@@ -9,10 +9,10 @@ import { CommonModule } from '@angular/common';
     <!-- Page Header -->
     <div class="page-header">
       <div class="page-header-bg"></div>
-      <div class="container" style="position:relative;z-index:1;padding-top:calc(var(--header-h) + var(--space-12));padding-bottom:var(--space-12);">
+      <div class="container p-header-section">
         <h1 class="section-title">Privacy Policy</h1>
-        <div class="divider" style="margin-left:0;"></div>
-        <p class="text-muted" style="margin-top:var(--space-4);">Last Updated: March 2026</p>
+        <div class="divider ml-0"></div>
+        <p class="text-muted mt-4">Last Updated: March 2026</p>
       </div>
     </div>
 
@@ -20,7 +20,7 @@ import { CommonModule } from '@angular/common';
     <section class="section">
       <div class="container text-content">
         <h2>1. Information We Collect</h2>
-        <p>When you visit Noir & Orange, make a reservation, or order online, we collect information that you voluntarily provide to us. This may include your name, email address, phone number, and payment information (handled securely by our payment processors).</p>
+        <p>When you visit NooR, make a reservation, or order online, we collect information that you voluntarily provide to us. This may include your name, email address, phone number, and payment information (handled securely by our payment processors).</p>
 
         <h2>2. How We Use Your Information</h2>
         <p>We use the information we collect to:</p>
@@ -40,55 +40,13 @@ import { CommonModule } from '@angular/common';
         <h2>5. Contact Us</h2>
         <p>If you have any questions regarding this privacy policy, you may contact us using the information below:</p>
         <p>
-          Noir & Orange<br>
+          NooR<br>
           18 West 29th Street<br>
           New York, NY 10001<br>
-          <a href="mailto:privacy@noirorange.com" style="color:var(--color-accent);text-decoration:none;">privacy&#64;noirorange.com</a>
+          <a href="mailto:privacy@noor.com" class="text-accent text-decoration-none">privacy&#64;noor.com</a>
         </p>
       </div>
     </section>
-  `,
-  styles: [`
-    .page-header {
-      position: relative;
-      background: var(--color-surface);
-      border-bottom: 1px solid var(--color-border);
-      overflow: hidden;
-    }
-
-    .page-header-bg {
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(ellipse 60% 80% at 0% 100%, rgba(230,126,34,0.06) 0%, transparent 70%);
-    }
-
-    .text-content {
-      max-width: 800px;
-      margin: 0 auto;
-
-      h2 {
-        font-size: 1.5rem;
-        margin: var(--space-8) 0 var(--space-3);
-        color: var(--color-text);
-      }
-
-      p {
-        color: var(--color-text-muted);
-        line-height: 1.8;
-        margin-bottom: var(--space-4);
-      }
-
-      ul {
-        color: var(--color-text-muted);
-        line-height: 1.8;
-        margin-bottom: var(--space-4);
-        padding-left: var(--space-6);
-
-        li {
-          margin-bottom: var(--space-2);
-        }
-      }
-    }
-  `]
+  `
 })
 export class PrivacyComponent {}

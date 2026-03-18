@@ -1,19 +1,18 @@
 using AutoMapper;
-using FakeRestuarantAPI.Data;
 using FakeRestuarantAPI.Models;
+using FakeRestuarantAPI.Repositories.Interfaces;
 using FakeRestuarantAPI.Services.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace FakeRestuarantAPI.Services.Implementation;
 
 public class UserService : IUserService
 {
-    private readonly AppDbContext _context;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
-    public UserService(AppDbContext context, IMapper mapper)
+    public UserService(IUnitOfWork unitOfWork, IMapper mapper)
     {
-        _context = context;
+        _unitOfWork = unitOfWork;
         _mapper = mapper;
     }
 
@@ -22,77 +21,62 @@ public class UserService : IUserService
         var user = _mapper.Map<User>(userDTO);
         user.Usercode = await GenerateUniqueUserCodeAsync();
 
-        await _context.User.AddAsync(user);
-        await _context.SaveChangesAsync();
+        await _unitOfWork.Users.AddAsync(user);
+        await _unitOfWork.SaveChangesAsync();
+
         return user;
     }
 
     public async Task<bool> UserExistsAsync(string userEmail)
     {
-        return await _context.User.AnyAsync(u => u.UserEmail == userEmail);
+        return await _unitOfWork.Users.EmailExistsAsync(userEmail);
     }
 
     public async Task<string?> GetUserCodeAsync(string userEmail, string password)
     {
-        var user = await _context.User.FirstOrDefaultAsync(u => u.UserEmail == userEmail);
-        
-        if (user != null && password == user.Password)
-        {
-            return user.Usercode;
-        }
-        
-        return null;
+        var user = await _unitOfWork.Users.ValidateUserAsync(userEmail, password);
+        return user?.Usercode;
     }
 
     public async Task<User?> GetUserByCodeAsync(string userCode)
     {
-        return await _context.User.FirstOrDefaultAsync(u => u.Usercode == userCode);
+        return await _unitOfWork.Users.GetByUserCodeAsync(userCode);
     }
 
     public async Task<IEnumerable<User>> GetAllUsersAsync()
     {
-        return await _context.User.ToListAsync();
+        return await _unitOfWork.Users.GetAllAsync();
     }
 
     public async Task<bool> DeleteUserAsync(string apiKey)
     {
-        var user = await _context.User.FirstOrDefaultAsync(u => u.Usercode == apiKey);
-        
-        if (user != null)
-        {
-            _context.User.Remove(user);
-            await _context.SaveChangesAsync();
-            return true;
-        }
-        
-        return false;
+        var user = await _unitOfWork.Users.GetByUserCodeAsync(apiKey);
+        if (user == null) return false;
+
+        await _unitOfWork.Users.DeleteAsync(user);
+        await _unitOfWork.SaveChangesAsync();
+        return true;
     }
 
     public async Task<User?> UpdateUserPasswordAsync(string apiKey, string newPassword)
     {
-        var user = await _context.User.FirstOrDefaultAsync(u => u.Usercode == apiKey);
-        
-        if (user != null)
-        {
-            user.Password = newPassword;
-            await _context.SaveChangesAsync();
-            return user;
-        }
-        
-        return null;
+        var user = await _unitOfWork.Users.GetByUserCodeAsync(apiKey);
+        if (user == null) return null;
+
+        user.Password = newPassword;
+        await _unitOfWork.Users.UpdateAsync(user);
+        await _unitOfWork.SaveChangesAsync();
+
+        return user;
     }
 
     public async Task<string> GenerateUniqueUserCodeAsync()
     {
         string userCode;
-        bool isUnique;
-
         do
         {
             userCode = Guid.NewGuid().ToString();
-            isUnique = !await _context.User.AnyAsync(r => r.Usercode == userCode);
-        } 
-        while (!isUnique);
+        } while (await _unitOfWork.Users.UserCodeExistsAsync(userCode));
 
         return userCode;
     }

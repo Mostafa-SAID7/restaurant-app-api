@@ -1,91 +1,89 @@
 using AutoMapper;
-using FakeRestuarantAPI.Data;
 using FakeRestuarantAPI.Models;
+using FakeRestuarantAPI.Repositories.Interfaces;
 using FakeRestuarantAPI.Services.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace FakeRestuarantAPI.Services.Implementation;
 
 public class OrderService : IOrderService
 {
-    private readonly AppDbContext _context;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
-    private readonly IRestaurantService _restaurantService;
 
-    public OrderService(AppDbContext context, IMapper mapper, IRestaurantService restaurantService)
+    public OrderService(IUnitOfWork unitOfWork, IMapper mapper)
     {
-        _context = context;
+        _unitOfWork = unitOfWork;
         _mapper = mapper;
-        _restaurantService = restaurantService;
     }
 
     public async Task<FullOrderDTO> CreateOrderAsync(int restaurantId, string apiKey, MenuDTO menuDTO)
     {
-        var customer = await GetUserByApiKeyAsync(apiKey);
+        var customer = await _unitOfWork.Users.GetByUserCodeAsync(apiKey);
         if (customer == null)
             throw new UnauthorizedAccessException("Invalid API key");
 
-        var restaurant = await _restaurantService.GetRestaurantByIdAsync(restaurantId);
+        var restaurant = await _unitOfWork.Restaurants.GetByIdAsync(restaurantId);
         if (restaurant == null)
             throw new ArgumentException($"No Restaurant Exists with {restaurantId}");
 
-        var restaurantItems = await _context.Item
-            .Where(i => i.RestaurantID == restaurantId)
-            .ToListAsync();
+        var restaurantItems = await _unitOfWork.Items.GetByRestaurantIdAsync(restaurantId);
 
         var orderList = new FullOrderDTO { fullorder = new List<Order>() };
         decimal grandTotal = 0.00m;
 
-        var masterId = await GetNextMasterIdAsync();
+        var masterId = await _unitOfWork.Orders.GetNextMasterIdAsync();
 
-        foreach (var item in menuDTO.menuDTO)
+        await _unitOfWork.BeginTransactionAsync();
+        try
         {
-            var itemExists = restaurantItems.FirstOrDefault(i => i.ItemName == item.ItemName);
-            if (itemExists == null)
-                throw new ArgumentException("The Item did not exist on restaurant menu");
+            foreach (var item in menuDTO.menuDTO)
+            {
+                var itemExists = restaurantItems.FirstOrDefault(i => i.ItemName == item.ItemName);
+                if (itemExists == null)
+                    throw new ArgumentException("The Item did not exist on restaurant menu");
 
-            decimal totalPrice = itemExists.ItemPrice * item.Quantity;
+                decimal totalPrice = itemExists.ItemPrice * item.Quantity;
 
-            var order = _mapper.Map<Order>(item);
-            order.UserID = customer.UserEmail;
-            order.ItemPrice = itemExists.ItemPrice;
-            order.TotalPrice = totalPrice;
-            order.MasterID = masterId;
+                var order = _mapper.Map<Order>(item);
+                order.UserID = customer.UserEmail;
+                order.ItemPrice = itemExists.ItemPrice;
+                order.TotalPrice = totalPrice;
+                order.MasterID = masterId;
 
-            grandTotal += totalPrice;
-            orderList.fullorder.Add(order);
+                grandTotal += totalPrice;
+                orderList.fullorder.Add(order);
+            }
+
+            var masterOrder = new MasterOrder
+            {
+                UserID = customer.UserEmail,
+                GrandTotal = grandTotal,
+                RestaurantID = restaurant.RestaurantID
+            };
+
+            orderList.GrandTotal = grandTotal;
+
+            await _unitOfWork.MasterOrders.AddAsync(masterOrder);
+            await _unitOfWork.Orders.AddRangeAsync(orderList.fullorder);
+            await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.CommitTransactionAsync();
+
+            return orderList;
         }
-
-        var masterOrder = new MasterOrder
+        catch
         {
-            UserID = customer.UserEmail,
-            GrandTotal = grandTotal,
-            RestaurantID = restaurant.RestaurantID
-        };
-
-        orderList.GrandTotal = grandTotal;
-
-        await _context.masterOrders.AddAsync(masterOrder);
-        await _context.SaveChangesAsync();
-
-        foreach (var order in orderList.fullorder)
-        {
-            await _context.Order.AddAsync(order);
+            await _unitOfWork.RollbackTransactionAsync();
+            throw;
         }
-        await _context.SaveChangesAsync();
-
-        return orderList;
     }
 
     public async Task<IEnumerable<object>> GetUserOrdersAsync(string apiKey)
     {
-        var customer = await GetUserByApiKeyAsync(apiKey);
+        var customer = await _unitOfWork.Users.GetByUserCodeAsync(apiKey);
         if (customer == null)
             throw new UnauthorizedAccessException("Invalid API key");
 
-        var totalOrders = await _context.masterOrders
-            .Where(m => m.UserID == customer.UserEmail)
-            .ToListAsync();
+        var totalOrders = await _unitOfWork.MasterOrders.GetWithRestaurantByUserIdAsync(customer.UserEmail);
 
         return totalOrders.Select(t => new
         {
@@ -99,67 +97,53 @@ public class OrderService : IOrderService
 
     public async Task<IEnumerable<Order>> GetOrdersByMasterIdAsync(string apiKey, int masterId)
     {
-        var customer = await GetUserByApiKeyAsync(apiKey);
+        var customer = await _unitOfWork.Users.GetByUserCodeAsync(apiKey);
         if (customer == null)
             throw new UnauthorizedAccessException("Invalid API key");
 
-        return await _context.Order
-            .Where(o => o.MasterID == masterId)
-            .ToListAsync();
+        return await _unitOfWork.Orders.GetByMasterIdAsync(masterId);
     }
 
     public async Task<bool> DeleteOrderAsync(int orderId, string apiKey)
     {
-        var customer = await GetUserByApiKeyAsync(apiKey);
+        var customer = await _unitOfWork.Users.GetByUserCodeAsync(apiKey);
         if (customer == null)
             return false;
 
-        var order = await _context.Order.FirstOrDefaultAsync(o => o.OrderID == orderId);
-        if (order == null)
-            return false;
-
-        _context.Order.Remove(order);
-        await _context.SaveChangesAsync();
-        return true;
+        var deleted = await _unitOfWork.Orders.DeleteAsync(orderId);
+        if (deleted)
+        {
+            await _unitOfWork.SaveChangesAsync();
+        }
+        return deleted;
     }
 
     public async Task<object> DeleteMasterOrderAsync(int masterId, string apiKey)
     {
-        var customer = await GetUserByApiKeyAsync(apiKey);
+        var customer = await _unitOfWork.Users.GetByUserCodeAsync(apiKey);
         if (customer == null)
             throw new UnauthorizedAccessException("Invalid API key");
 
-        var masterOrders = await _context.masterOrders
-            .Include(o => o.restaurant)
-            .Where(o => o.MasterID == masterId)
-            .ToListAsync();
+        await _unitOfWork.BeginTransactionAsync();
+        try
+        {
+            var masterOrder = await _unitOfWork.MasterOrders.GetWithDetailsAsync(masterId);
+            if (masterOrder == null)
+                throw new ArgumentException("Orders are not found with associated ID");
 
-        if (!masterOrders.Any())
-            throw new ArgumentException("Orders are not found with associated ID");
+            var singleOrders = await _unitOfWork.Orders.GetByMasterIdAsync(masterId);
 
-        var singleOrders = await _context.Order
-            .Where(o => o.MasterID == masterId)
-            .ToListAsync();
+            await _unitOfWork.MasterOrders.DeleteAsync(masterOrder);
+            await _unitOfWork.Orders.DeleteRangeAsync(singleOrders);
+            await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.CommitTransactionAsync();
 
-        _context.masterOrders.RemoveRange(masterOrders);
-        _context.Order.RemoveRange(singleOrders);
-        await _context.SaveChangesAsync();
-
-        return new { message = "Master order Deleted", masterOrders, singleOrders };
-    }
-
-    public async Task<User?> GetUserByApiKeyAsync(string apiKey)
-    {
-        return await _context.User.FirstOrDefaultAsync(u => u.Usercode == apiKey);
-    }
-
-    private async Task<int> GetNextMasterIdAsync()
-    {
-        var lastMasterId = await _context.masterOrders
-            .OrderByDescending(m => m.MasterID)
-            .Select(m => m.MasterID)
-            .FirstOrDefaultAsync();
-
-        return lastMasterId + 1;
+            return new { message = "Master order Deleted", masterOrder, singleOrders };
+        }
+        catch
+        {
+            await _unitOfWork.RollbackTransactionAsync();
+            throw;
+        }
     }
 }

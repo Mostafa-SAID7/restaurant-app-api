@@ -13,17 +13,6 @@ import { FooterComponent } from './layout/footer/footer.component';
       <router-outlet></router-outlet>
     </main>
     <app-footer></app-footer>
-  `,
-  styles: [`
-    :host {
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-
-    main {
-      flex: 1;
-    }
-  `]
+  `
 })
 export class AppComponent {}

@@ -9,5 +9,4 @@ public interface IOrderService
     Task<IEnumerable<Order>> GetOrdersByMasterIdAsync(string apiKey, int masterId);
     Task<bool> DeleteOrderAsync(int orderId, string apiKey);
     Task<object> DeleteMasterOrderAsync(int masterId, string apiKey);
-    Task<User?> GetUserByApiKeyAsync(string apiKey);
 }

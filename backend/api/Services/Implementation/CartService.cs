@@ -1,105 +1,84 @@
 using AutoMapper;
-using FakeRestuarantAPI.Data;
 using FakeRestuarantAPI.Models;
+using FakeRestuarantAPI.Repositories.Interfaces;
 using FakeRestuarantAPI.Services.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace FakeRestuarantAPI.Services.Implementation;
 
 public class CartService : ICartService
 {
-    private readonly AppDbContext _context;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
-    public CartService(AppDbContext context, IMapper mapper)
+    public CartService(IUnitOfWork unitOfWork, IMapper mapper)
     {
-        _context = context;
+        _unitOfWork = unitOfWork;
         _mapper = mapper;
     }
 
     public async Task<IEnumerable<Cart>> GetCartItemsAsync(string apiKey)
     {
-        var user = await _context.User.FirstOrDefaultAsync(u => u.Usercode == apiKey);
+        var user = await _unitOfWork.Users.GetByUserCodeAsync(apiKey);
         if (user == null)
             throw new UnauthorizedAccessException("No user found with given key");
 
-        return await _context.cart
-            .Where(c => c.UserID == apiKey)
-            .ToListAsync();
+        return await _unitOfWork.Carts.GetByUserIdAsync(user.Usercode);
     }
 
     public async Task<CartDTO> AddItemToCartAsync(string apiKey, setcart setCart)
     {
-        var user = await _context.User.FirstOrDefaultAsync(u => u.Usercode == apiKey);
+        var user = await _unitOfWork.Users.GetByUserCodeAsync(apiKey);
         if (user == null)
             throw new UnauthorizedAccessException("No user found with given key");
 
         var cartDTO = _mapper.Map<CartDTO>(setCart);
         cartDTO.UserID = user.Usercode;
 
-        // Convert CartDTO to Cart entity and save
-        var cartItem = new Cart
-        {
-            UserID = cartDTO.UserID,
-            ItemID = cartDTO.ItemID,
-            ItemName = cartDTO.ItemName,
-            Quantity = cartDTO.Quantity,
-            ItemPrice = cartDTO.ItemPrice
-        };
-
-        await _context.cart.AddAsync(cartItem);
-        await _context.SaveChangesAsync();
+        var cart = _mapper.Map<Cart>(cartDTO);
+        await _unitOfWork.Carts.AddAsync(cart);
+        await _unitOfWork.SaveChangesAsync();
 
         return cartDTO;
     }
 
     public async Task<bool> RemoveItemFromCartAsync(string apiKey, int itemId)
     {
-        var user = await _context.User.FirstOrDefaultAsync(u => u.Usercode == apiKey);
+        var user = await _unitOfWork.Users.GetByUserCodeAsync(apiKey);
         if (user == null)
             return false;
 
-        var cartItem = await _context.cart
-            .FirstOrDefaultAsync(c => c.UserID == apiKey && c.ItemID == itemId);
-
-        if (cartItem == null)
-            return false;
-
-        _context.cart.Remove(cartItem);
-        await _context.SaveChangesAsync();
-        return true;
+        var removed = await _unitOfWork.Carts.RemoveByUserAndItemAsync(user.Usercode, itemId);
+        if (removed)
+        {
+            await _unitOfWork.SaveChangesAsync();
+        }
+        return removed;
     }
 
     public async Task<getcartDTO> GetCartSummaryAsync(string apiKey)
     {
-        var user = await _context.User.FirstOrDefaultAsync(u => u.Usercode == apiKey);
+        var user = await _unitOfWork.Users.GetByUserCodeAsync(apiKey);
         if (user == null)
             throw new UnauthorizedAccessException("No user found with given key");
 
-        var cartItems = await _context.cart
-            .Where(c => c.UserID == apiKey)
-            .ToListAsync();
-
-        var grandTotal = cartItems.Sum(c => c.ItemPrice * c.Quantity);
-
+        var cartItems = await _unitOfWork.Carts.GetByUserIdAsync(user.Usercode);
+        
+        var totalAmount = cartItems.Sum(c => c.item.ItemPrice * c.Quantity);
+        
         return new getcartDTO
         {
-            cartitems = cartItems,
-            GrandTotal = grandTotal
+            cartitems = cartItems.ToList(),
+            GrandTotal = totalAmount
         };
     }
 
     public async Task ClearCartAsync(string apiKey)
     {
-        var user = await _context.User.FirstOrDefaultAsync(u => u.Usercode == apiKey);
+        var user = await _unitOfWork.Users.GetByUserCodeAsync(apiKey);
         if (user == null)
             throw new UnauthorizedAccessException("No user found with given key");
 
-        var cartItems = await _context.cart
-            .Where(c => c.UserID == apiKey)
-            .ToListAsync();
-
-        _context.cart.RemoveRange(cartItems);
-        await _context.SaveChangesAsync();
+        await _unitOfWork.Carts.ClearByUserIdAsync(user.Usercode);
+        await _unitOfWork.SaveChangesAsync();
     }
 }

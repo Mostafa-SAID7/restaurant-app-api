@@ -13,8 +13,17 @@ const SVG_ICONS: Record<string, string> = {
   star: '<path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />',
   diamond: '<path stroke-linecap="round" stroke-linejoin="round" d="M12 2L2 12l10 10 10-10L12 2z" />',
   diamondFill: '<path stroke-linecap="round" stroke-linejoin="round" fill="currentColor" d="M12 2L2 12l10 10 10-10L12 2z" />',
+  noorLogo: "<text x='12' y='18' font-family='Caudex, serif' font-size='20' font-weight='bold' fill='currentColor' text-anchor='middle'>N</text>",
   minus: '<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15" />',
   plus: '<path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />',
+  candle: '<path d="M12 10V21M12 10a2 2 0 100-4 2 2 0 000 4zM10 21h4M12 6c0-1 1-2 1-3s-1-2-1-3-1 1-1 2 1 2 1 3z" stroke-linecap="round" stroke-linejoin="round"/>',
+  trophy: '<path d="M8 21h8M12 17v4M7 4h10M17 4v8c0 2.8-2.2 5-5 5s-5-2.2-5-5V4M3 6h4M21 6h-4" stroke-linecap="round" stroke-linejoin="round"/>',
+  checkout: '<path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" stroke-linecap="round" stroke-linejoin="round"/>',
+  takeout: '<path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9zM9 22V12h6v10" stroke-linecap="round" stroke-linejoin="round"/>',
+  bike: '<circle cx="6" cy="17" r="3"/><circle cx="18" cy="17" r="3"/><path d="M12 17H9M12 17v-4l-4-4h4M12 13l4-4h4M18 17h-2.5" stroke-linecap="round" stroke-linejoin="round"/>',
+  seedling: '<path d="M12 22V12M12 12c-3 0-5-2-5-5s2-5 5-5 5 2 5 5-2 5-5 5zM12 12c3 0 5-2 5-5s-2-5-5-5-5 2-5 5 2 5 5 5z" stroke-linecap="round" stroke-linejoin="round"/>',
+  gift: '<path d="M20 12v10H4V12M2 7h20v5H2V7zM12 22V7M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z" stroke-linecap="round" stroke-linejoin="round"/>',
+  mapPinFill: '<path d="M12 2c-3.3 0-6 2.7-6 6 0 4.4 6 12 6 12s6-7.6 6-12c0-3.3-2.7-6-6-6zM12 11c-1.7 0-3-1.3-3-3s1.3-3 3-3 3 1.3 3 3-1.3 3-3 3z" fill="currentColor"/>',
   
   // Specific Concepts
   leaf: '<path stroke-linecap="round" stroke-linejoin="round" d="M11.412 15.655L9.75 21.75l3.745-4.012M9.257 13.5H3.75l2.659-2.849m2.022-3.141L3.75 6.75l2.659-2.849M18.75 6.75L21.75 3l-3.257 1.012M15 11.25l3.75-4.5-3.257 1.012M15 15.75l3.75-4.5-3.257 1.012M12 12a4.5 4.5 0 110-9 4.5 4.5 0 010 9z" />',
@@ -22,6 +31,11 @@ const SVG_ICONS: Record<string, string> = {
   chef: '<path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />',
   handshake: '<path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />', // using a generic relation icon
   sparkles: '<path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />',
+  instagram: '<rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/>',
+  facebook: '<path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>',
+  twitter: '<path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/>',
+  arrow_right: '<path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />',
+  arrow_left: '<path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />',
   
   // Contact & Details
   mapPin: '<path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />',
@@ -53,41 +67,7 @@ const SVG_ICONS: Record<string, string> = {
          [attr.fill]="fill" [attr.stroke]="stroke" [attr.stroke-width]="strokeWidth"
          [innerHTML]="safeHtml" class="ui-icon">
     </svg>
-  `,
-  styles: [`
-    .ui-icon {
-      display: inline-block;
-      width: 1em;
-      height: 1em;
-      vertical-align: -0.125em;
-      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), 
-                  color 0.3s ease, 
-                  filter 0.3s ease;
-    }
-    
-    /* Global hover effect for standalone icons, or when their parent container is hovered */
-    :host:hover .ui-icon,
-    *:hover > :host .ui-icon,
-    .card:hover .ui-icon,
-    button:hover .ui-icon,
-    a:hover .ui-icon,
-    .contact-detail:hover .ui-icon,
-    .nav-link:hover .ui-icon {
-      transform: scale(1.2) translateY(-2px);
-      filter: drop-shadow(0 3px 6px rgba(230,126,34,0.45));
-      animation: floatPulse 2s ease-in-out infinite alternate;
-    }
-
-    @keyframes floatPulse {
-      0% {
-        transform: scale(1.2) translateY(-2px);
-      }
-      100% {
-        transform: scale(1.22) translateY(-4px);
-        filter: drop-shadow(0 6px 10px rgba(230,126,34,0.6));
-      }
-    }
-  `]
+  `
 })
 export class IconComponent implements OnChanges {
   @Input({ required: true }) name!: string;

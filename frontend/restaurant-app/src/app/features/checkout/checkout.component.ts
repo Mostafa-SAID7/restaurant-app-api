@@ -16,9 +16,9 @@ type OrderStep = 'cart' | 'details' | 'payment' | 'confirmed';
     <!-- Page Header -->
     <div class="page-header">
       <div class="page-header-bg"></div>
-      <div class="container" style="position:relative;z-index:1;padding-top:calc(var(--header-h) + var(--space-10));padding-bottom:var(--space-10);text-align:center;">
+      <div class="container p-header-section text-center">
         <span class="section-label">Order Online</span>
-        <h1 class="section-title" style="font-size:clamp(2rem,5vw,3rem);">Your Order</h1>
+        <h1 class="section-title title-lg">Your Order</h1>
         <div class="divider"></div>
 
         <!-- Steps indicator -->
@@ -61,7 +61,7 @@ type OrderStep = 'cart' | 'details' | 'payment' | 'confirmed';
                     <app-icon [name]="getCategoryIcon(item.menuItem.category)" class="cart-item-emoji"></app-icon>
                     <div class="cart-item-info">
                       <h4>{{ item.menuItem.name }}</h4>
-                      <span class="text-muted" style="font-size:0.85rem;">{{ item.menuItem.category }}</span>
+                      <span class="text-muted text-sm">{{ item.menuItem.category }}</span>
                     </div>
                     <div class="cart-item-qty">
                       <button class="qty-btn" (click)="cartService.updateQuantity(item.menuItem.id, item.quantity - 1)"><app-icon name="minus" strokeWidth="2"></app-icon></button>
@@ -86,23 +86,25 @@ type OrderStep = 'cart' | 'details' | 'payment' | 'confirmed';
           @if (!cartService.isEmpty()) {
             <div class="checkout-sidebar">
               <div class="order-summary card">
-                <h3>Order Summary</h3>
-                <div class="summary-lines">
-                  <div class="summary-line">
-                    <span class="text-muted">Subtotal</span>
-                    <span>\${{ cartService.totalAmount() | number:'1.2-2' }}</span>
+                <div class="order-type-grid">
+                  <div class="order-type-option" [class.selected]="detailsForm.get('orderType')?.value === 'dine-in'" (click)="detailsForm.patchValue({orderType: 'dine-in'})">
+                    <app-icon name="dining" class="type-icon"></app-icon>
+                    <span>Dine-in</span>
+                    <small>Reserve a table</small>
                   </div>
-                  <div class="summary-line">
-                    <span class="text-muted">Service (10%)</span>
-                    <span>\${{ (cartService.totalAmount() * 0.1) | number:'1.2-2' }}</span>
+                  <div class="order-type-option" [class.selected]="detailsForm.get('orderType')?.value === 'takeaway'" (click)="detailsForm.patchValue({orderType: 'takeaway'})">
+                    <app-icon name="takeout" class="type-icon"></app-icon>
+                    <span>Takeout</span>
+                    <small>Self-pickup</small>
                   </div>
-                  <div class="summary-line summary-total">
-                    <span>Total</span>
-                    <span class="price">\${{ (cartService.totalAmount() * 1.1) | number:'1.2-2' }}</span>
+                  <div class="order-type-option" [class.selected]="detailsForm.get('orderType')?.value === 'delivery'" (click)="detailsForm.patchValue({orderType: 'delivery'})">
+                    <app-icon name="bike" class="type-icon"></app-icon>
+                    <span>Delivery</span>
+                    <small>To your door</small>
                   </div>
                 </div>
-                <button class="btn btn-primary btn-lg" style="width:100%;justify-content:center;" (click)="goTo('details')">
-                  Proceed to Details →
+                <button class="btn btn-primary btn-lg w-full justify-center" (click)="goTo('details')">
+                  Proceed to Details <app-icon name="arrow_right" strokeWidth="2"></app-icon>
                 </button>
               </div>
             </div>
@@ -159,8 +161,8 @@ type OrderStep = 'cart' | 'details' | 'payment' | 'confirmed';
               </div>
 
               <div class="step-actions">
-                <button type="button" class="btn btn-ghost" (click)="goTo('cart')">← Back to Cart</button>
-                <button type="submit" class="btn btn-primary btn-lg" [disabled]="detailsForm.invalid">Continue to Payment →</button>
+                <button type="button" class="btn btn-ghost" (click)="goTo('cart')"><app-icon name="arrow_left" strokeWidth="2"></app-icon> Back to Cart</button>
+                <button type="submit" class="btn btn-primary btn-lg" [disabled]="detailsForm.invalid">Continue to Payment <app-icon name="arrow_right" strokeWidth="2"></app-icon></button>
               </div>
             </form>
           </div>
@@ -195,7 +197,7 @@ type OrderStep = 'cart' | 'details' | 'payment' | 'confirmed';
                   <label class="form-label" for="cardholder">Card Holder *</label>
                   <input id="cardholder" type="text" class="form-input" formControlName="cardHolder" placeholder="John Doe">
                 </div>
-                <div class="form-row-2" style="gap:var(--space-3);">
+                <div class="form-row-2 gap-3">
                   <div class="form-group">
                     <label class="form-label" for="expiry">Expiry *</label>
                     <input id="expiry" type="text" class="form-input" formControlName="cardExpiry" placeholder="MM/YY" maxlength="5">
@@ -208,14 +210,14 @@ type OrderStep = 'cart' | 'details' | 'payment' | 'confirmed';
               </div>
 
               <div class="secure-note">
-                <app-icon name="lock" style="vertical-align:-0.15em; margin-right:4px;"></app-icon> Your payment info is encrypted and secure.
+                <app-icon name="lock" class="icon-inline"></app-icon> Your payment info is encrypted and secure.
               </div>
 
               <div class="step-actions">
-                <button type="button" class="btn btn-ghost" (click)="goTo('details')">← Back</button>
+                <button type="button" class="btn btn-ghost" (click)="goTo('details')"><app-icon name="arrow_left" strokeWidth="2"></app-icon> Back</button>
                 <button type="submit" class="btn btn-primary btn-lg" [disabled]="paymentForm.invalid || submitting()">
                   @if (submitting()) {
-                    <span class="spinner" style="width:18px;height:18px;border-width:2px;"></span> Processing...
+                    <span class="spinner spinner-sm"></span> Processing...
                   } @else {
                     Place Order · \${{ (cartService.totalAmount() * 1.1) | number:'1.2-2' }}
                   }
@@ -230,17 +232,22 @@ type OrderStep = 'cart' | 'details' | 'payment' | 'confirmed';
 
       <!-- STEP 4: Confirmed -->
       @if (currentStep() === 'confirmed') {
-        <div class="confirmed-screen animate-fade-up">
-          <div class="confirm-tick"><app-icon name="check" strokeWidth="2"></app-icon></div>
-          <h2>Order Placed!</h2>
-          <p class="text-muted">{{ orderMessage() }}</p>
-          <div class="confirm-id-box">
-            <span class="text-muted">Order #</span>
-            <strong class="text-accent" style="font-size:1.3rem;">{{ orderId() }}</strong>
+        <div class="confirmed-screen card animate-fade-up">
+          <div class="confirm-tick">
+            <app-icon name="check" strokeWidth="3"></app-icon>
           </div>
-          <div style="display:flex;gap:var(--space-4);justify-content:center;flex-wrap:wrap;margin-top:var(--space-8);">
-            <a routerLink="/" class="btn btn-ghost">Back to Home</a>
-            <a routerLink="/menu" class="btn btn-primary">Order Again</a>
+          <h2 class="title-lg">Order Confirmed</h2>
+          <p class="text-xl mb-2">Thank you, {{ detailsForm.value.name }}!</p>
+          <p class="text-muted leading-relaxed mb-6">{{ orderMessage() }}</p>
+
+          <div class="confirm-id-box">
+             <span class="text-xs text-muted font-bold uppercase tracking-wider">Order ID:</span>
+             <span class="font-mono font-bold text-accent">#{{ orderId() }}</span>
+          </div>
+
+          <div class="mt-8 flex gap-4 justify-center">
+            <a routerLink="/" class="btn btn-primary">Back to Home</a>
+            <button class="btn btn-outline" (click)="currentStep.set('cart'); cartService.clearCart()">Order Something Else</button>
           </div>
         </div>
       }
@@ -276,359 +283,7 @@ type OrderStep = 'cart' | 'details' | 'payment' | 'confirmed';
         </div>
       </div>
     </ng-template>
-  `,
-  styles: [`
-    .page-header {
-      background: var(--color-surface);
-      border-bottom: 1px solid var(--color-border);
-      overflow: hidden;
-      position: relative;
-    }
-
-    .page-header-bg {
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(ellipse 60% 80% at 50% 100%, rgba(230,126,34,0.06) 0%, transparent 70%);
-    }
-
-    /* Steps bar */
-    .steps-bar {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0;
-      margin-top: var(--space-6);
-    }
-
-    .step-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: var(--space-2);
-    }
-
-    .step-circle {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      border: 2px solid var(--color-border);
-      background: var(--color-surface-2);
-      color: var(--color-text-muted);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.85rem;
-      font-weight: 700;
-      transition: all var(--transition-base);
-    }
-
-    .step-item.active .step-circle {
-      border-color: var(--color-accent);
-      background: var(--color-accent-muted);
-      color: var(--color-accent);
-    }
-
-    .step-item.done .step-circle {
-      border-color: var(--color-success);
-      background: rgba(39,174,96,0.12);
-      color: var(--color-success);
-    }
-
-    .step-label {
-      font-size: 0.75rem;
-      color: var(--color-text-muted);
-      white-space: nowrap;
-    }
-
-    .step-item.active .step-label { color: var(--color-accent); font-weight: 600; }
-
-    .step-connector {
-      width: 80px;
-      height: 2px;
-      background: var(--color-border);
-      margin: 0 var(--space-2);
-      margin-bottom: var(--space-6);
-      transition: background var(--transition-base);
-
-      &.done { background: var(--color-success); }
-    }
-
-    /* Layout */
-    .checkout-layout {
-      display: grid;
-      grid-template-columns: 1fr 340px;
-      gap: var(--space-8);
-      align-items: start;
-    }
-
-    .step-title {
-      font-size: 1.4rem;
-      margin-bottom: var(--space-6);
-      padding-bottom: var(--space-4);
-      border-bottom: 1px solid var(--color-border);
-    }
-
-    /* Cart Items */
-    .cart-items {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-3);
-      margin-bottom: var(--space-5);
-    }
-
-    .cart-item {
-      display: flex;
-      align-items: center;
-      gap: var(--space-4);
-      padding: var(--space-4);
-      border-radius: var(--radius-lg);
-
-      &:hover { transform: none; }
-    }
-
-    .cart-item-emoji { font-size: 1.5rem; }
-
-    .cart-item-info { flex: 1; h4 { font-size:0.95rem; } }
-
-    .cart-item-qty {
-      display: flex;
-      align-items: center;
-      gap: var(--space-2);
-    }
-
-    .qty-btn {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      border: 1px solid var(--color-border);
-      background: var(--color-surface-2);
-      color: var(--color-text);
-      font-size: 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all var(--transition-fast);
-
-      &:hover { border-color: var(--color-accent); color: var(--color-accent); }
-    }
-
-    .qty-num { min-width: 24px; text-align: center; font-weight: 600; }
-
-    .cart-item-price {
-      display: flex;
-      align-items: center;
-      gap: var(--space-3);
-    }
-
-    .remove-btn {
-      color: var(--color-text-dim);
-      font-size: 0.75rem;
-      cursor: pointer;
-      background: none;
-      border: none;
-      padding: 4px;
-      border-radius: var(--radius-sm);
-      transition: color var(--transition-fast);
-
-      &:hover { color: var(--color-error); }
-    }
-
-    .cart-actions {
-      display: flex;
-      gap: var(--space-3);
-    }
-
-    /* Empty Cart */
-    .empty-cart {
-      text-align: center;
-      padding: var(--space-16) 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: var(--space-4);
-    }
-
-    .empty-icon { font-size: 3rem; }
-
-    /* Summary card */
-    .order-summary {
-      padding: var(--space-6);
-      position: sticky;
-      top: calc(var(--header-h) + var(--space-6));
-
-      h3 { font-size: 1rem; margin-bottom: var(--space-4); }
-    }
-
-    .mini-items {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-2);
-      padding-bottom: var(--space-4);
-      margin-bottom: var(--space-4);
-      border-bottom: 1px solid var(--color-border);
-    }
-
-    .mini-item {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.85rem;
-      gap: var(--space-4);
-
-      span:first-child { flex:1; color: var(--color-text-muted); }
-    }
-
-    .summary-lines {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-3);
-      margin-bottom: var(--space-5);
-    }
-
-    .summary-line {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.9rem;
-    }
-
-    .summary-total {
-      padding-top: var(--space-3);
-      border-top: 1px solid var(--color-border);
-      font-weight: 600;
-      font-size: 1rem;
-    }
-
-    /* Details form */
-    .details-form {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-5);
-    }
-
-    .form-row-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-4);
-    }
-
-    /* Order type */
-    .order-type-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: var(--space-3);
-    }
-
-    .order-type-option {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: var(--space-2);
-      padding: var(--space-4);
-      border: 2px solid var(--color-border);
-      border-radius: var(--radius-lg);
-      cursor: pointer;
-      text-align: center;
-      transition: all var(--transition-fast);
-
-      &:hover { border-color: rgba(230,126,34,0.4); }
-      &.selected { border-color: var(--color-accent); background: var(--color-accent-muted); }
-    }
-
-    .type-icon { font-size: 1.5rem; }
-    .order-type-option small { font-size: 0.75rem; line-height: 1.4; }
-
-    /* Card visual */
-    .card-visual {
-      background: linear-gradient(135deg, var(--color-surface-3) 0%, #2D2D2D 100%);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-xl);
-      padding: var(--space-6);
-      margin-bottom: var(--space-6);
-      position: relative;
-      overflow: hidden;
-
-      &::before {
-        content: '';
-        position: absolute;
-        top: 0; left: 0; right: 0; height: 3px;
-        background: linear-gradient(90deg, var(--color-accent), #F39C12);
-      }
-    }
-
-    .card-chip { font-size: 1.4rem; color: var(--color-accent); margin-bottom: var(--space-4); }
-
-    .card-number-preview {
-      font-size: 1.1rem;
-      letter-spacing: 0.2em;
-      font-family: monospace;
-      color: var(--color-text-muted);
-      margin-bottom: var(--space-4);
-    }
-
-    .card-meta {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.85rem;
-      color: var(--color-text-muted);
-    }
-
-    .secure-note {
-      font-size: 0.83rem;
-      color: var(--color-text-muted);
-      padding: var(--space-3) var(--space-4);
-      background: rgba(39,174,96,0.07);
-      border-radius: var(--radius-md);
-      border: 1px solid rgba(39,174,96,0.2);
-    }
-
-    .step-actions {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-top: var(--space-4);
-    }
-
-    /* Confirmed */
-    .confirmed-screen {
-      text-align: center;
-      padding: var(--space-16) 0;
-      max-width: 480px;
-      margin: 0 auto;
-    }
-
-    .confirm-tick {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      background: rgba(39,174,96,0.1);
-      border: 2px solid var(--color-success);
-      color: var(--color-success);
-      font-size: 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto var(--space-6);
-    }
-
-    .confirm-id-box {
-      display: inline-flex;
-      align-items: center;
-      gap: var(--space-3);
-      background: var(--color-surface);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-lg);
-      padding: var(--space-4) var(--space-6);
-      margin-top: var(--space-5);
-    }
-
-    @media (max-width: 900px) {
-      .checkout-layout { grid-template-columns: 1fr; }
-      .order-summary { position: static; }
-      .form-row-2 { grid-template-columns: 1fr; }
-      .order-type-grid { grid-template-columns: 1fr 1fr; }
-      .step-connector { width: 40px; }
-    }
-  `]
+  `
 })
 export class CheckoutComponent {
   cartService = inject(CartService);

@@ -5,43 +5,43 @@ export const routes: Routes = [
     path: '',
     loadComponent: () =>
       import('./features/home/home.component').then(m => m.HomeComponent),
-    title: 'Noir & Orange — Fine Dining'
+    title: 'NooR — Fine Dining'
   },
   {
     path: 'menu',
     loadComponent: () =>
       import('./features/menu/menu.component').then(m => m.MenuComponent),
-    title: 'Our Menu — Noir & Orange'
+    title: 'Our Menu — NooR'
   },
   {
     path: 'reservations',
     loadComponent: () =>
       import('./features/reservations/reservations.component').then(m => m.ReservationsComponent),
-    title: 'Reserve a Table — Noir & Orange'
+    title: 'Reserve a Table — NooR'
   },
   {
     path: 'checkout',
     loadComponent: () =>
       import('./features/checkout/checkout.component').then(m => m.CheckoutComponent),
-    title: 'Order Online — Noir & Orange'
+    title: 'Order Online — NooR'
   },
   {
     path: 'about',
     loadComponent: () =>
       import('./features/about/about.component').then(m => m.AboutComponent),
-    title: 'About & Contact — Noir & Orange'
+    title: 'About & Contact — NooR'
   },
   {
     path: 'privacy',
     loadComponent: () =>
       import('./features/privacy/privacy.component').then(m => m.PrivacyComponent),
-    title: 'Privacy Policy — Noir & Orange'
+    title: 'Privacy Policy — NooR'
   },
   {
     path: 'terms',
     loadComponent: () =>
       import('./features/terms/terms.component').then(m => m.TermsComponent),
-    title: 'Terms of Service — Noir & Orange'
+    title: 'Terms of Service — NooR'
   },
   {
     path: '**',
