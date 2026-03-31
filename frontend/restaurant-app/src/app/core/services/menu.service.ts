@@ -23,7 +23,7 @@ const MOCK_MENU: MenuItem[] = [
 
 @Injectable({ providedIn: 'root' })
 export class MenuService {
-  private apiUrl = 'https://fakerestaurantapi.runasp.net/menu';
+  private apiUrl = 'http://localhost:5124/api/Restaurant/items';
 
   constructor(private http: HttpClient) {}
 
