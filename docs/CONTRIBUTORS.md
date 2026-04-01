@@ -158,3 +158,7 @@ By contributing to this project, you agree that your contributions will be licen
 ---
 
 Thank you to all contributors who help make this project better! 🎉
+
+---
+
+[⬅️ Back to Main README](../README.md)

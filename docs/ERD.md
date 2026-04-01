@@ -2,7 +2,7 @@
 
 ## Database Schema Overview
 
-The NooR Restaurant Management System uses a relational database design with the following entities:
+**Restaurant API** uses a relational database design with the following entities:
 
 ## Core Entities
 
@@ -79,3 +79,7 @@ MasterOrder ||--o{ Order : "contains"
 - Foreign keys should be indexed for performance
 - UserEmail and Usercode should have unique indexes
 - RestaurantName should be indexed for search performance
+
+---
+
+[⬅️ Back to Main README](../README.md)

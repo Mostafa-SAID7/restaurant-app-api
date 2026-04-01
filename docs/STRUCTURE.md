@@ -1,8 +1,8 @@
-# Project Structure
+# 🏗️ Project Structure
 
 ## Overview
 
-The NooR Restaurant Management System follows a clean architecture pattern with clear separation of concerns between the backend API and frontend application.
+**Restaurant API** follows a clean architecture pattern with clear separation of concerns.
 
 ## Backend Structure (.NET 8 Web API)
 
@@ -171,3 +171,7 @@ frontend/restaurant-app/
 - **Dependency Inversion**: High-level modules don't depend on low-level modules
 - **Open/Closed Principle**: Open for extension, closed for modification
 - **Interface Segregation**: Clients shouldn't depend on unused interfaces
+
+---
+
+[⬅️ Back to Main README](../README.md)

@@ -1,8 +1,8 @@
-# Styling Guide
+# 🎨 Cinematic Design System
 
 ## Overview
 
-The NooR Restaurant Management System uses a modern, responsive design approach with consistent styling across all components.
+The **Restaurant API** static UI uses a premium "Cinematic" design approach — glassmorphism, crimson gradients, and hardware-accelerated micro-animations — served directly from `wwwroot`.
 
 ## Design System
 
@@ -317,3 +317,7 @@ styles/
   }
 }
 ```
+
+---
+
+[⬅️ Back to Main README](../README.md)

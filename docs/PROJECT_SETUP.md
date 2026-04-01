@@ -1,202 +1,86 @@
-# Project Setup Guide
+# 🚀 Project Setup & Installation
 
-## Prerequisites
+This guide will walk you through setting up **Restaurant API** for local development and testing.
 
-Before setting up the NooR Restaurant Management System, ensure you have the following installed:
+---
 
-### Required Software
-- **.NET 8 SDK** - [Download here](https://dotnet.microsoft.com/download/dotnet/8.0)
-- **Node.js 18+** - [Download here](https://nodejs.org/)
-- **npm** (comes with Node.js)
-- **SQL Server** (LocalDB or full instance) - [Download here](https://www.microsoft.com/en-us/sql-server/sql-server-downloads)
-- **Git** - [Download here](https://git-scm.com/)
+## 📋 Prerequisites
 
-### Recommended Tools
-- **Visual Studio 2022** or **VS Code**
-- **SQL Server Management Studio (SSMS)**
-- **Postman** for API testing
+Ensure you have the following installed on your machine:
 
-## Clone the Repository
+- **.NET 8.0 SDK** (Required for building and running the API)
+- **Docker Desktop** (Recommended for containerized execution)
+- **SQL Server** (LocalDB or a full instance)
+- **Git** (For cloning the repository)
 
+---
+
+## 📥 Getting Started
+
+### 1. Clone the Repository
 ```bash
-git clone https://github.com/Mostafa-SAID7/NooR.git
-cd NooR
+git clone https://github.com/Mostafa-SAID7/restaurant-app-api.git
+cd restaurant-app-api
 ```
 
-## Backend Setup (.NET 8 Web API)
-
-### 1. Navigate to Backend Directory
-```bash
-cd backend/api
-```
-
-### 2. Restore NuGet Packages
-```bash
-dotnet restore
-```
-
-### 3. Update Database Connection String
-Edit `appsettings.json` and update the connection string:
+### 2. Configure the Database
+Edit `api/appsettings.json` to update your connection string if necessary:
 ```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Server=db44985.public.databaseasp.net; Database=db44985; User Id=db44985; Password=g_4C8S!z-9fN; Encrypt=True; TrustServerCertificate=True; MultipleActiveResultSets=True;"
-  }
+"ConnectionStrings": {
+  "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=RestaurantDb;Trusted_Connection=True;MultipleActiveResultSets=true"
 }
 ```
 
-### 4. Apply Database Migrations
+---
+
+## 🛠️ Local Development Setup
+
+### 1. Restore & Build
+Navigate to the `api` directory and prepare the project:
+```bash
+cd api
+dotnet restore
+dotnet build
+```
+
+### 2. Update the Database
+Apply Entity Framework migrations to create your local schema:
 ```bash
 dotnet ef database update
 ```
 
-### 5. Build the Project
-```bash
-dotnet build
-```
-
-### 6. Run the Backend
+### 3. Launch the API
 ```bash
 dotnet run
 ```
+The API will be available at `http://localhost:5124`. The **Cinematic UI** will be hosted at the root `/`.
 
-The API will be available at:
-- **HTTP**: `http://localhost:5124`
-- **HTTPS**: `https://localhost:7124`
-- **Swagger UI**: `https://localhost:7124/swagger`
+---
 
-## Frontend Setup (Angular 19)
+## 🐳 Docker Setup (Recommended)
 
-### 1. Navigate to Frontend Directory
+For a consistent environment across all platforms, use the provided Docker configuration.
+
+### 1. Build & Run with Compose
+From the root directory:
 ```bash
-cd frontend/restaurant-app
+docker-compose up --build
 ```
 
-### 2. Install Dependencies
-```bash
-npm install
-```
+This will orchestrate:
+- **API Container**: Running the .NET 8 application.
+- **Database Container**: (If configured in compose) or connecting to your cloud/local DB.
 
-### 3. Update API Base URL (if needed)
-Edit the environment files in `src/environments/` to point to your backend URL:
-```typescript
-export const environment = {
-  production: false,
-  apiUrl: 'https://localhost:7124/api'
-};
-```
+---
 
-### 4. Start Development Server
-```bash
-ng serve
-```
+## ✅ Verification
 
-The frontend will be available at:
-- **Development**: `http://localhost:4200`
+Once running, you can verify the setup by visiting:
 
-## Database Setup
+1. **Cinematic Landing Page**: [http://localhost:5124/Home.html](http://localhost:5124/Home.html)
+2. **Interactive Docs**: [http://localhost:5124/Docs.html](http://localhost:5124/Docs.html)
+3. **Swagger UI**: [http://localhost:5124/index.html](http://localhost:5124/index.html)
 
-### Using SQL Server LocalDB (Recommended for Development)
-1. Install SQL Server Express LocalDB
-2. The connection string in `appsettings.json` should work out of the box
-3. Run migrations: `dotnet ef database update`
+---
 
-### Using Full SQL Server Instance
-1. Install SQL Server
-2. Create a new database
-3. Update the connection string in `appsettings.json`
-4. Run migrations: `dotnet ef database update`
-
-## Environment Configuration
-
-### Backend Environment Variables
-Create `appsettings.Development.json` for local development:
-```json
-{
-  "Logging": {
-    "LogLevel": {
-      "Default": "Information",
-      "Microsoft.AspNetCore": "Warning"
-    }
-  },
-  "ConnectionStrings": {
-    "DefaultConnection": "Your local connection string here"
-  }
-}
-```
-
-### Frontend Environment Configuration
-Update `src/environments/environment.ts`:
-```typescript
-export const environment = {
-  production: false,
-  apiUrl: 'https://localhost:7124/api',
-  imageUrl: 'https://localhost:7124'
-};
-```
-
-## Verification Steps
-
-### Backend Verification
-1. Navigate to `https://localhost:7124/swagger`
-2. You should see the Swagger UI with all API endpoints
-3. Test the `/api/Restaurant` GET endpoint
-
-### Frontend Verification
-1. Navigate to `http://localhost:4200`
-2. You should see the restaurant application homepage
-3. Check browser console for any errors
-
-## Troubleshooting
-
-### Common Backend Issues
-
-**Port Already in Use**
-```bash
-# Find process using port 5124
-netstat -ano | findstr :5124
-# Kill the process (replace PID with actual process ID)
-taskkill /PID <PID> /F
-```
-
-**Database Connection Issues**
-- Verify SQL Server is running
-- Check connection string format
-- Ensure database exists
-- Run `dotnet ef database update` again
-
-**Package Restore Issues**
-```bash
-# Clear NuGet cache
-dotnet nuget locals all --clear
-# Restore packages
-dotnet restore
-```
-
-### Common Frontend Issues
-
-**Node Modules Issues**
-```bash
-# Delete node_modules and package-lock.json
-rm -rf node_modules package-lock.json
-# Reinstall dependencies
-npm install
-```
-
-**Angular CLI Issues**
-```bash
-# Install Angular CLI globally
-npm install -g @angular/cli@19
-```
-
-**CORS Issues**
-- Ensure CORS is properly configured in the backend
-- Check that the frontend URL is allowed in CORS policy
-
-## Next Steps
-
-After successful setup:
-1. Review the [Features Documentation](FEATURES.md)
-2. Check the [API Documentation](https://localhost:7124/swagger)
-3. Explore the [Architecture Guide](STRUCTURE.md)
-4. Read the [Contributing Guidelines](CONTRIBUTING.md)
+[⬅️ Back to Main README](../README.md)

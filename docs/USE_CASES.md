@@ -1,7 +1,7 @@
-# Use Cases
+# 📋 Use Cases
 
 ## Overview
-This document outlines the various use cases and scenarios for the Fake Restaurant API system. The API serves as a comprehensive backend for restaurant management, food ordering, and user management systems.
+This document outlines the various use cases and scenarios for the **Restaurant API** system. The API serves as a comprehensive backend for restaurant management, food ordering, and user management systems.
 
 ## Primary Use Cases
 
@@ -281,3 +281,7 @@ This document outlines the various use cases and scenarios for the Fake Restaura
 ---
 
 This use case document serves as a comprehensive guide for understanding the system's functionality and requirements. It should be updated as new features are added or existing functionality is modified.
+
+---
+
+[⬅️ Back to Main README](../README.md)

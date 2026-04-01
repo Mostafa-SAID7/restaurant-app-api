@@ -1,6 +1,6 @@
-# Contributing to NooR Restaurant Management System
+# 🤝 Contributing to the Restaurant API
 
-Thank you for your interest in contributing to NooR! This document provides guidelines and information for contributors.
+Thank you for your interest in contributing! This document provides guidelines and information for contributors.
 
 ## Getting Started
 
@@ -15,23 +15,15 @@ Thank you for your interest in contributing to NooR! This document provides guid
 
 ### Prerequisites
 - .NET 8 SDK
-- Node.js 18+
 - SQL Server (LocalDB or full instance)
 - Git
 
 ### Backend Setup
 ```bash
-cd backend/api
+cd api
 dotnet restore
 dotnet ef database update
 dotnet run
-```
-
-### Frontend Setup
-```bash
-cd frontend/restaurant-app
-npm install
-ng serve
 ```
 
 ## Coding Standards
@@ -44,20 +36,12 @@ ng serve
 - Write unit tests for new functionality
 - Use async/await for database operations
 
-### Frontend (Angular)
-- Follow Angular style guide
-- Use TypeScript strict mode
-- Implement proper error handling
-- Write component tests
-- Use reactive forms for user input
-- Follow component-based architecture
-
 ## Pull Request Process
 
 1. **Update documentation** if needed
 2. **Add tests** for new features
 3. **Ensure all tests pass**
-4. **Update CHANGELOG.md** with your changes
+4. **Update [CHANGELOG.md](CHANGELOG.md)** with your changes
 5. **Request review** from maintainers
 
 ## Reporting Issues
@@ -66,7 +50,7 @@ When reporting issues, please include:
 - Clear description of the problem
 - Steps to reproduce
 - Expected vs actual behavior
-- Environment details (OS, browser, etc.)
+- Environment details (OS, .NET version, etc.)
 - Screenshots if applicable
 
 ## Feature Requests
@@ -84,4 +68,6 @@ For new features:
 - Suggest improvements, don't just point out problems
 - Test the changes locally when possible
 
-Thank you for contributing to NooR!
+---
+
+[⬅️ Back to Main README](../README.md)

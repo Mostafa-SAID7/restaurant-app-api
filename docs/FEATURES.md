@@ -1,85 +1,54 @@
-# Features Overview
+# ✨ Features Overview
 
 ## Core Features
 
 ### 🏪 Restaurant Management
-- **Create Restaurant**: Add new restaurants with details (name, address, type, parking)
-- **View Restaurants**: List all restaurants with filtering by category, address, and name
-- **Restaurant Details**: Get detailed information about specific restaurants
-- **Menu Management**: Add, view, and manage menu items for each restaurant
+- **Create Restaurant**: Add new restaurants with comprehensive details (name, address, category, parking).
+- **View Restaurants**: Browse restaurants with advanced filtering by category, address, and name.
+- **Detailed Menu**: Access full menu listings for each restaurant with high-resolution image support.
+- **Categorization**: Automated categorization of restaurants for easier discovery.
 
 ### 👤 User Management
-- **User Registration**: Secure user account creation with email validation
-- **Authentication**: API key-based authentication system
-- **User Profile**: View and update user information
-- **Password Management**: Secure password updates
+- **Secure Registration**: Robust user account creation with email and password validation.
+- **Advanced Auth**: Industry-standard API key-based authentication system.
+- **Profile Hub**: Comprehensive user profile management and real-time updates.
+- **Security First**: Encrypted password management and secure session handling.
 
-### 🛒 Shopping Cart
-- **Add to Cart**: Add menu items to personal shopping cart
-- **Cart Management**: View, update quantities, and remove items
-- **Cart Summary**: Calculate total amounts and item counts
-- **Clear Cart**: Remove all items from cart
+### 🛒 Smart Shopping Cart
+- **Persistent Cart**: Dedicated endpoints for managing items across sessions.
+- **Advanced Controls**: Real-time quantity updates, item removal, and bulk clearing.
+- **Financial Accuracy**: Precise total amount and item count calculations.
+- **State Sync**: Seamless synchronization between backend state and potential frontends.
 
-### 📦 Order Processing
-- **Place Orders**: Create orders from cart items
-- **Order History**: View past orders and order details
-- **Master Orders**: Group related orders for better organization
-- **Order Tracking**: Track order status and details
+### 📦 Order Life-cycle
+- **Seemless Checkout**: Transform cart items into confirmed orders in a single request.
+- **History Tracking**: Full visibility into past orders with detailed breakdowns.
+- **Master Orders**: Logical grouping of related orders for enterprise-scale management.
+- **Real-time Status**: Track the progression of orders from placement to completion.
 
-### 🖼️ Image Management
-- **File Upload**: Upload images for menu items via file selection
-- **Base64 Upload**: Support for base64 encoded image uploads
-- **Image Storage**: Local file system storage with URL generation
-- **Image Validation**: File type and size validation
+---
 
-## Technical Features
+## Technical Excellence
 
 ### 🏗️ Architecture
-- **Repository Pattern**: Clean data access layer with generic repositories
-- **Unit of Work**: Transaction management and coordinated database operations
-- **Service Layer**: Business logic separation with dependency injection
-- **Clean Architecture**: Separation of concerns and maintainable code structure
+- **Repository Pattern**: Pristine data access layer isolation using generic repositories.
+- **Unit of Work**: Coordinated database operations ensuring strict transactional integrity.
+- **Service Layer**: Decoupled business logic orchestrated through Dependency Injection.
+- **Middleware Pipeline**: Custom middleware for error handling, static file serving, and security.
 
-### 🔒 Security
-- **API Key Authentication**: Secure API access with unique user keys
-- **Input Validation**: Comprehensive data validation and sanitization
-- **CORS Configuration**: Secure cross-origin resource sharing
-- **SQL Injection Prevention**: Entity Framework Core protection
+### 🔒 Security & Performance
+- **API Key Guard**: Custom authorization filters protecting sensitive endpoints.
+- **Input Sanitization**: Multi-layer validation and sanitization to prevent common attack vectors.
+- **Async Processing**: 100% non-blocking database and I/O operations for maximum throughput.
+- **Dockerized**: Container-ready architecture for consistent deployment across environments.
 
-### 📊 Data Management
-- **Entity Framework Core**: Code-first database approach
-- **Database Migrations**: Version-controlled database schema changes
-- **AutoMapper**: Efficient object-to-object mapping
-- **Data Transfer Objects**: Clean API contracts with DTOs
+---
 
-### 📖 Documentation
-- **Swagger Integration**: Interactive API documentation
-- **XML Documentation**: Comprehensive code documentation
-- **API Annotations**: Detailed endpoint descriptions and examples
+## 🎨 Premium Visual Documentation
+- **Cinematic Landing Page**: A stunning entry point for developers and stakeholders.
+- **Interactive API Docs**: Custom-built documentation interface with crimson-themed glassmorphism.
+- **Integrated Swagger**: Full OpenAPI support for exploration and testing.
 
-## Frontend Features
+---
 
-### 🎨 User Interface
-- **Responsive Design**: Mobile-first approach with modern UI
-- **Component Architecture**: Reusable and modular components
-- **Reactive Forms**: Type-safe form handling with validation
-- **Loading States**: User-friendly loading indicators
-
-### 🔄 State Management
-- **HTTP Interceptors**: Centralized request/response handling
-- **Error Handling**: Comprehensive error management and user feedback
-- **Caching**: Efficient data caching for better performance
-
-## Performance Features
-
-### ⚡ Optimization
-- **Async Operations**: Non-blocking database operations
-- **Lazy Loading**: Efficient data loading strategies
-- **Pagination**: Large dataset handling with pagination
-- **Caching**: Strategic caching for improved response times
-
-### 📈 Scalability
-- **Dependency Injection**: Loosely coupled and testable code
-- **Configuration Management**: Environment-specific settings
-- **Logging**: Comprehensive application logging
-- **Error Tracking**: Detailed error monitoring and reporting
+[⬅️ Back to Main README](../README.md)

@@ -1,87 +1,68 @@
 # 🍽️ Cinematic Restaurant API
 
-A premium, high-performance .NET 8 Web API designed for modern restaurant management. This project features a stunning "Cinematic" design system with glassmorphism, real-time documentation, and robust backend architecture.
+A premium, high-performance **.NET 8 Web API** for modern restaurant management — featuring a stunning Cinematic glassmorphism UI, robust clean architecture, and production-ready DevOps infrastructure.
 
----
-
-### 🏢 About Apptunix
-This project was developed as a professional technical task for **[Apptunix](https://www.apptunix.com)**.
-
-**Apptunix** is a global product engineering and software development company founded in 2013. They specialize in delivering AI-powered, enterprise-grade digital solutions, including custom mobile and web applications, IoT, and blockchain services. With over 2,000 digital products delivered for 500+ global brands, Apptunix is a leader in digital transformation.
+> **Developed as a professional technical task for [Apptunix](https://www.apptunix.com)** — a global product engineering company specializing in AI-powered, enterprise-grade digital solutions.
 
 ---
 
 ## 🚀 Quick Links
-| Resource | Description | Path |
+
+| Resource | Description | URL |
 | :--- | :--- | :--- |
-| **🏠 Home** | Cinematic Landing Page | [/](http://localhost:5124/) |
-| **📜 Documentation** | Interactive API Docs | [/Docs.html](http://localhost:5124/Docs.html) |
-| **🛠️ Swagger UI** | API Explorer | [/index.html](http://localhost:5124/index.html) |
+| 🏠 **Home** | Cinematic Landing Page | [`/Home.html`](http://localhost:5124/Home.html) |
+| 📜 **Docs** | Interactive API Documentation | [`/Docs.html`](http://localhost:5124/Docs.html) |
+| 🛠️ **Swagger** | OpenAPI Explorer & Testing | [`/index.html`](http://localhost:5124/index.html) |
 
 ---
 
 ## 🖼️ UI Showcase
 
-![Home Page](screenshots/home.png)
-
-![API Documentation](screenshots/docs.png)
-
-![404 Error Page](screenshots/404.png)
+![Cinematic Home Page](screenshots/home.png)
 
 ---
 
-## ✨ Key Features
+## 📚 Documentation
 
-- **🍔 Menu Management**: Dynamic restaurant and item management with categorized listings.
-- **🛒 Smart Cart**: Persistent shopping cart management via dedicated endpoints.
-- **📋 Real-time Orders**: Seamless order placement and tracking system.
-- **🔐 User Profiles**: High-security user management and profile handling.
-- **🎨 Cinematic UI**: A professional-grade CSS design system (Glassmorphism + Crimson Theme).
-- **🐳 Docker Ready**: Full containerization support for instant deployment.
-- **🤖 CI/CD Integration**: Automated GitHub Actions pipeline for build and test validation.
+All detailed guides live in the [`docs/`](docs/) folder:
 
----
-
-## 🛠️ API Architecture
-
-The application follows a clean middleware-driven architecture:
-- **Controllers**: Thin controllers handling HTTP request/response.
-- **Configurations**: Decoupled Swagger and Middleware setup for better maintainability.
-- **Static Assets**: All premium UI files served directly from `wwwroot`.
-
-### Core Endpoints
-- `GET /api/restaurant` - List all restaurants.
-- `GET /api/restaurant/{id}` - Get detailed menu items.
-- `POST /api/cart` - Add items to shopping cart.
-- `POST /api/order` - Place a new order.
-- `GET /api/user/profile` - Retrieve user details.
+| Guide | Description |
+| :--- | :--- |
+| [✨ Features Overview](docs/FEATURES.md) | Full breakdown of API capabilities |
+| [🏗️ Project Structure](docs/STRUCTURE.md) | File organization and architectural patterns |
+| [💻 Technologies Stack](docs/TECHNOLOGIES.md) | Frameworks, tools, and libraries used |
+| [📝 API Endpoints](docs/API_ENDPOINTS.md) | Comprehensive list of all routes and payloads |
+| [📊 Entity Relationship Diagram](docs/ERD.md) | Database schema and relationship visualization |
+| [🎨 Cinematic Design System](docs/STYLES.md) | Premium glassmorphism UI documentation |
+| [🛡️ Security Guide](docs/SECURITY.md) | API Key auth, CORS, and best practices |
+| [⚙️ Project Setup](docs/PROJECT_SETUP.md) | Step-by-step local development guide |
+| [🚢 Deployment Strategy](docs/DEPLOYMENT.md) | Docker and production build instructions |
+| [📋 Use Cases](docs/USE_CASES.md) | Detailed actor scenarios and business flows |
+| [🤝 Contributing](docs/CONTRIBUTING.md) | How to contribute to this project |
+| [📜 Code of Conduct](docs/CODE_OF_CONDUCT.md) | Community standards and guidelines |
+| [📋 Changelog](docs/CHANGELOG.md) | Version history and release notes |
+| [👥 Contributors](docs/CONTRIBUTORS.md) | Project team and hall of fame |
 
 ---
 
-## 🐳 Running with Docker
-
-You can launch the entire stack in seconds using Docker:
+## ⚡ Getting Started
 
 ```bash
+# Clone the repository
+git clone https://github.com/Mostafa-SAID7/restaurant-app-api.git
+
+# Run with Docker (recommended)
 docker-compose up --build
+
+# Or run locally
+cd api
+dotnet restore && dotnet run
 ```
-The API will be available at `http://localhost:5124`.
+
+The API will be available at **`http://localhost:5124`**.
+
+> For a full setup walkthrough, see [⚙️ Project Setup](docs/PROJECT_SETUP.md).
 
 ---
 
-## 🏗️ Development
-
-### Prerequisites
-- .NET 8.0 SDK
-- Docker (optional)
-
-### Build & Run
-```bash
-dotnet restore
-dotnet build
-dotnet run --project api/RestaurantApi.csproj
-```
-
----
-
-*Developed by M.Said for Apptunix.*
+*Developed by **[M.Said](https://m-said-portfolio.netlify.app)** for [Apptunix](https://www.apptunix.com).*
