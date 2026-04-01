@@ -385,3 +385,146 @@ footer a {
         font-size: 11px;
     }
 }
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes floating {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+    100% { transform: translateY(0px); }
+}
+
+@keyframes pulseGlow {
+    0% { text-shadow: 0 0 10px var(--shadow-red); }
+    50% { text-shadow: 0 0 30px var(--shadow-red-strong), 0 0 50px var(--primary-red); }
+    100% { text-shadow: 0 0 10px var(--shadow-red); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ================= ==========================
+   HOME PAGE (Home.html)
+   ============================================ */
+
+.hero-section {
+    min-height: calc(100vh - 200px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 60px 20px;
+    background: radial-gradient(circle at center, rgba(220, 20, 60, 0.1) 0%, transparent 70%);
+}
+
+.hero-logo {
+    width: 120px;
+    height: 120px;
+    margin-bottom: 30px;
+    filter: drop-shadow(0 0 20px var(--shadow-red-strong));
+    animation: floating 4s ease-in-out infinite;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 10px;
+    text-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    animation: fadeIn 0.8s ease-out;
+}
+
+.hero-subtitle {
+    font-size: 1.4rem;
+    color: var(--text-muted);
+    margin-bottom: 40px;
+    max-width: 600px;
+    animation: fadeIn 1s ease-out;
+}
+
+.home-buttons {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    animation: fadeIn 1.2s ease-out;
+}
+
+.home-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 30px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 12px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.home-btn-primary {
+    background: linear-gradient(135deg, var(--primary-red), var(--dark-red));
+    color: white;
+    box-shadow: 0 10px 20px var(--shadow-red);
+}
+
+.home-btn-primary:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 15px 30px var(--shadow-red-strong), 0 0 15px var(--primary-red);
+}
+
+.home-btn-secondary {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-light);
+    border: 1px solid var(--border-dark);
+    backdrop-filter: blur(10px);
+}
+
+.home-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--primary-red);
+    color: white;
+    transform: translateY(-5px);
+}
+
+/* ============================================
+   ERROR PAGE (404.html)
+   ============================================ */
+
+.error-container {
+    min-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 40px;
+}
+
+.error-code {
+    font-size: 12rem;
+    font-weight: 900;
+    color: var(--primary-red);
+    line-height: 1;
+    margin: 0;
+    animation: floating 3s ease-in-out infinite, pulseGlow 4s infinite;
+    position: relative;
+    z-index: 1;
+}
+
+.error-message {
+    font-size: 2rem;
+    color: white;
+    margin: 20px 0;
+    font-weight: 600;
+}
+
+.error-desc {
+    color: var(--text-muted);
+    margin-bottom: 40px;
+    max-width: 500px;
+}

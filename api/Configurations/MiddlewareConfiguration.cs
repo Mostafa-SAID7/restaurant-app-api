@@ -1,5 +1,3 @@
-using Microsoft.Extensions.FileProviders;
-
 namespace FakeRestuarantAPI.Configurations;
 
 public static class MiddlewareConfiguration
@@ -16,37 +14,34 @@ public static class MiddlewareConfiguration
             app.UseHsts();
         }
 
-        // CORS
+        // 1. CORS First
         app.UseCorsConfiguration();
 
-        // Serve files from api/views/ at the URL root
-        // e.g. api/views/Docs.html → GET /Docs.html
-        // e.g. api/views/restaurant.css → GET /restaurant.css
-        var viewsPath = Path.Combine(app.Environment.ContentRootPath, "views");
-        if (Directory.Exists(viewsPath))
-        {
-            app.UseStaticFiles(new StaticFileOptions
-            {
-                FileProvider = new PhysicalFileProvider(viewsPath),
-                RequestPath = ""
-            });
-        }
+        // 2. HTTP Redirection
+        app.UseHttpsRedirection();
 
-        // Serve wwwroot (images, etc.)
+        // 3. Static Files (Home.html, Docs.html, 404.html, css, images)
         app.UseStaticFiles();
 
-        // Root / → redirect to Docs
-        app.MapGet("/", () => Results.Redirect("/Docs.html"));
-
-        // Swagger at /index.html (RoutePrefix = "" means Swagger serves at root,
-        // its embedded UI is served at /index.html)
+        // 4. Swagger UI (Mounts at root namespace /index.html)
         app.UseSwaggerConfiguration();
 
-        // Routing & controllers
-        app.UseHttpsRedirection();
+        // 5. Routing
         app.UseRouting();
         app.UseAuthorization();
+
+        // 6. Explicit Root Redirect to the New Home Page
+        app.MapGet("/", () => Results.Redirect("/Home.html"));
+
+        // 7. Controllers
         app.MapControllers();
+
+        // 8. Custom 404 Fallback for all other unmatched routes
+        app.MapFallback(async context =>
+        {
+            context.Response.Redirect("/404.html");
+            await Task.CompletedTask;
+        });
 
         return app;
     }
