@@ -15,15 +15,19 @@ public static class MiddlewareConfiguration
             app.UseHsts();
         }
 
-        // Use Swagger
-        app.UseSwaggerConfiguration();
-
         // Use CORS
         app.UseCorsConfiguration();
 
-        // Static files
-        app.UseDefaultFiles();
+        // Static files FIRST — Docs.html is the default landing page at /
+        // This must come before Swagger so that / serves Docs.html, not Swagger
+        var defaultFileOptions = new DefaultFilesOptions();
+        defaultFileOptions.DefaultFileNames.Clear();
+        defaultFileOptions.DefaultFileNames.Add("Docs.html");
+        app.UseDefaultFiles(defaultFileOptions);
         app.UseStaticFiles();
+
+        // Swagger at /index.html (after static files so / is not intercepted)
+        app.UseSwaggerConfiguration();
 
         // Security and routing
         app.UseHttpsRedirection();

@@ -15,11 +15,11 @@ public static class SwaggerConfiguration
             {
                 Title = "M.Said's Restaurant API",
                 Version = "v1",
-                Description = "A comprehensive Restaurant Management API by M.Said. Featuring user authentication, menu management, ordering system, and cinematic design.",
+                Description = "A comprehensive Restaurant Management API by M.Said. Featuring user authentication, menu management, ordering system, and cinematic design. | [GitHub Repository](https://github.com/Mostafa-SAID7/restaurant-app-api) | [Docs](/Docs.html)",
                 Contact = new OpenApiContact
                 {
                     Name = "M.Said",
-                    Email = "support@restaurantapi.com",
+                    Email = "m.ssaid356@gmail.com",
                     Url = new Uri("https://m-said-portfolio.netlify.app")
                 },
                 License = new OpenApiLicense
@@ -84,8 +84,8 @@ public static class SwaggerConfiguration
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Restaurant API v1");
-                c.RoutePrefix = string.Empty;
-                c.DocumentTitle = "Restaurant API Documentation";
+                c.RoutePrefix = "index.html";
+                c.DocumentTitle = "M.Said's Restaurant API";
                 c.DefaultModelsExpandDepth(-1);
                 c.DisplayRequestDuration();
                 c.EnableDeepLinking();

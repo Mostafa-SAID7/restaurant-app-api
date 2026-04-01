@@ -1,43 +1,47 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
     <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>M.Said's Restaurant API — Docs</title>
         <link rel="icon" type="image/x-icon" href="images/logo.png">
-        <title>Fake Restaurant API</title>
-        <link rel="stylesheet" href="index.css">
-        <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+        <link rel="stylesheet" href="restaurant.css">
         <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     </head>
     <body>
-        
+
         <nav>
             <div class="intrologo">
-                <img src="images/logo.png" alt="">
+                <img src="images/logo.png" alt="M.Said's Restaurant API Logo">
             </div>
-            <div><a href="Index.html">Home</a>
-                <a href="Docs.html">Docs</a>
-        <a href="https://github.com/Mostafa-SAID7/restaurant-app-api">Github</a></div>
+            <div>
+                <a href="Docs.html"><i class="fa-solid fa-book"></i> Docs</a>
+                <a href="index.html"><i class="fa-solid fa-code"></i> Swagger</a>
+                <a href="https://github.com/Mostafa-SAID7/restaurant-app-api" target="_blank"><i class="fa-brands fa-github"></i> GitHub</a>
+            </div>
         </nav>
-        <div class="doccontainer">
-            <h2><i class="fa-solid fa-book-open"></i> Let's Use API</h2>
-            <p>Fake Restaurant API is perfect for any food-related project that requires restaurants, menus, and user data in JSON format. Check out the examples below to see how it works, and feel free to use it in your fantastic projects!</p>
 
+        <div class="doccontainer">
+            <h2><i class="fa-solid fa-book-open"></i> Let's Use the API</h2>
+            <p>M.Said's Restaurant API is perfect for any food-related project that requires restaurants, menus, and user data in JSON format. Check out the examples below to see how it works, and feel free to use it in your fantastic projects!</p>
+
+            <!-- RESTAURANTS -->
             <div class="resources" id="restaurants">
-                <h2>Restaurants <i class='bx bxs-store-alt' ></i> </h2>
+                <h2><i class="fa-solid fa-shop"></i> Restaurants</h2>
+
                 <p>Get all restaurants</p>
-                <div class=" docbox ">
+                <div class="docbox">
                   <pre><code>
-      fetch(<span>'https://fakerestaurantapi.runasp.net/api/Restaurant'</span>)
-            .then(res=>res.json())
-            .then(json=>console.log(json))
-                       </code></pre>
-                      
+fetch(<span>'https://restaurant-app-api.runasp.net/api/Restaurant'</span>)
+      .then(res=>res.json())
+      .then(json=>console.log(json))
+                  </code></pre>
                 </div>
-                
-                <button class="button ">Show output</button>
+                <button class="button">Show output</button>
                 <div class="displaybtn docbox" hidden>
                   <pre><code>
 [
@@ -56,49 +60,47 @@
     parkingLot: ......
   }
 ]
-                  </code></pre> 
+                  </code></pre>
+                </div>
 
-            </div>
-
-
-            <p>Filter by category</p>
-            <div class=" docbox ">
-              <pre><code>
-  fetch(<span>'https://fakerestaurantapi.runasp.net/api/Restaurant?category=Parsi Cuisine'</span>)
-        .then(res=>res.json())
-        .then(json=>console.log(json))
-                   </code></pre>
-            </div>
-            <button class="button ">Show output</button>
-            <div class="displaybtn docbox" hidden>
-              <pre><code>
+                <p>Filter by category</p>
+                <div class="docbox">
+                  <pre><code>
+fetch(<span>'https://restaurant-app-api.runasp.net/api/Restaurant?category=Parsi Cuisine'</span>)
+      .then(res=>res.json())
+      .then(json=>console.log(json))
+                  </code></pre>
+                </div>
+                <button class="button">Show output</button>
+                <div class="displaybtn docbox" hidden>
+                  <pre><code>
 [
   {
-  restaurantID: 16,
-  restaurantName: ".....",
-  address: ".....",
-  type: "Parsi Cuisine",
-  parkingLot: ......
+    restaurantID: 16,
+    restaurantName: ".....",
+    address: ".....",
+    type: "Parsi Cuisine",
+    parkingLot: ......
   }
 ]
-              </code></pre> 
+                  </code></pre>
+                </div>
 
-        </div>
-
-        <p>Filter by address and Restaurant Name</p>
-        <div class=" docbox ">
-          <pre><code>
-fetch(<span>'https://fakerestaurantapi.runasp.net/api/Restaurant?address=hyderabad & name=Paradise Biryani'</span>)
-    .then(res=>res.json())
-    .then(json=>console.log(json))
-               </code></pre>
-        </div>
-        <div class="infodiv">
-          <i class='bx bx-no-entry' style="margin-right: 10px; color: rgb(9, 20, 228);" ></i><p class="info">The restaurant's address may be a substring of the provided address. The system should perform a 'contains' operation to retrieve related addresses. </p>
-      </div>
-        <button class="button ">Show output</button>
-        <div class="displaybtn docbox" hidden>
-          <pre><code>
+                <p>Filter by address and Restaurant Name</p>
+                <div class="docbox">
+                  <pre><code>
+fetch(<span>'https://restaurant-app-api.runasp.net/api/Restaurant?address=hyderabad &amp; name=Paradise Biryani'</span>)
+      .then(res=>res.json())
+      .then(json=>console.log(json))
+                  </code></pre>
+                </div>
+                <div class="infodiv">
+                  <i class="fa-solid fa-circle-info"></i>
+                  <p class="info">The restaurant's address may be a substring of the provided address. The system performs a 'contains' operation to retrieve related addresses.</p>
+                </div>
+                <button class="button">Show output</button>
+                <div class="displaybtn docbox" hidden>
+                  <pre><code>
 [
   {
     "restaurantID": 1,
@@ -108,21 +110,20 @@ fetch(<span>'https://fakerestaurantapi.runasp.net/api/Restaurant?address=hyderab
     "parkingLot": true
   }
 ]
-          </code></pre> 
+                  </code></pre>
+                </div>
 
-    </div>
-
-    <p>Get Restaurant by id</p>
-        <div class=" docbox ">
-          <pre><code>
-fetch(<span>'https://fakerestaurantapi.runasp.net/api/Restaurant/4'</span>)
-    .then(res=>res.json())
-    .then(json=>console.log(json))
-               </code></pre>
-        </div>
-        <button class="button ">Show output</button>
-        <div class="displaybtn docbox" hidden>
-          <pre><code>
+                <p>Get Restaurant by id</p>
+                <div class="docbox">
+                  <pre><code>
+fetch(<span>'https://restaurant-app-api.runasp.net/api/Restaurant/4'</span>)
+      .then(res=>res.json())
+      .then(json=>console.log(json))
+                  </code></pre>
+                </div>
+                <button class="button">Show output</button>
+                <div class="displaybtn docbox" hidden>
+                  <pre><code>
 [
   {
     restaurantID: 4,
@@ -132,21 +133,20 @@ fetch(<span>'https://fakerestaurantapi.runasp.net/api/Restaurant/4'</span>)
     parkingLot: ......
   }
 ]
-          </code></pre> 
+                  </code></pre>
+                </div>
 
-    </div>
-
-    <p>Get Restaurant menu</p>
-        <div class=" docbox ">
-          <pre><code>
-fetch(<span>'https://fakerestaurantapi.runasp.net/api/Restaurant/5/menu'</span>)
-    .then(res=>res.json())
-    .then(json=>console.log(json))
-               </code></pre>
-        </div>
-        <button class="button ">Show output</button>
-        <div class="displaybtn docbox" hidden>
-          <pre><code>
+                <p>Get Restaurant menu</p>
+                <div class="docbox">
+                  <pre><code>
+fetch(<span>'https://restaurant-app-api.runasp.net/api/Restaurant/5/menu'</span>)
+      .then(res=>res.json())
+      .then(json=>console.log(json))
+                  </code></pre>
+                </div>
+                <button class="button">Show output</button>
+                <div class="displaybtn docbox" hidden>
+                  <pre><code>
 [
   {
     itemID: 91,
@@ -155,7 +155,7 @@ fetch(<span>'https://fakerestaurantapi.runasp.net/api/Restaurant/5/menu'</span>)
     itemPrice: 220,
     restaurantName: "Pista House",
     restaurantID: 5,
-    imageUrl: "https://fakerestaurantapi.runasp.net/images/haleem.jpg"
+    imageUrl: "https://restaurant-app-api.runasp.net/images/haleem.jpg"
   },
   {
     itemID: 92,
@@ -164,67 +164,61 @@ fetch(<span>'https://fakerestaurantapi.runasp.net/api/Restaurant/5/menu'</span>)
     itemPrice: 350,
     restaurantName: "Pista House",
     restaurantID: 5,
-    imageUrl: "https://fakerestaurantapi.runasp.net/images/mutton biryani.jpg"
+    imageUrl: "https://restaurant-app-api.runasp.net/images/mutton biryani.jpg"
   }
   .......
 ]
-          </code></pre> 
+                  </code></pre>
+                </div>
 
-    </div>
-
-
-    <p>Sort menu by price </p>
-        <div class=" docbox ">
-          <pre><code>
-fetch(<span>'https://fakerestaurantapi.runasp.net/api/Restaurant/5/menu?sortbyprice=desc'</span>)
-    .then(res=>res.json())
-    .then(json=>console.log(json))
-               </code></pre>
-        </div>
-        <div class="infodiv">
-          <i class='bx bx-no-entry' style="margin-right: 10px; color: rgb(9, 20, 228);" ></i><p class="info">The prices are sorted in ascending order when sortbyprice=asc and in descending order when sortbyprice=desc. If sortbyprice is null, the prices are displayed in a random (zigzag) order. </p>
-      </div>
-        <button class="button ">Show output</button>
-        <div class="displaybtn docbox" hidden>
-          <pre><code>
+                <p>Sort menu by price</p>
+                <div class="docbox">
+                  <pre><code>
+fetch(<span>'https://restaurant-app-api.runasp.net/api/Restaurant/5/menu?sortbyprice=desc'</span>)
+      .then(res=>res.json())
+      .then(json=>console.log(json))
+                  </code></pre>
+                </div>
+                <div class="infodiv">
+                  <i class="fa-solid fa-circle-info"></i>
+                  <p class="info">The prices are sorted in ascending order when sortbyprice=asc and in descending order when sortbyprice=desc. If sortbyprice is null, the prices are displayed in a random (zigzag) order.</p>
+                </div>
+                <button class="button">Show output</button>
+                <div class="displaybtn docbox" hidden>
+                  <pre><code>
 [
   {
     itemID: 92,
     itemName: "Mutton Biryani",
-    itemDescription: "Signature biryani with perfectly cooked mutton.",
     itemPrice: 350,
     restaurantName: "Pista House",
     restaurantID: 5,
-    imageUrl: "https://fakerestaurantapi.runasp.net/images/mutton biryani.jpg"
-  }
+    imageUrl: "https://restaurant-app-api.runasp.net/images/mutton biryani.jpg"
+  },
   {
     itemID: 91,
     itemName: "Haleem",
-    itemDescription: "Rich and creamy stew made with lentils, wheat, and slow-cooked meat.",
     itemPrice: 220,
     restaurantName: "Pista House",
     restaurantID: 5,
-    imageUrl: "https://fakerestaurantapi.runasp.net/images/haleem.jpg"
-  },
- 
+    imageUrl: "https://restaurant-app-api.runasp.net/images/haleem.jpg"
+  }
   .......
 ]
-          </code></pre> 
+                  </code></pre>
+                </div>
 
-    </div>
-
-
-    <p>Get all items</p>
-        <div class=" docbox ">
-          <pre><code>
-fetch(<span>'https://fakerestaurantapi.runasp.net/api/Restaurant/items'</span>)
-    .then(res=>res.json())
-    .then(json=>console.log(json))
-               </code></pre>
-        </div>
-        <button class="button ">Show output</button>
-        <div class="displaybtn docbox" hidden>
-          <pre><code>
+                <p>Get all items</p>
+                <div class="docbox">
+                  <pre><code>
+fetch(<span>'https://restaurant-app-api.runasp.net/api/Restaurant/items'</span>)
+      .then(res=>res.json())
+      .then(json=>console.log(json))
+                  </code></pre>
+                </div>
+                <button class="button">Show output</button>
+                <div class="displaybtn docbox" hidden>
+                  <pre><code>
 [
   {
     itemID: 91,
@@ -246,27 +240,24 @@ fetch(<span>'https://fakerestaurantapi.runasp.net/api/Restaurant/items'</span>)
   }
   .......
 ]
-          </code></pre> 
+                  </code></pre>
+                </div>
 
-    </div>
-
-
-    <p>Search items by item name</p>
-        <div class=" docbox ">
-          <pre><code>
-fetch(<span>'https://fakerestaurantapi.runasp.net/api/Restaurant/items?ItemName=fish'</span>)
-    .then(res=>res.json())
-    .then(json=>console.log(json))
-               </code></pre>
-        </div>
-        <button class="button ">Show output</button>
-        <div class="displaybtn docbox" hidden>
-          <pre><code>
+                <p>Search items by item name</p>
+                <div class="docbox">
+                  <pre><code>
+fetch(<span>'https://restaurant-app-api.runasp.net/api/Restaurant/items?ItemName=fish'</span>)
+      .then(res=>res.json())
+      .then(json=>console.log(json))
+                  </code></pre>
+                </div>
+                <button class="button">Show output</button>
+                <div class="displaybtn docbox" hidden>
+                  <pre><code>
 [
   {
     itemID: 14,
     itemName: 'Fish Amritsari',
-    itemDescription: '......',
     itemPrice: .....,
     restaurantName: '.....',
     restaurantID: .....,
@@ -275,7 +266,6 @@ fetch(<span>'https://fakerestaurantapi.runasp.net/api/Restaurant/items?ItemName=
   {
     itemID: 47,
     itemName: 'Fish Curry',
-    itemDescription: '......',
     itemPrice: .....,
     restaurantName: '.....',
     restaurantID: .....,
@@ -283,30 +273,27 @@ fetch(<span>'https://fakerestaurantapi.runasp.net/api/Restaurant/items?ItemName=
   }
   .......
 ]
-          </code></pre> 
+                  </code></pre>
+                </div>
 
-    </div>
-
-
-    <p>Sort items by price </p>
-    <div class=" docbox ">
-      <pre><code>
-fetch(<span>'https://fakerestaurantapi.runasp.net/api/Restaurant/items?sortbyprice=asc'</span>)
-.then(res=>res.json())
-.then(json=>console.log(json))
-           </code></pre>
-    </div>
-    <div class="infodiv">
-      <i class='bx bx-no-entry' style="margin-right: 10px; color: rgb(9, 20, 228);" ></i><p class="info">The prices are sorted in ascending order when sortbyprice=asc and in descending order when sortbyprice=desc. If sortbyprice is null, the prices are displayed in a random (zigzag) order. </p>
-  </div>
-    <button class="button ">Show output</button>
-    <div class="displaybtn docbox" hidden>
-      <pre><code>
+                <p>Sort items by price</p>
+                <div class="docbox">
+                  <pre><code>
+fetch(<span>'https://restaurant-app-api.runasp.net/api/Restaurant/items?sortbyprice=asc'</span>)
+      .then(res=>res.json())
+      .then(json=>console.log(json))
+                  </code></pre>
+                </div>
+                <div class="infodiv">
+                  <i class="fa-solid fa-circle-info"></i>
+                  <p class="info">The prices are sorted in ascending order when sortbyprice=asc and in descending order when sortbyprice=desc. If sortbyprice is null, the prices are displayed in a random (zigzag) order.</p>
+                </div>
+                <button class="button">Show output</button>
+                <div class="displaybtn docbox" hidden>
+                  <pre><code>
 [
   {
     itemID: 26,
-    itemName: '.....',
-    itemDescription: '......',
     itemPrice: 40,
     restaurantName: '.....',
     restaurantID: .....,
@@ -314,8 +301,6 @@ fetch(<span>'https://fakerestaurantapi.runasp.net/api/Restaurant/items?sortbypri
   },
   {
     itemID: 80,
-    itemName: '.....',
-    itemDescription: '......',
     itemPrice: 60,
     restaurantName: '.....',
     restaurantID: .....,
@@ -323,14 +308,13 @@ fetch(<span>'https://fakerestaurantapi.runasp.net/api/Restaurant/items?sortbypri
   }
   .......
 ]
-      </code></pre> 
+                  </code></pre>
+                </div>
 
-</div>
-
-<p>Add a restaurant </p>
-<div class=" docbox ">
-  <pre><code>
-fetch(<span>'https://fakerestaurantapi.runasp.net/api/Restaurant'</span>{
+                <p>Add a restaurant</p>
+                <div class="docbox">
+                  <pre><code>
+fetch(<span>'https://restaurant-app-api.runasp.net/api/Restaurant'</span>, {
   method:"POST",
   body:JSON.stringify(
     {
@@ -342,15 +326,15 @@ fetch(<span>'https://fakerestaurantapi.runasp.net/api/Restaurant'</span>{
   )})
   .then(res=>res.json())
   .then(json=>console.log(json))
-       </code></pre>
-</div>
-<div class="infodiv">
-  <i class='bx bx-no-entry' style="margin-right: 10px; color: rgb(9, 20, 228);" ></i><p class="info">The restaurant information shown here is just an object. It's not saved to the database yet. We're still working on the feature to actually add restaurants.  We'll let you know when it's ready.
-  </p>
-</div>
-<button class="button ">Show output</button>
-<div class="displaybtn docbox" hidden>
-  <pre><code>
+                  </code></pre>
+                </div>
+                <div class="infodiv">
+                  <i class="fa-solid fa-circle-info"></i>
+                  <p class="info">The restaurant information shown here is just an object. It's not saved to the database yet. We're still working on the feature to actually add restaurants. We'll let you know when it's ready.</p>
+                </div>
+                <button class="button">Show output</button>
+                <div class="displaybtn docbox" hidden>
+                  <pre><code>
 {
   restaurantID: ....,
   restaurantName: ".....",
@@ -358,17 +342,13 @@ fetch(<span>'https://fakerestaurantapi.runasp.net/api/Restaurant'</span>{
   type: ".....",
   parkingLot: ......
 }
-  </code></pre> 
+                  </code></pre>
+                </div>
 
-</div>
-
-
-
-
-<p>Add a item to a restaurant menu  </p>
-<div class=" docbox ">
-  <pre><code>
-fetch(<span>'https://fakerestaurantapi.runasp.net/api/Restaurant/{Restaurant_id}/additem'</span>{
+                <p>Add an item to a restaurant menu</p>
+                <div class="docbox">
+                  <pre><code>
+fetch(<span>'https://restaurant-app-api.runasp.net/api/Restaurant/{Restaurant_id}/additem'</span>, {
   method:"POST",
   body:JSON.stringify(
     {
@@ -380,53 +360,48 @@ fetch(<span>'https://fakerestaurantapi.runasp.net/api/Restaurant/{Restaurant_id}
   )})
   .then(res=>res.json())
   .then(json=>console.log(json))
-       </code></pre>
-</div>
-<div class="infodiv">
-  <i class='bx bx-no-entry' style="margin-right: 10px; color: rgb(9, 20, 228);" ></i><p class="info">The restaurant menu shown here is just an object. It's not saved to the database yet. We're still working on the feature to actually add menu from user side.  We'll let you know when it's ready.
-  </p>
-</div>
-<button class="button ">Show output</button>
-<div class="displaybtn docbox" hidden>
-  <pre><code>
-    {
-      itemID: .....,
-      itemName: ".....",
-      itemDescription: ".....",
-      itemPrice: .....,
-      restaurant: {....},
-      restaurantID: .....,
-      imageUrl: "....."
-    }
-  </code></pre> 
-
-</div>
-
-
-
-        
-            
-        </div>
-        <div class="resources" id="users">
-          <h2>User <i class='bx bxs-user'></i> </h2>
-
-
-          <p>Get users</p>
-                <div class=" docbox ">
-                  <pre><code>
-      fetch(<span>'https://fakerestaurantapi.runasp.net/api/User'</span>)
-            .then(res=>res.json())
-            .then(json=>console.log(json))
-                       </code></pre>
+                  </code></pre>
                 </div>
-                <button class="button ">Show output</button>
+                <div class="infodiv">
+                  <i class="fa-solid fa-circle-info"></i>
+                  <p class="info">The restaurant menu shown here is just an object. It's not saved to the database yet. We'll let you know when this feature is ready.</p>
+                </div>
+                <button class="button">Show output</button>
                 <div class="displaybtn docbox" hidden>
                   <pre><code>
+{
+  itemID: .....,
+  itemName: ".....",
+  itemDescription: ".....",
+  itemPrice: .....,
+  restaurant: {....},
+  restaurantID: .....,
+  imageUrl: "....."
+}
+                  </code></pre>
+                </div>
+            </div>
+
+            <!-- USERS -->
+            <div class="resources" id="users">
+              <h2><i class="fa-solid fa-user"></i> User</h2>
+
+              <p>Get users</p>
+              <div class="docbox">
+                <pre><code>
+fetch(<span>'https://restaurant-app-api.runasp.net/api/User'</span>)
+      .then(res=>res.json())
+      .then(json=>console.log(json))
+                </code></pre>
+              </div>
+              <button class="button">Show output</button>
+              <div class="displaybtn docbox" hidden>
+                <pre><code>
 [
   {
-  "userEmail": "tech@example.com",
-  "password": "let's go",
-  "usercode": "cbc4ecf6-7eda-47e7-bbae-de84be9c796c"
+    "userEmail": "tech@example.com",
+    "password": "let's go",
+    "usercode": "cbc4ecf6-7eda-47e7-bbae-de84be9c796c"
   },
   {
     "userEmail": "bachelor@example.com",
@@ -434,141 +409,125 @@ fetch(<span>'https://fakerestaurantapi.runasp.net/api/Restaurant/{Restaurant_id}
     "usercode": "dbc3ecf6-7eda-47e7-bbae-de87be9c796c"
   }
 ]
-                  </code></pre> 
+                </code></pre>
+              </div>
 
-            </div>
-
-            <p>Get user code</p>
-            <div class=" docbox ">
-              <pre><code>
-  fetch(<span>'https://fakerestaurantapi.runasp.net/api/User/getusercode?UserEmail=tech@example.com&Password=string'</span>)
-        .then(res=>res.json())
-        .then(json=>console.log(json))
-                   </code></pre>
-            </div>
-            <div class="infodiv">
-              <i class='bx bx-no-entry' style="margin-right: 10px; color: rgb(9, 20, 228);" ></i><p class="info">The 
-                user code is your unique API key.  It's required for all operations on this API and grants access to protected resources.  Treat it like a password and keep it secure.
-              </p>
-            </div>
-            <button class="button ">Show output</button>
-            <div class="displaybtn docbox" hidden>
-              <pre><code>
+              <p>Get user code</p>
+              <div class="docbox">
+                <pre><code>
+fetch(<span>'https://restaurant-app-api.runasp.net/api/User/getusercode?UserEmail=tech@example.com&amp;Password=string'</span>)
+      .then(res=>res.json())
+      .then(json=>console.log(json))
+                </code></pre>
+              </div>
+              <div class="infodiv">
+                <i class="fa-solid fa-circle-info"></i>
+                <p class="info">The user code is your unique API key. It's required for all operations on this API and grants access to protected resources. Treat it like a password and keep it secure.</p>
+              </div>
+              <button class="button">Show output</button>
+              <div class="displaybtn docbox" hidden>
+                <pre><code>
 {
   usercode: "cbc4ecf6-7eda-47e7-bbae-de84be9c796c"
 }
-              </code></pre> 
+                </code></pre>
+              </div>
 
-        </div>
-
-        <p>Register new user</p>
-            <div class=" docbox ">
-              <pre><code>
-  fetch(<span>'https://fakerestaurantapi.runasp.net/api/User/register'</span>{
-    method:"POST",
-    body:JSON.stringify(
-      {
-        userEmail: "user@bachelor.com",
-        password: "sonicmaster"
-      }
-    )})
-    .then(res=>res.json())
-    .then(json=>console.log(json))
-                   </code></pre>
-            </div>
-            <button class="button ">Show output</button>
-            <div class="displaybtn docbox" hidden>
-              <pre><code>
+              <p>Register new user</p>
+              <div class="docbox">
+                <pre><code>
+fetch(<span>'https://restaurant-app-api.runasp.net/api/User/register'</span>, {
+  method:"POST",
+  body:JSON.stringify(
+    {
+      userEmail: "user@bachelor.com",
+      password: "sonicmaster"
+    }
+  )})
+  .then(res=>res.json())
+  .then(json=>console.log(json))
+                </code></pre>
+              </div>
+              <button class="button">Show output</button>
+              <div class="displaybtn docbox" hidden>
+                <pre><code>
 {
   "userEmail": "user@bachelor.com",
   "password": "sonicmaster",
   "usercode": "6f3d1852-aecd-4224-8898-8507a541bc52"
 }
-              </code></pre> 
+                </code></pre>
+              </div>
 
-        </div>
-
-        <p>Delete user details</p>
-        <div class=" docbox ">
-          <pre><code>
-fetch(<span>'https://fakerestaurantapi.runasp.net/api/User/{apikey}'</span>{
+              <p>Delete user details</p>
+              <div class="docbox">
+                <pre><code>
+fetch(<span>'https://restaurant-app-api.runasp.net/api/User/{apikey}'</span>, {
   method:"DELETE"
   })
   .then(res=>res.json())
   .then(json=>console.log(json))
-               </code></pre>
-        </div>
-        <div class="infodiv">
-          <i class='bx bx-no-entry' style="margin-right: 10px; color: rgb(9, 20, 228);" ></i><p class="info">You must replace 
-            {api key} in the path route with your actual user code (apikey) to perform any operations.  Using the literal {apikey} will not work.
-          </p>
-        </div>
-        <button class="button ">Show output</button>
-        <div class="displaybtn docbox" hidden>
-          <pre><code>
+                </code></pre>
+              </div>
+              <div class="infodiv">
+                <i class="fa-solid fa-circle-info"></i>
+                <p class="info">You must replace {api key} in the path route with your actual user code (apikey) to perform any operations. Using the literal {apikey} will not work.</p>
+              </div>
+              <button class="button">Show output</button>
+              <div class="displaybtn docbox" hidden>
+                <pre><code>
 {
   message: "User Data Deleted"
 }
-          </code></pre> 
+                </code></pre>
+              </div>
 
-    </div>
-
-
-    <p>Update user details</p>
-        <div class=" docbox ">
-          <pre><code>
-fetch(<span>'https://fakerestaurantapi.runasp.net/api/User/{apikey}'</span>{
+              <p>Update user details</p>
+              <div class="docbox">
+                <pre><code>
+fetch(<span>'https://restaurant-app-api.runasp.net/api/User/{apikey}'</span>, {
   method:"PUT",
   body:JSON.stringify(NewPassword)
   })
   .then(res=>res.json())
   .then(json=>console.log(json))
-               </code></pre>
-        </div>
-        <div class="infodiv">
-          <i class='bx bx-no-entry' style="margin-right: 10px; color: rgb(9, 20, 228);" ></i><p class="info">The API request body should contain a string parameter representing the new password.
-          </p>
-        </div>
-        <button class="button ">Show output</button>
-        <div class="displaybtn docbox" hidden>
-          <pre><code>
+                </code></pre>
+              </div>
+              <div class="infodiv">
+                <i class="fa-solid fa-circle-info"></i>
+                <p class="info">The API request body should contain a string parameter representing the new password.</p>
+              </div>
+              <button class="button">Show output</button>
+              <div class="displaybtn docbox" hidden>
+                <pre><code>
 {
   "userEmail": "user@bachelor.com",
   "password": "string",
   "usercode": "6f3d1852-aecd-4224-8898-8507a541bc52"
 }
-          </code></pre> 
+                </code></pre>
+              </div>
+            </div>
 
-    </div>
+            <!-- ORDERS -->
+            <div class="resources" id="orders">
+              <h2><i class="fa-solid fa-box"></i> Orders</h2>
 
-
-
-
-
-
-
-        </div>
-        
-        <div class="resources" id="orders">
-          <h2>Orders <i class='bx bxs-package'></i> </h2>
-
-
-          <p>Get orders</p>
-          <div class=" docbox ">
-            <pre><code>
-fetch(<span>'https://fakerestaurantapi.runasp.net/api/Order?apikey={api key}'</span>)
+              <p>Get orders</p>
+              <div class="docbox">
+                <pre><code>
+fetch(<span>'https://restaurant-app-api.runasp.net/api/Order?apikey={api key}'</span>)
       .then(res=>res.json())
       .then(json=>console.log(json))
-                 </code></pre>
-          </div>
-          <div class="infodiv">
-            <i class='bx bx-no-entry' style="margin-right: 10px; color: rgb(9, 20, 228);" ></i><p class="info">This API endpoint retrieves all master orders of single user who is associated with above api key.  The response includes the total order price, user details, and the user's email address (identified as 
-              userid).
-            </p>
-          </div>
-          <button class="button ">Show output</button>
-          <div class="displaybtn docbox" hidden>
-            <pre><code>
+                </code></pre>
+              </div>
+              <div class="infodiv">
+                <i class="fa-solid fa-circle-info"></i>
+                <p class="info">This API endpoint retrieves all master orders of the single user associated with the given api key. The response includes the total order price, user details, and the user's email address.</p>
+              </div>
+              <button class="button">Show output</button>
+              <div class="displaybtn docbox" hidden>
+                <pre><code>
 [
   {
     masterID: 4,
@@ -585,25 +544,24 @@ fetch(<span>'https://fakerestaurantapi.runasp.net/api/Order?apikey={api key}'</s
     grandtotal: 2750
   }
 ]
-            </code></pre> 
+                </code></pre>
+              </div>
 
-      </div>
-
-      <p>Get orders by id</p>
-      <div class=" docbox ">
-        <pre><code>
-fetch(<span>'https://fakerestaurantapi.runasp.net/api/Order/{master_id}?apikey={api key}'</span>)
-  .then(res=>res.json())
-  .then(json=>console.log(json))
-             </code></pre>
-      </div>
-      <div class="infodiv">
-        <i class='bx bx-no-entry' style="margin-right: 10px; color: rgb(9, 20, 228);" ></i><p class="info">This API retrieves all individual orders associated with a single, specified master order ID.  It returns details for each separate order within that transaction.
-        </p>
-      </div>
-      <button class="button ">Show output</button>
-      <div class="displaybtn docbox" hidden>
-        <pre><code>
+              <p>Get orders by id</p>
+              <div class="docbox">
+                <pre><code>
+fetch(<span>'https://restaurant-app-api.runasp.net/api/Order/{master_id}?apikey={api key}'</span>)
+      .then(res=>res.json())
+      .then(json=>console.log(json))
+                </code></pre>
+              </div>
+              <div class="infodiv">
+                <i class="fa-solid fa-circle-info"></i>
+                <p class="info">This API retrieves all individual orders associated with a single, specified master order ID. It returns details for each separate order within that transaction.</p>
+              </div>
+              <button class="button">Show output</button>
+              <div class="displaybtn docbox" hidden>
+                <pre><code>
 [
   {
     orderID: 3,
@@ -615,27 +573,15 @@ fetch(<span>'https://fakerestaurantapi.runasp.net/api/Order/{master_id}?apikey={
     totalPrice: .....,
     masterID: .....
   },
-  {
-    orderID: 4,
-    user: {.....},
-    userID: ".....",
-    itemName: ".....",
-    quantity: .....,
-    itemPrice: .....,
-    totalPrice: .....,
-    masterID: .....
-  },
   ......
 ]
-        </code></pre> 
+                </code></pre>
+              </div>
 
-  </div>
-
-
-  <p>Make a order </p>
-<div class=" docbox ">
-  <pre><code>
-fetch(<span>'https://fakerestaurantapi.runasp.net/api/Order/{resaurant id}/makeorder?apikey={api key}'</span>{
+              <p>Make an order</p>
+              <div class="docbox">
+                <pre><code>
+fetch(<span>'https://restaurant-app-api.runasp.net/api/Order/{restaurant_id}/makeorder?apikey={api key}'</span>, {
   method:"POST",
   body:JSON.stringify(
     {
@@ -654,20 +600,19 @@ fetch(<span>'https://fakerestaurantapi.runasp.net/api/Order/{resaurant id}/makeo
   )})
   .then(res=>res.json())
   .then(json=>console.log(json))
-       </code></pre>
-</div>
-<div class="infodiv">
-  <i class='bx bx-no-entry' style="margin-right: 10px; color: rgb(9, 20, 228);" ></i><p class="info">This API creates a master order (a transaction).  menuDTO is a list of individual items (each with its own order ID) that are part of this transaction. All these individual order IDs are then grouped under a single master order ID.
-  </p>
-</div>
-<button class="button ">Show output</button>
-<div class="displaybtn docbox" hidden>
-  <pre><code>
+                </code></pre>
+              </div>
+              <div class="infodiv">
+                <i class="fa-solid fa-circle-info"></i>
+                <p class="info">This API creates a master order (a transaction). menuDTO is a list of individual items each with its own order ID. All individual order IDs are grouped under a single master order ID.</p>
+              </div>
+              <button class="button">Show output</button>
+              <div class="displaybtn docbox" hidden>
+                <pre><code>
 {
   fullorder: [
     {
       orderID: 9,
-      user: {.....},
       userID: "tech@example.com",
       itemName: "Kofta Curry",
       quantity: 2,
@@ -677,7 +622,6 @@ fetch(<span>'https://fakerestaurantapi.runasp.net/api/Order/{resaurant id}/makeo
     },
     {
       orderID: 10,
-      user: {.....},
       userID: "tech@example.com",
       itemName: "Sheer Korma",
       quantity: 2,
@@ -688,32 +632,28 @@ fetch(<span>'https://fakerestaurantapi.runasp.net/api/Order/{resaurant id}/makeo
   ],
   grandTotal: 900
 }
-  </code></pre> 
+                </code></pre>
+              </div>
 
-</div>
-
-<p>Delete master order </p>
-<div class=" docbox ">
-  <pre><code>
-fetch(<span>'https://fakerestaurantapi.runasp.net/api/Order/master/{master ID}?apikey={api key}'</span>{
+              <p>Delete master order</p>
+              <div class="docbox">
+                <pre><code>
+fetch(<span>'https://restaurant-app-api.runasp.net/api/Order/master/{master_ID}?apikey={api key}'</span>, {
   method:"DELETE"
   })
   .then(res=>res.json())
   .then(json=>console.log(json))
-       </code></pre>
-</div>
-<button class="button ">Show output</button>
-<div class="displaybtn docbox" hidden>
-  <pre><code>
-
+                </code></pre>
+              </div>
+              <button class="button">Show output</button>
+              <div class="displaybtn docbox" hidden>
+                <pre><code>
 {
   message: "Master order Deleted",
   orderexits: [
     {
       masterID: 8,
-      user: {.....},
       userID: "tech@example.com",
-      restaurant: {.....},
       restaurantID: 2,
       grandTotal: 600
     }
@@ -721,7 +661,6 @@ fetch(<span>'https://fakerestaurantapi.runasp.net/api/Order/master/{master ID}?a
   singleorders: [
     {
       orderID: 9,
-      user: {.....},
       userID: "tech@example.com",
       itemName: "Kofta Curry",
       quantity: 2,
@@ -731,84 +670,68 @@ fetch(<span>'https://fakerestaurantapi.runasp.net/api/Order/master/{master ID}?a
     }
   ]
 }
-  </code></pre> 
+                </code></pre>
+              </div>
 
-</div>
-
-
-<p>Delete single order </p>
-<div class=" docbox ">
-  <pre><code>
-fetch(<span>'https://fakerestaurantapi.runasp.net/api/Order/{order ID}?apikey={api key}'</span>{
+              <p>Delete single order</p>
+              <div class="docbox">
+                <pre><code>
+fetch(<span>'https://restaurant-app-api.runasp.net/api/Order/{order_ID}?apikey={api key}'</span>, {
   method:"DELETE"
   })
   .then(res=>res.json())
   .then(json=>console.log(json))
-       </code></pre>
-</div>
-<button class="button ">Show output</button>
-<div class="displaybtn docbox" hidden>
-  <pre><code>
+                </code></pre>
+              </div>
+              <button class="button">Show output</button>
+              <div class="displaybtn docbox" hidden>
+                <pre><code>
 {
   message: "Order Deleted",
   orderexits: {
-      orderID: 9,
-      user: {.....},
-      userID: "tech@example.com",
-      itemName: "Kofta Curry",
-      quantity: 2,
-      itemPrice: 300,
-      totalPrice: 600,
-      masterID: 8
-    }
+    orderID: 9,
+    userID: "tech@example.com",
+    itemName: "Kofta Curry",
+    quantity: 2,
+    itemPrice: 300,
+    totalPrice: 600,
+    masterID: 8
+  }
 }
-  </code></pre> 
+                </code></pre>
+              </div>
+            </div>
 
-</div>
- 
-
-
-
-
-        </div>
-        </div>
-
-
+        </div><!-- end doccontainer -->
 
         <footer>
-            <p><i class="fa-solid fa-clapperboard"></i> Made with <i class="fa-solid fa-heart" style="color: #dc143c;"></i> by <a href="https://m-said-portfolio.netlify.app" target="_blank" style="color: inherit; text-decoration: none;">M.Said</a> | Cinematic Design</p>
+            <p>
+                <i class="fa-solid fa-clapperboard"></i>
+                Made with <i class="fa-solid fa-heart" style="color: #dc143c;"></i> by
+                <a href="https://m-said-portfolio.netlify.app" target="_blank">M.Said</a>
+                &nbsp;|&nbsp;
+                <a href="https://github.com/Mostafa-SAID7/restaurant-app-api" target="_blank"><i class="fa-brands fa-github"></i> GitHub</a>
+                &nbsp;|&nbsp; Cinematic Design
+            </p>
         </footer>
 
     </body>
     <script>
       window.onload = function () {
-    document.querySelectorAll("input, textarea").forEach(input => input.value = "");
-};
+        document.querySelectorAll("input, textarea").forEach(input => input.value = "");
+      };
 
-const buttons = document.querySelectorAll('.button');
-
-// Add a click event listener to each button
-buttons.forEach(button => {
-  button.addEventListener('click', () => {
-    // Get the clicked button
-    const sibling =button.nextElementSibling;
-    sibling.classList.toggle('block');
-    if(sibling.classList.contains('block'))
-  {
-    button.textContent= 'Hide output'
-  }
-  else{
-    button.textContent='Show output'
-  }
-    
-    
-    // Perform an action or log the button
-    
-    
-  });
-});
-        </script>
-
-
-
+      const buttons = document.querySelectorAll('.button');
+      buttons.forEach(button => {
+        button.addEventListener('click', () => {
+          const sibling = button.nextElementSibling;
+          sibling.classList.toggle('block');
+          if (sibling.classList.contains('block')) {
+            button.textContent = 'Hide output';
+          } else {
+            button.textContent = 'Show output';
+          }
+        });
+      });
+    </script>
 </html>
