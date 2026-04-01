@@ -1,87 +1,87 @@
-# M.Said's Restaurant Management System
+# 🍽️ Cinematic Restaurant API
 
-A comprehensive restaurant management system built with .NET 8 Web API backend and Angular 19 frontend, featuring modern architecture patterns and clean code principles.
-
-## 🚀 Features
-
-- **Restaurant Management**: Complete CRUD operations for restaurants
-- **Menu Management**: Dynamic menu creation and item management
-- **User Authentication**: Secure user registration and API key-based authentication
-- **Order Processing**: Full order lifecycle management with master orders
-- **Shopping Cart**: Real-time cart management with item tracking
-- **Image Upload**: Support for both file upload and base64 image handling
-- **Clean Architecture**: Repository pattern with Unit of Work implementation
-- **Modern Frontend**: Angular 19 with responsive design
-
-## 🏗️ Architecture
-
-### Backend (.NET 8 Web API)
-- **Repository Pattern**: Clean data access layer with generic repositories
-- **Unit of Work**: Transaction management and coordinated saves
-- **Service Layer**: Business logic separation with dependency injection
-- **AutoMapper**: Object-to-object mapping for DTOs
-- **Swagger Documentation**: Comprehensive API documentation
-- **Entity Framework Core**: Code-first database approach
-
-### Frontend (Angular 19)
-- **Component-based Architecture**: Modular and reusable components
-- **Reactive Forms**: Type-safe form handling
-- **HTTP Interceptors**: Centralized request/response handling
-- **Responsive Design**: Mobile-first approach with modern UI
-
-## 📋 Prerequisites
-
-- .NET 8 SDK
-- Node.js 18+ and npm
-- SQL Server (LocalDB or full instance)
-- Visual Studio 2022 or VS Code
-
-## 🛠️ Quick Start
-
-### Backend Setup
-```bash
-cd backend/api
-dotnet restore
-dotnet ef database update
-dotnet run
-```
-
-### Frontend Setup
-```bash
-cd frontend/restaurant-app
-npm install
-ng serve
-```
-
-## 📚 Documentation
-
-- [📖 Project Setup Guide](docs/PROJECT_SETUP.md)
-- [🏛️ Architecture & Structure](docs/STRUCTURE.md)
-- [🔧 Technologies Used](docs/TECHNOLOGIES.md)
-- [✨ Features Overview](docs/FEATURES.md)
-- [🎯 Use Cases](docs/USE_CASES.md)
-- [🚀 Deployment Guide](docs/DEPLOYMENT.md)
-- [🎨 Styling Guide](docs/STYLES.md)
-- [📊 Database ERD](docs/ERD.md)
-- [📝 Changelog](docs/CHANGELOG.md)
-- [🔒 Security](docs/SECURITY.md)
-
-## 🤝 Contributing
-
-We welcome contributions! Please see our [Contributing Guide](docs/CONTRIBUTING.md) and [Code of Conduct](docs/CODE_OF_CONDUCT.md).
-
-## 👥 Contributors
-
-See [CONTRIBUTORS.md](docs/CONTRIBUTORS.md) for a list of contributors to this project.
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🆘 Support
-
-If you encounter any issues or have questions, please [open an issue](https://github.com/Mostafa-SAID7/restaurant-app-api/issues) on GitHub.
+A premium, high-performance .NET 8 Web API designed for modern restaurant management. This project features a stunning "Cinematic" design system with glassmorphism, real-time documentation, and robust backend architecture.
 
 ---
 
-**Built with ❤️ by [M.Said](https://m-said-portfolio.netlify.app)**
+### 🏢 About Apptunix
+This project was developed as a professional technical task for **[Apptunix](https://www.apptunix.com)**.
+
+**Apptunix** is a global product engineering and software development company founded in 2013. They specialize in delivering AI-powered, enterprise-grade digital solutions, including custom mobile and web applications, IoT, and blockchain services. With over 2,000 digital products delivered for 500+ global brands, Apptunix is a leader in digital transformation.
+
+---
+
+## 🚀 Quick Links
+| Resource | Description | Path |
+| :--- | :--- | :--- |
+| **🏠 Home** | Cinematic Landing Page | [/](http://localhost:5124/) |
+| **📜 Documentation** | Interactive API Docs | [/Docs.html](http://localhost:5124/Docs.html) |
+| **🛠️ Swagger UI** | API Explorer | [/index.html](http://localhost:5124/index.html) |
+
+---
+
+## 🖼️ UI Showcase
+
+![Home Page](screenshots/home.png)
+
+![API Documentation](screenshots/docs.png)
+
+![404 Error Page](screenshots/404.png)
+
+---
+
+## ✨ Key Features
+
+- **🍔 Menu Management**: Dynamic restaurant and item management with categorized listings.
+- **🛒 Smart Cart**: Persistent shopping cart management via dedicated endpoints.
+- **📋 Real-time Orders**: Seamless order placement and tracking system.
+- **🔐 User Profiles**: High-security user management and profile handling.
+- **🎨 Cinematic UI**: A professional-grade CSS design system (Glassmorphism + Crimson Theme).
+- **🐳 Docker Ready**: Full containerization support for instant deployment.
+- **🤖 CI/CD Integration**: Automated GitHub Actions pipeline for build and test validation.
+
+---
+
+## 🛠️ API Architecture
+
+The application follows a clean middleware-driven architecture:
+- **Controllers**: Thin controllers handling HTTP request/response.
+- **Configurations**: Decoupled Swagger and Middleware setup for better maintainability.
+- **Static Assets**: All premium UI files served directly from `wwwroot`.
+
+### Core Endpoints
+- `GET /api/restaurant` - List all restaurants.
+- `GET /api/restaurant/{id}` - Get detailed menu items.
+- `POST /api/cart` - Add items to shopping cart.
+- `POST /api/order` - Place a new order.
+- `GET /api/user/profile` - Retrieve user details.
+
+---
+
+## 🐳 Running with Docker
+
+You can launch the entire stack in seconds using Docker:
+
+```bash
+docker-compose up --build
+```
+The API will be available at `http://localhost:5124`.
+
+---
+
+## 🏗️ Development
+
+### Prerequisites
+- .NET 8.0 SDK
+- Docker (optional)
+
+### Build & Run
+```bash
+dotnet restore
+dotnet build
+dotnet run --project api/RestaurantApi.csproj
+```
+
+---
+
+*Developed by M.Said for Apptunix.*
