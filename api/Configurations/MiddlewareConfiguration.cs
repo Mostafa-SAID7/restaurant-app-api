@@ -1,10 +1,11 @@
+using Microsoft.Extensions.FileProviders;
+
 namespace FakeRestuarantAPI.Configurations;
 
 public static class MiddlewareConfiguration
 {
     public static WebApplication ConfigureMiddleware(this WebApplication app)
     {
-        // Configure the HTTP request pipeline
         if (app.Environment.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
@@ -15,26 +16,36 @@ public static class MiddlewareConfiguration
             app.UseHsts();
         }
 
-        // Use CORS
+        // CORS
         app.UseCorsConfiguration();
 
-        // Static files FIRST — Docs.html is the default landing page at /
-        // This must come before Swagger so that / serves Docs.html, not Swagger
-        var defaultFileOptions = new DefaultFilesOptions();
-        defaultFileOptions.DefaultFileNames.Clear();
-        defaultFileOptions.DefaultFileNames.Add("Docs.html");
-        app.UseDefaultFiles(defaultFileOptions);
+        // Serve files from api/views/ at the URL root
+        // e.g. api/views/Docs.html → GET /Docs.html
+        // e.g. api/views/restaurant.css → GET /restaurant.css
+        var viewsPath = Path.Combine(app.Environment.ContentRootPath, "views");
+        if (Directory.Exists(viewsPath))
+        {
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(viewsPath),
+                RequestPath = ""
+            });
+        }
+
+        // Serve wwwroot (images, etc.)
         app.UseStaticFiles();
 
-        // Swagger at /index.html (after static files so / is not intercepted)
+        // Root / → redirect to Docs
+        app.MapGet("/", () => Results.Redirect("/Docs.html"));
+
+        // Swagger at /index.html (RoutePrefix = "" means Swagger serves at root,
+        // its embedded UI is served at /index.html)
         app.UseSwaggerConfiguration();
 
-        // Security and routing
+        // Routing & controllers
         app.UseHttpsRedirection();
         app.UseRouting();
         app.UseAuthorization();
-
-        // Map controllers
         app.MapControllers();
 
         return app;

@@ -16,8 +16,46 @@
     --shadow-red-strong: rgba(220, 20, 60, 0.6);
 }
 
+/* ============================================
+   SCROLLBAR
+   ============================================ */
+
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-darker);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary-red);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--bright-red);
+}
+
 * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary-red) var(--bg-darker);
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-sizing: border-box;
+}
+
+/* ============================================
+   BASE & TYPOGRAPHY
+   ============================================ */
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    font-family: "Poppins", sans-serif;
+    background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-darker) 100%);
+    color: var(--text-light);
 }
 
 a {
@@ -48,37 +86,6 @@ a:hover::after {
     width: 100%;
 }
 
-html {
-    width: 100%;
-    font-family: "Poppins", sans-serif;
-    margin: 0;
-    background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-darker) 100%);
-}
-
-body {
-    margin: 0;
-    background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-darker) 100%);
-    color: var(--text-light);
-}
-
-/* ============================================
-   LAYOUT & CONTAINERS
-   ============================================ */
-
-.container {
-    width: 70%;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.doccontainer {
-    width: 85%;
-    margin: 0 auto;
-    margin-top: 80px;
-}
-
 /* ============================================
    NAVIGATION
    ============================================ */
@@ -93,7 +100,9 @@ nav {
     border-bottom: 2px solid var(--primary-red);
     box-shadow: 0 4px 15px var(--shadow-red);
     width: 100%;
-    box-sizing: border-box;
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
 .intrologo {
@@ -127,27 +136,28 @@ nav a::after {
 }
 
 /* ============================================
-   BUTTONS & LINKS
+   DOC CONTAINER
    ============================================ */
 
-.button {
-    margin: 10px 0;
-    height: 35px;
-    font-size: 15px;
-    width: 120px;
-    background: linear-gradient(135deg, var(--primary-red) 0%, var(--dark-red) 100%);
-    color: white;
-    border: 2px solid var(--primary-red);
-    border-radius: 5px;
-    padding: 0 10px;
-    font-weight: 600;
-    cursor: pointer;
+.doccontainer {
+    width: 85%;
+    margin: 0 auto;
+    padding-top: 60px;
+    padding-bottom: 40px;
 }
 
-.button:hover {
-    background: linear-gradient(135deg, var(--bright-red) 0%, var(--primary-red) 100%);
-    box-shadow: 0 8px 20px var(--shadow-red);
-    transform: translateY(-2px);
+.doccontainer > h2 {
+    color: var(--primary-red);
+    font-size: 2.5em;
+    text-shadow: 0 0 15px var(--shadow-red);
+    margin: 40px 0 20px 0;
+}
+
+.doccontainer > p {
+    color: var(--text-muted);
+    font-size: 1.1em;
+    line-height: 1.6;
+    margin: 0 0 40px 0;
 }
 
 /* ============================================
@@ -162,37 +172,50 @@ nav a::after {
 
 .resources h2 {
     color: var(--primary-red);
-    font-size: 2em;
+    font-size: 1.8em;
     text-shadow: 0 0 15px var(--shadow-red);
     margin: 0 0 20px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .resources p {
-    font-size: 18px;
+    font-size: 1em;
     font-weight: 400;
     color: var(--text-muted);
-    margin: 0 0 30px 0;
+    margin: 10px 0 20px 0;
 }
 
 /* ============================================
-   DOCUMENTATION BOX
+   CODE BOXES
    ============================================ */
 
 .docbox {
-    background: linear-gradient(135deg, rgba(30, 30, 30, 0.9) 0%, rgba(40, 40, 40, 0.9) 100%);
+    background: linear-gradient(135deg, rgba(25, 25, 25, 0.95) 0%, rgba(38, 38, 38, 0.95) 100%);
     border-radius: 10px;
-    padding: 15px;
-    box-shadow: 0 8px 32px var(--shadow-red);
-    word-wrap: break-word;
-    margin: 20px 0;
+    padding: 18px 20px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+    margin: 16px 0;
+    overflow: hidden;
 }
 
-.docbox * {
-    font-weight: normal;
-    overflow: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+.docbox pre {
+    margin: 0;
+    overflow-x: auto;
+}
+
+.docbox pre::-webkit-scrollbar {
+    height: 4px;
+}
+
+.docbox code {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 14px;
+    line-height: 1.6;
     color: var(--text-light);
+    display: block;
+    white-space: pre;
 }
 
 .docbox span {
@@ -200,101 +223,76 @@ nav a::after {
     font-weight: 600;
 }
 
-code {
-    letter-spacing: 1px;
-    line-height: 1.5;
-    display: block;
-    font-size: 15px;
-    color: var(--text-light);
+/* ============================================
+   BUTTONS
+   ============================================ */
+
+.button {
+    margin: 10px 0;
+    height: 35px;
+    font-size: 14px;
+    width: 120px;
+    background: linear-gradient(135deg, var(--primary-red) 0%, var(--dark-red) 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 0 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: "Poppins", sans-serif;
+    letter-spacing: 0.5px;
 }
 
-pre {
-    margin: 0;
+.button:hover {
+    background: linear-gradient(135deg, var(--bright-red) 0%, var(--primary-red) 100%);
+    box-shadow: 0 6px 18px var(--shadow-red);
+    transform: translateY(-2px);
 }
 
 /* ============================================
-   UTILITY CLASSES
+   OUTPUT TOGGLE
    ============================================ */
-
-.block {
-    display: block;
-}
-
-.hide {
-    display: none;
-}
 
 .displaybtn {
     max-height: 0;
-    transition: max-height 0.5s ease, opacity 0.5s ease;
     overflow: hidden;
-    text-align: left;
+    opacity: 0;
+    transition: max-height 0.45s ease, opacity 0.45s ease;
 }
 
 .displaybtn.block {
-    max-height: max-content;
+    max-height: 9999px;
     opacity: 1;
 }
+
+/* ============================================
+   INFO CALLOUT
+   ============================================ */
 
 .infodiv {
     display: flex;
     flex-direction: row;
-    align-items: center;
-    margin-top: 30px;
-    justify-content: flex-start;
-    background: rgba(220, 20, 60, 0.08);
-    padding: 15px;
-    border-radius: 5px;
+    align-items: flex-start;
+    gap: 14px;
+    margin: 20px 0;
+    background: rgba(220, 20, 60, 0.07);
+    padding: 14px 18px;
+    border-radius: 8px;
 }
 
 .infodiv i {
     color: var(--primary-red);
-    font-size: 1.5em;
-    margin-right: 15px;
+    font-size: 1.2em;
+    margin-top: 2px;
     flex-shrink: 0;
 }
 
-.resources .info {
-    font-weight: 300;
+.info {
     font-size: 14px;
+    font-weight: 300;
+    color: var(--text-muted);
     margin: 0;
-    color: var(--text-muted);
-}
-
-.doccontainer h2 {
-    color: var(--primary-red);
-    font-size: 2.5em;
-    text-shadow: 0 0 15px var(--shadow-red);
-    margin: 40px 0 20px 0;
-}
-
-.doccontainer > p {
-    color: var(--text-muted);
-    font-size: 1.1em;
     line-height: 1.6;
-    margin: 0 0 40px 0;
-}
-
-.doccontainer .resources {
-    text-align: left;
-    margin: 50px 0;
-}
-
-.doccontainer .resources h2 {
-    color: var(--primary-red);
-    font-size: 1.8em;
-    text-shadow: 0 0 15px var(--shadow-red);
-    margin: 30px 0 15px 0;
-}
-
-.doccontainer .resources p {
-    color: var(--text-muted);
-    font-size: 1em;
-    margin: 10px 0 20px 0;
-}
-
-.doccontainer .button {
-    margin: 20px 0;
 }
 
 /* ============================================
@@ -302,7 +300,6 @@ pre {
    ============================================ */
 
 footer {
-    height: 150px;
     background: linear-gradient(135deg, var(--bg-darker) 0%, var(--bg-dark) 100%);
     text-align: center;
     display: flex;
@@ -311,49 +308,46 @@ footer {
     border-top: 2px solid var(--primary-red);
     color: var(--text-muted);
     width: 100%;
-    box-sizing: border-box;
+    padding: 40px 20px;
     margin-top: 60px;
 }
 
 footer p {
     margin: 0;
     font-size: 1em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.footer-heart {
+    color: var(--primary-red);
+}
+
+footer a {
+    font-weight: 500;
 }
 
 /* ============================================
-   RESPONSIVE DESIGN
+   RESPONSIVE
    ============================================ */
 
 @media screen and (max-width: 968px) {
-    .container {
-        width: 90%;
-    }
-
-    .resources h2 {
-        font-size: 1.5em;
-    }
-
-    .resources p {
-        font-size: 14px;
-    }
-
-    code {
-        font-size: 12px;
-    }
-
-    .button {
-        font-size: 12px;
-        width: 100px;
-        height: 30px;
+    .doccontainer {
+        width: 95%;
     }
 
     nav {
-        height: 80px;
-        padding: 0 10px;
+        height: auto;
+        padding: 12px 16px;
+        flex-wrap: wrap;
+        gap: 10px;
     }
 
     nav a {
-        padding: 0 10px;
+        padding: 6px 12px;
         font-size: 0.9em;
     }
 
@@ -361,26 +355,33 @@ footer p {
         width: 40px;
         height: 40px;
     }
+
+    .resources h2 {
+        font-size: 1.4em;
+    }
+
+    .docbox code {
+        font-size: 12px;
+    }
+
+    .button {
+        font-size: 12px;
+        width: 110px;
+        height: 32px;
+    }
 }
 
 @media screen and (max-width: 600px) {
     .doccontainer {
-        width: 95%;
+        width: 98%;
+        padding-top: 30px;
     }
 
     .resources h2 {
         font-size: 1.2em;
     }
 
-    nav {
-        flex-direction: column;
-        height: auto;
-        padding: 10px;
-        gap: 10px;
-    }
-
-    nav a {
-        padding: 5px 10px;
-        font-size: 0.8em;
+    .docbox code {
+        font-size: 11px;
     }
 }

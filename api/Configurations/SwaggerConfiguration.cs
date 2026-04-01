@@ -84,7 +84,7 @@ public static class SwaggerConfiguration
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Restaurant API v1");
-                c.RoutePrefix = "index.html";
+                c.RoutePrefix = string.Empty;
                 c.DocumentTitle = "M.Said's Restaurant API";
                 c.DefaultModelsExpandDepth(-1);
                 c.DisplayRequestDuration();
