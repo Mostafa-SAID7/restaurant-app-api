@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <!-- AutoMapper 13: Extensions package merged into main, CVE fixed -->
-    <PackageReference Include="AutoMapper" Version="13.0.1" />
+    <PackageReference Include="AutoMapper" Version="16.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.1.0" />
     <!-- EF Core: all packages must share the same version to avoid NU1605 -->
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.4" />
