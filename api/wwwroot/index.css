@@ -396,7 +396,18 @@ pre {
     flex-direction: row;
     align-items: center;
     margin-top: 30px;
-    justify-content: center;
+    justify-content: flex-start;
+    background: rgba(220, 20, 60, 0.1);
+    border-left: 4px solid var(--primary-red);
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.infodiv i {
+    color: var(--primary-red);
+    font-size: 1.5em;
+    margin-right: 15px;
+    flex-shrink: 0;
 }
 
 .resources .info {
@@ -404,6 +415,7 @@ pre {
     font-size: 14px;
     width: max-content;
     margin: 0;
+    color: var(--text-muted);
 }
 
 /* ============================================
@@ -427,6 +439,46 @@ footer {
 footer p {
     margin: 0;
     font-size: 1em;
+}
+
+/* ============================================
+   DOCUMENTATION PAGE STYLES
+   ============================================ */
+
+.doccontainer h2 {
+    color: var(--primary-red);
+    font-size: 2.5em;
+    text-shadow: 0 0 15px var(--shadow-red);
+    margin: 40px 0 20px 0;
+}
+
+.doccontainer > p {
+    color: var(--text-muted);
+    font-size: 1.1em;
+    line-height: 1.6;
+    margin: 0 0 40px 0;
+}
+
+.doccontainer .resources {
+    text-align: left;
+    margin: 50px 0;
+}
+
+.doccontainer .resources h2 {
+    color: var(--primary-red);
+    font-size: 1.8em;
+    text-shadow: 0 0 15px var(--shadow-red);
+    margin: 30px 0 15px 0;
+}
+
+.doccontainer .resources p {
+    color: var(--text-muted);
+    font-size: 1em;
+    margin: 10px 0 20px 0;
+}
+
+.doccontainer .button {
+    margin: 20px 0;
 }
 
 /* ============================================
