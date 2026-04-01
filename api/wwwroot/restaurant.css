@@ -224,29 +224,57 @@ nav a::after {
 }
 
 /* ============================================
-   BUTTONS
+   BUTTONS (Unified Cinematic Style)
    ============================================ */
 
-.button {
-    margin: 10px 0;
-    height: 35px;
-    font-size: 14px;
-    width: 120px;
-    background: linear-gradient(135deg, var(--primary-red) 0%, var(--dark-red) 100%);
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 0 12px;
+.button,
+.home-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 24px;
+    height: 45px;
+    min-width: 140px;
+    font-size: 15px;
     font-weight: 600;
+    font-family: inherit;
+    border: none;
+    border-radius: 10px;
     cursor: pointer;
-    font-family: "Poppins", sans-serif;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     letter-spacing: 0.5px;
+    background: linear-gradient(135deg, var(--primary-red) 0%, var(--dark-red) 100%);
+    color: white !important;
+    box-shadow: 0 4px 15px var(--shadow-red);
+    text-decoration: none;
 }
 
-.button:hover {
+/* Ensure Home and 404 links override default link behavior */
+.home-buttons a.home-btn {
+    color: white !important;
+}
+
+.button:hover,
+.home-btn:hover {
     background: linear-gradient(135deg, var(--bright-red) 0%, var(--primary-red) 100%);
-    box-shadow: 0 6px 18px var(--shadow-red);
-    transform: translateY(-2px);
+    box-shadow: 0 8px 25px var(--shadow-red-strong), 0 0 15px var(--primary-red);
+    transform: translateY(-3px) scale(1.03);
+    color: white !important;
+}
+
+.home-btn-secondary {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-light) !important;
+    border: 1px solid var(--border-dark);
+    backdrop-filter: blur(10px);
+}
+
+.home-btn-secondary:hover {
+    background: rgba(220, 20, 60, 0.1);
+    border-color: var(--primary-red);
+    color: white !important;
+    box-shadow: 0 8px 25px var(--shadow-red), 0 0 15px var(--primary-red);
 }
 
 /* ============================================
@@ -364,10 +392,10 @@ footer a {
         font-size: 12px;
     }
 
-    .button {
-        font-size: 12px;
-        width: 110px;
-        height: 32px;
+    .button, .home-btn {
+        font-size: 13px;
+        min-width: 110px;
+        height: 40px;
     }
 }
 
@@ -453,42 +481,6 @@ footer a {
     flex-wrap: wrap;
     justify-content: center;
     animation: fadeIn 1.2s ease-out;
-}
-
-.home-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 15px 30px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    border-radius: 12px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.home-btn-primary {
-    background: linear-gradient(135deg, var(--primary-red), var(--dark-red));
-    color: white;
-    box-shadow: 0 10px 20px var(--shadow-red);
-}
-
-.home-btn-primary:hover {
-    transform: translateY(-5px) scale(1.05);
-    box-shadow: 0 15px 30px var(--shadow-red-strong), 0 0 15px var(--primary-red);
-}
-
-.home-btn-secondary {
-    background: rgba(255, 255, 255, 0.05);
-    color: var(--text-light);
-    border: 1px solid var(--border-dark);
-    backdrop-filter: blur(10px);
-}
-
-.home-btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: var(--primary-red);
-    color: white;
-    transform: translateY(-5px);
 }
 
 /* ============================================
