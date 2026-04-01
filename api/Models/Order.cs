@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.EntityFrameworkCore;
 
-namespace FakeRestuarantAPI.Models;
+namespace RestuarantAPI.Models;
 
 public class Order
 {   

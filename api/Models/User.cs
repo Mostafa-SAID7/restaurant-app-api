@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace FakeRestuarantAPI.Models;
+namespace RestuarantAPI.Models;
 
 public class User
 {  

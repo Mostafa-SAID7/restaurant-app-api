@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace FakeRestuarantAPI.Extensions;
+namespace RestuarantAPI.Extensions;
 
 public static class StringExtensions
 {

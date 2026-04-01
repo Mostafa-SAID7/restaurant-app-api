@@ -1,6 +1,6 @@
-using FakeRestuarantAPI.Models;
+using RestuarantAPI.Models;
 
-namespace FakeRestuarantAPI.Services.Interfaces;
+namespace RestuarantAPI.Services.Interfaces;
 
 public interface IRestaurantService
 {

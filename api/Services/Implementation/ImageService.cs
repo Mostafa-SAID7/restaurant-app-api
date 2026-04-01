@@ -1,7 +1,7 @@
-using FakeRestuarantAPI.Services.Interfaces;
-using FakeRestuarantAPI.Helpers;
+using RestuarantAPI.Services.Interfaces;
+using RestuarantAPI.Helpers;
 
-namespace FakeRestuarantAPI.Services.Implementation;
+namespace RestuarantAPI.Services.Implementation;
 
 public class ImageService : IImageService
 {

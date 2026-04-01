@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 
-namespace FakeRestuarantAPI.Models;
+namespace RestuarantAPI.Models;
 
 public class Item
 {

@@ -1,6 +1,6 @@
-using FakeRestuarantAPI.Models;
+using RestuarantAPI.Models;
 
-namespace FakeRestuarantAPI.Repositories.Interfaces;
+namespace RestuarantAPI.Repositories.Interfaces;
 
 /// <summary>
 /// User repository interface with specific user operations

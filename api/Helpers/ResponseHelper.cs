@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace FakeRestuarantAPI.Helpers;
+namespace RestuarantAPI.Helpers;
 
 public static class ResponseHelper
 {

@@ -1,6 +1,6 @@
-using FakeRestuarantAPI.Extensions;
+using RestuarantAPI.Extensions;
 
-namespace FakeRestuarantAPI.Helpers;
+namespace RestuarantAPI.Helpers;
 
 public static class FileHelper
 {

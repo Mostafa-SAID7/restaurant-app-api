@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace FakeRestuarantAPI.Extensions;
+namespace RestuarantAPI.Extensions;
 
 public static class DecimalExtensions
 {

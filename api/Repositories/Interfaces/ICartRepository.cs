@@ -1,6 +1,6 @@
-using FakeRestuarantAPI.Models;
+using RestuarantAPI.Models;
 
-namespace FakeRestuarantAPI.Repositories.Interfaces;
+namespace RestuarantAPI.Repositories.Interfaces;
 
 /// <summary>
 /// Cart repository interface with specific cart operations

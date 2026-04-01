@@ -1,4 +1,4 @@
-using FakeRestuarantAPI.Configurations;
+using RestuarantAPI.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,4 +1,4 @@
-namespace FakeRestuarantAPI.Models;
+namespace RestuarantAPI.Models;
 
 public enum RestaurantCategory
 {

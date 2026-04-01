@@ -1,10 +1,10 @@
-using FakeRestuarantAPI.Models;
-using FakeRestuarantAPI.Services.Interfaces;
+using RestuarantAPI.Models;
+using RestuarantAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
-namespace FakeRestuarantAPI.Controllers
+namespace RestuarantAPI.Controllers
 {
     [Route("api/Restaurant")]
     [ApiController]

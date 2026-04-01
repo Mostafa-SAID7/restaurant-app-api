@@ -1,8 +1,8 @@
 using AutoMapper;
-using FakeRestuarantAPI.Models;
-using FakeRestuarantAPI.Services.Interfaces;
+using RestuarantAPI.Models;
+using RestuarantAPI.Services.Interfaces;
 
-namespace FakeRestuarantAPI.Mapping;
+namespace RestuarantAPI.Mapping;
 
 public class ImageUrlResolver : IValueResolver<Item, GetItems, string>
 {

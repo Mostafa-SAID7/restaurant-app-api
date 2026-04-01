@@ -1,4 +1,4 @@
-namespace FakeRestuarantAPI.Repositories.Interfaces;
+namespace RestuarantAPI.Repositories.Interfaces;
 
 /// <summary>
 /// Unit of Work interface for managing transactions and repository access

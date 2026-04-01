@@ -1,4 +1,4 @@
-namespace FakeRestuarantAPI.Configurations;
+namespace RestuarantAPI.Configurations;
 
 public static class MiddlewareConfiguration
 {

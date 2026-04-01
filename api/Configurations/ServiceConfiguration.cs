@@ -1,10 +1,10 @@
-using FakeRestuarantAPI.Mapping;
-using FakeRestuarantAPI.Services.Interfaces;
-using FakeRestuarantAPI.Services.Implementation;
-using FakeRestuarantAPI.Repositories.Interfaces;
-using FakeRestuarantAPI.Repositories.Implementation;
+using RestuarantAPI.Mapping;
+using RestuarantAPI.Services.Interfaces;
+using RestuarantAPI.Services.Implementation;
+using RestuarantAPI.Repositories.Interfaces;
+using RestuarantAPI.Repositories.Implementation;
 
-namespace FakeRestuarantAPI.Configurations;
+namespace RestuarantAPI.Configurations;
 
 public static class ServiceConfiguration
 {

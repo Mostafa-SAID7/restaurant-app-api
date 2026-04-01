@@ -1,4 +1,4 @@
-namespace FakeRestuarantAPI.Extensions;
+namespace RestuarantAPI.Extensions;
 
 public static class EnumerableExtensions
 {

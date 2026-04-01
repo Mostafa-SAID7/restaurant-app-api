@@ -1,9 +1,9 @@
-using FakeRestuarantAPI.Extensions;
-using FakeRestuarantAPI.Helpers;
+using RestuarantAPI.Extensions;
+using RestuarantAPI.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace FakeRestuarantAPI.Filters;
+namespace RestuarantAPI.Filters;
 
 /// <summary>
 /// Authorization filter to validate API keys for protected endpoints

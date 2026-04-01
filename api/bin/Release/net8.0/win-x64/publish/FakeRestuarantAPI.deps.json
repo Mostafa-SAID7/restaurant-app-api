@@ -7,7 +7,7 @@
   "targets": {
     ".NETCoreApp,Version=v8.0": {},
     ".NETCoreApp,Version=v8.0/win-x64": {
-      "FakeRestuarantAPI/1.0.0": {
+      "RestuarantAPI/1.0.0": {
         "dependencies": {
           "Microsoft.EntityFrameworkCore": "9.0.1",
           "Microsoft.EntityFrameworkCore.SqlServer": "9.0.1",
@@ -16,7 +16,7 @@
           "Swashbuckle.AspNetCore": "6.6.2"
         },
         "runtime": {
-          "FakeRestuarantAPI.dll": {}
+          "RestuarantAPI.dll": {}
         }
       },
       "Azure.Core/1.38.0": {
@@ -1502,7 +1502,7 @@
     }
   },
   "libraries": {
-    "FakeRestuarantAPI/1.0.0": {
+    "RestuarantAPI/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

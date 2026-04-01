@@ -95,7 +95,7 @@ backend/api/
 ├── wwwroot/                 # Static files and uploaded images
 ├── appsettings.json         # Application configuration
 ├── appsettings.Development.json
-├── FakeRestuarantAPI.csproj # Project file
+├── RestuarantAPI.csproj # Project file
 └── Program.cs               # Application entry point
 ```
 

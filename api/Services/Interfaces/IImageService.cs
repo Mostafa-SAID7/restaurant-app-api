@@ -1,4 +1,4 @@
-namespace FakeRestuarantAPI.Services.Interfaces;
+namespace RestuarantAPI.Services.Interfaces;
 
 public interface IImageService
 {

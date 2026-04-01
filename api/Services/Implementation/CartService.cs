@@ -1,9 +1,9 @@
 using AutoMapper;
-using FakeRestuarantAPI.Models;
-using FakeRestuarantAPI.Repositories.Interfaces;
-using FakeRestuarantAPI.Services.Interfaces;
+using RestuarantAPI.Models;
+using RestuarantAPI.Repositories.Interfaces;
+using RestuarantAPI.Services.Interfaces;
 
-namespace FakeRestuarantAPI.Services.Implementation;
+namespace RestuarantAPI.Services.Implementation;
 
 public class CartService : ICartService
 {

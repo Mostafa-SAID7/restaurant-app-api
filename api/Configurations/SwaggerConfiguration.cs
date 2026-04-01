@@ -1,8 +1,8 @@
-using FakeRestuarantAPI.Filters;
+using RestuarantAPI.Filters;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 
-namespace FakeRestuarantAPI.Configurations;
+namespace RestuarantAPI.Configurations;
 
 public static class SwaggerConfiguration
 {

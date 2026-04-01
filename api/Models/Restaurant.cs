@@ -2,7 +2,7 @@
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    namespace FakeRestuarantAPI.Models;
+    namespace RestuarantAPI.Models;
 
     public class Restaurant
     {

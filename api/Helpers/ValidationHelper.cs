@@ -1,7 +1,7 @@
-using FakeRestuarantAPI.Extensions;
+using RestuarantAPI.Extensions;
 using System.Text.RegularExpressions;
 
-namespace FakeRestuarantAPI.Helpers;
+namespace RestuarantAPI.Helpers;
 
 public static class ValidationHelper
 {

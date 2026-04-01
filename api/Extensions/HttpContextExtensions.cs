@@ -1,6 +1,6 @@
 using System.Security.Claims;
 
-namespace FakeRestuarantAPI.Extensions;
+namespace RestuarantAPI.Extensions;
 
 public static class HttpContextExtensions
 {

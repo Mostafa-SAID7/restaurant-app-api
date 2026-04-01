@@ -1,9 +1,9 @@
-using FakeRestuarantAPI.Data;
-using FakeRestuarantAPI.Repositories.Interfaces;
+using RestuarantAPI.Data;
+using RestuarantAPI.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
-namespace FakeRestuarantAPI.Repositories.Implementation;
+namespace RestuarantAPI.Repositories.Implementation;
 
 /// <summary>
 /// Unit of Work implementation for managing transactions and repository access

@@ -1,9 +1,9 @@
-using FakeRestuarantAPI.Data;
-using FakeRestuarantAPI.Repositories.Interfaces;
+using RestuarantAPI.Data;
+using RestuarantAPI.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
-namespace FakeRestuarantAPI.Repositories.Implementation;
+namespace RestuarantAPI.Repositories.Implementation;
 
 /// <summary>
 /// Base repository implementation with common CRUD operations

@@ -33,10 +33,10 @@ jobs:
           queries: security-and-quality
 
       - name: 📦 Restore dependencies
-        run: dotnet restore api/FakeRestuarantAPI.csproj
+        run: dotnet restore api/RestuarantAPI.csproj
 
       - name: 🔨 Build for analysis
-        run: dotnet build api/FakeRestuarantAPI.csproj --no-restore -c Release
+        run: dotnet build api/RestuarantAPI.csproj --no-restore -c Release
 
       - name: 📊 Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3

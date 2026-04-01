@@ -1,9 +1,9 @@
-using FakeRestuarantAPI.Data;
-using FakeRestuarantAPI.Models;
-using FakeRestuarantAPI.Repositories.Interfaces;
+using RestuarantAPI.Data;
+using RestuarantAPI.Models;
+using RestuarantAPI.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace FakeRestuarantAPI.Repositories.Implementation;
+namespace RestuarantAPI.Repositories.Implementation;
 
 /// <summary>
 /// Cart repository implementation with specific cart operations

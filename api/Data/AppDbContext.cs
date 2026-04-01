@@ -1,8 +1,8 @@
 using System;
-using FakeRestuarantAPI.Models;
+using RestuarantAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace FakeRestuarantAPI.Data;
+namespace RestuarantAPI.Data;
 
 public class AppDbContext :DbContext
 {

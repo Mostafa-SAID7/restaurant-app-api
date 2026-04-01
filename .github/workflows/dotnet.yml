@@ -21,10 +21,10 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: 📦 Restore dependencies
-        run: dotnet restore api/FakeRestuarantAPI.csproj
+        run: dotnet restore api/RestuarantAPI.csproj
 
       - name: 🔨 Build (Release)
-        run: dotnet build api/FakeRestuarantAPI.csproj --no-restore -c Release
+        run: dotnet build api/RestuarantAPI.csproj --no-restore -c Release
 
       - name: ✅ Publish (verify output)
-        run: dotnet publish api/FakeRestuarantAPI.csproj --no-build -c Release -o ./publish
+        run: dotnet publish api/RestuarantAPI.csproj --no-build -c Release -o ./publish

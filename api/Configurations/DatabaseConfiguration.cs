@@ -1,7 +1,7 @@
-using FakeRestuarantAPI.Data;
+using RestuarantAPI.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace FakeRestuarantAPI.Configurations;
+namespace RestuarantAPI.Configurations;
 
 public static class DatabaseConfiguration
 {
