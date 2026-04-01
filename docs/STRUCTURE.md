@@ -7,144 +7,29 @@
 ## Backend Structure (.NET 8 Web API)
 
 ```
-backend/api/
-├── Configurations/          # Dependency injection and service configurations
-│   ├── ApiConfiguration.cs
-│   ├── CorsConfiguration.cs
-│   ├── DatabaseConfiguration.cs
-│   ├── FilterConfiguration.cs
-│   ├── MiddlewareConfiguration.cs
-│   ├── ServiceConfiguration.cs
-│   └── SwaggerConfiguration.cs
-├── Controllers/             # API endpoints and HTTP request handling
-│   ├── CartController.cs
-│   ├── OrderController.cs
-│   ├── RestaurantController.cs
-│   └── UserController.cs
-├── Data/                    # Database context and configuration
-│   └── AppDbContext.cs
-├── DTOs/                    # Data Transfer Objects for API contracts
-│   ├── CartDTO.cs
-│   ├── GetItemsDTO.cs
-│   ├── ImageRequest.cs
-│   ├── ItemDTO.cs
-│   ├── MenuDTO.cs
-│   ├── OrderDTO.cs
-│   ├── RestaurantCategory.cs
-│   ├── RestaurantDTO.cs
-│   └── UserDTO.cs
-├── Extensions/              # Extension methods for common operations
-│   ├── DateTimeExtensions.cs
-│   ├── DecimalExtensions.cs
-│   ├── EnumerableExtensions.cs
-│   ├── HttpContextExtensions.cs
-│   └── StringExtensions.cs
-├── Filters/                 # Action filters and middleware
-│   ├── ApiKeyAuthorizationFilter.cs
-│   ├── ExceptionFilter.cs
-│   ├── FileUploadOperationFilter.cs
-│   ├── LoggingFilter.cs
-│   ├── RateLimitingFilter.cs
-│   └── ValidationFilter.cs
-├── Helpers/                 # Utility classes and helper methods
-│   ├── FileHelper.cs
-│   ├── ResponseHelper.cs
-│   └── ValidationHelper.cs
-├── Mapping/                 # AutoMapper profiles
-│   └── MappingProfile.cs
-├── Migrations/              # Entity Framework database migrations
-├── Models/                  # Domain entities and data models
-│   ├── Cart.cs
-│   ├── Item.cs
-│   ├── MasterOrder.cs
-│   ├── Order.cs
-│   ├── Restaurant.cs
-│   └── User.cs
-├── Repositories/            # Data access layer with Repository pattern
-│   ├── Interfaces/          # Repository contracts
-│   │   ├── IBaseRepository.cs
-│   │   ├── ICartRepository.cs
-│   │   ├── IItemRepository.cs
-│   │   ├── IMasterOrderRepository.cs
-│   │   ├── IOrderRepository.cs
-│   │   ├── IRestaurantRepository.cs
-│   │   ├── IUnitOfWork.cs
-│   │   └── IUserRepository.cs
-│   └── Implementation/      # Repository implementations
-│       ├── BaseRepository.cs
-│       ├── CartRepository.cs
-│       ├── ItemRepository.cs
-│       ├── MasterOrderRepository.cs
-│       ├── OrderRepository.cs
-│       ├── RestaurantRepository.cs
-│       ├── UnitOfWork.cs
-│       └── UserRepository.cs
-├── Services/                # Business logic layer
-│   ├── Interfaces/          # Service contracts
-│   │   ├── ICartService.cs
-│   │   ├── IImageService.cs
-│   │   ├── IOrderService.cs
-│   │   ├── IRestaurantService.cs
-│   │   └── IUserService.cs
-│   └── Implementation/      # Service implementations
-│       ├── CartService.cs
-│       ├── ImageService.cs
-│       ├── OrderService.cs
-│       ├── RestaurantService.cs
-│       └── UserService.cs
-├── wwwroot/                 # Static files and uploaded images
-├── appsettings.json         # Application configuration
-├── appsettings.Development.json
-├── RestuarantAPI.csproj # Project file
-└── Program.cs               # Application entry point
+RestuarantAPI/
+├── api/                     # .NET 8 Web API Source
+│   ├── Configurations/      # DI and service setup
+│   ├── Controllers/         # API endpoints
+│   ├── Data/                # EF Core context
+│   ├── DTOs/                # Data Transfer Objects
+│   ├── Extensions/          # Extension methods
+│   ├── Filters/             # Middleware and filters
+│   ├── Helpers/             # Utilities
+│   ├── Mapping/             # AutoMapper profiles
+│   ├── Migrations/          # DB migrations
+│   ├── Models/              # Domain entities
+│   ├── Repositories/        # Data access layer
+│   ├── Services/            # Business logic layer
+│   ├── wwwroot/             # Static UI files
+│   ├── appsettings.json     # Configuration
+│   ├── RestuarantAPI.csproj # Project file
+│   └── Program.cs           # Entry point
+├── docs/                    # Detailed documentation
+├── screenshots/             # UI previews
+├── RestuarantAPI.sln        # Solution file
+└── docker-compose.yml       # Docker orchestration
 ```
-
-## Frontend Structure (Angular 19)
-
-```
-frontend/restaurant-app/
-├── src/
-│   ├── app/
-│   │   ├── core/                    # Core functionality (singleton services)
-│   │   │   ├── models/              # TypeScript interfaces and models
-│   │   │   │   ├── menu-item.model.ts
-│   │   │   │   ├── order.model.ts
-│   │   │   │   ├── reservation.model.ts
-│   │   │   │   └── review.model.ts
-│   │   │   └── services/            # Core services
-│   │   │       ├── cart.service.ts
-│   │   │       ├── menu.service.ts
-│   │   │       ├── reservation.service.ts
-│   │   │       └── review.service.ts
-│   │   ├── features/                # Feature modules
-│   │   │   ├── about/
-│   │   │   ├── checkout/
-│   │   │   ├── home/
-│   │   │   ├── menu/
-│   │   │   ├── privacy/
-│   │   │   ├── reservations/
-│   │   │   └── terms/
-│   │   ├── layout/                  # Layout components
-│   │   │   ├── footer/
-│   │   │   └── header/
-│   │   ├── shared/                  # Shared components and utilities
-│   │   │   └── components/
-│   │   │       ├── custom-calendar.component.ts
-│   │   │       ├── custom-select.component.ts
-│   │   │       └── icon.component.ts
-│   │   ├── app.component.html
-│   │   ├── app.component.scss
-│   │   ├── app.component.ts
-│   │   ├── app.config.ts
-│   │   └── app.routes.ts
-│   ├── assets/                      # Static assets
-│   ├── environments/                # Environment configurations
-│   ├── index.html
-│   ├── main.ts
-│   └── styles.scss
-├── angular.json                     # Angular CLI configuration
-├── package.json                     # Dependencies and scripts
-└── tsconfig.json                    # TypeScript configuration
 ```
 
 ## Architecture Patterns
