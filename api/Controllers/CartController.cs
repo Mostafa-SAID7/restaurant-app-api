@@ -46,7 +46,7 @@ namespace RestuarantAPI.Controllers
         [SwaggerOperation(Summary = "Add item to cart", Description = "Add an item to user's cart")]
         [SwaggerResponse(201, "Item added to cart successfully")]
         [SwaggerResponse(404, "User not found")]
-        public async Task<ActionResult> AddItemToCart(string apikey, [FromBody] setcart setCart)
+        public async Task<ActionResult> AddItemToCart(string apikey, [FromBody] SetCart setCart)
         {
             try
             {

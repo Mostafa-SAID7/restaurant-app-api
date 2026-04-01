@@ -114,7 +114,7 @@ namespace RestuarantAPI.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("masterOrders");
+                    b.ToTable("MasterOrderDTO");
                 });
 
             modelBuilder.Entity("RestuarantAPI.Models.Order", b =>

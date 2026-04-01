@@ -12,7 +12,7 @@ namespace RestuarantAPI.Migrations
         {
             migrationBuilder.DropForeignKey(
                 name: "FK_masterOrders_User_Usercode",
-                table: "masterOrders");
+                table: "MasterOrderDTO");
 
             migrationBuilder.DropForeignKey(
                 name: "FK_Order_User_UserID",
@@ -28,16 +28,16 @@ namespace RestuarantAPI.Migrations
 
             migrationBuilder.DropColumn(
                 name: "Userapi",
-                table: "masterOrders");
+                table: "MasterOrderDTO");
 
             migrationBuilder.RenameColumn(
                 name: "Usercode",
-                table: "masterOrders",
+                table: "MasterOrderDTO",
                 newName: "UserID");
 
             migrationBuilder.RenameIndex(
                 name: "IX_masterOrders_Usercode",
-                table: "masterOrders",
+                table: "MasterOrderDTO",
                 newName: "IX_masterOrders_UserID");
 
             migrationBuilder.AlterColumn<string>(
@@ -62,7 +62,7 @@ namespace RestuarantAPI.Migrations
 
             migrationBuilder.AddForeignKey(
                 name: "FK_masterOrders_User_UserID",
-                table: "masterOrders",
+                table: "MasterOrderDTO",
                 column: "UserID",
                 principalTable: "User",
                 principalColumn: "UserEmail",
@@ -82,7 +82,7 @@ namespace RestuarantAPI.Migrations
         {
             migrationBuilder.DropForeignKey(
                 name: "FK_masterOrders_User_UserID",
-                table: "masterOrders");
+                table: "MasterOrderDTO");
 
             migrationBuilder.DropForeignKey(
                 name: "FK_Order_User_UserID",
@@ -98,12 +98,12 @@ namespace RestuarantAPI.Migrations
 
             migrationBuilder.RenameColumn(
                 name: "UserID",
-                table: "masterOrders",
+                table: "MasterOrderDTO",
                 newName: "Usercode");
 
             migrationBuilder.RenameIndex(
                 name: "IX_masterOrders_UserID",
-                table: "masterOrders",
+                table: "MasterOrderDTO",
                 newName: "IX_masterOrders_Usercode");
 
             migrationBuilder.AlterColumn<string>(
@@ -118,7 +118,7 @@ namespace RestuarantAPI.Migrations
 
             migrationBuilder.AddColumn<string>(
                 name: "Userapi",
-                table: "masterOrders",
+                table: "MasterOrderDTO",
                 type: "nvarchar(max)",
                 nullable: false,
                 defaultValue: "");
@@ -136,7 +136,7 @@ namespace RestuarantAPI.Migrations
 
             migrationBuilder.AddForeignKey(
                 name: "FK_masterOrders_User_Usercode",
-                table: "masterOrders",
+                table: "MasterOrderDTO",
                 column: "Usercode",
                 principalTable: "User",
                 principalColumn: "Usercode",

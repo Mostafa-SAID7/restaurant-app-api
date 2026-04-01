@@ -11,14 +11,14 @@ public class AppDbContext :DbContext
 
     }
 
-    public DbSet<User> User{get; set;}
-    public DbSet<Item> Item{get; set;}
-    public DbSet<Order> Order{get; set;}
-    public DbSet<Restaurant> Restaurant{get;set;}
+    public DbSet<User> Users{get; set;}
+    public DbSet<Item> Items{get; set;}
+    public DbSet<Order> Orders{get; set;}
+    public DbSet<Restaurant> Restaurants{get;set;}
 
-    public DbSet<MasterOrder> masterOrders{get;set;}
+    public DbSet<MasterOrder> MasterOrders{get;set;}
 
-    public DbSet<Cart> cart{get;set;}
+    public DbSet<Cart> Carts{get;set;}
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
 {

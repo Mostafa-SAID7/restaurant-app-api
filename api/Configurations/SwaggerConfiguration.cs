@@ -1,5 +1,5 @@
 using RestuarantAPI.Filters;
-using Microsoft.OpenApi.Models;
+using OpenApiModels = Microsoft.OpenApi.Models;
 using System.Reflection;
 
 namespace RestuarantAPI.Configurations;
@@ -11,18 +11,18 @@ public static class SwaggerConfiguration
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(c =>
         {
-            c.SwaggerDoc("v1", new OpenApiInfo
+            c.SwaggerDoc("v1", new OpenApiModels.OpenApiInfo
             {
                 Title = "M.Said's Restaurant API",
                 Version = "v1",
                 Description = "A comprehensive Restaurant Management API by M.Said. Featuring user authentication, menu management, ordering system, and cinematic design. | [GitHub Repository](https://github.com/Mostafa-SAID7/restaurant-app-api) | [Docs](/Docs.html)",
-                Contact = new OpenApiContact
+                Contact = new OpenApiModels.OpenApiContact
                 {
                     Name = "M.Said",
                     Email = "m.ssaid356@gmail.com",
                     Url = new Uri("https://m-said-portfolio.netlify.app")
                 },
-                License = new OpenApiLicense
+                License = new OpenApiModels.OpenApiLicense
                 {
                     Name = "MIT License",
                     Url = new Uri("https://opensource.org/licenses/MIT")
@@ -30,23 +30,23 @@ public static class SwaggerConfiguration
             });
 
             // Add API Key authentication
-            c.AddSecurityDefinition("ApiKey", new OpenApiSecurityScheme
+            c.AddSecurityDefinition("ApiKey", new OpenApiModels.OpenApiSecurityScheme
             {
                 Description = "API Key needed to access the endpoints. Format: 'your-api-key'",
-                In = ParameterLocation.Query,
+                In = OpenApiModels.ParameterLocation.Query,
                 Name = "apikey",
-                Type = SecuritySchemeType.ApiKey,
+                Type = OpenApiModels.SecuritySchemeType.ApiKey,
                 Scheme = "ApiKeyScheme"
             });
 
-            c.AddSecurityRequirement(new OpenApiSecurityRequirement
+            c.AddSecurityRequirement(new OpenApiModels.OpenApiSecurityRequirement
             {
                 {
-                    new OpenApiSecurityScheme
+                    new OpenApiModels.OpenApiSecurityScheme
                     {
-                        Reference = new OpenApiReference
+                        Reference = new OpenApiModels.OpenApiReference
                         {
-                            Type = ReferenceType.SecurityScheme,
+                            Type = OpenApiModels.ReferenceType.SecurityScheme,
                             Id = "ApiKey"
                         }
                     },

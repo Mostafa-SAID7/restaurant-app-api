@@ -52,7 +52,7 @@ namespace RestuarantAPI.Migrations
                 name: "FK_Order_masterOrders_MasterOrderMasterID",
                 table: "Order",
                 column: "MasterOrderMasterID",
-                principalTable: "masterOrders",
+                principalTable: "MasterOrderDTO",
                 principalColumn: "MasterID");
         }
     }

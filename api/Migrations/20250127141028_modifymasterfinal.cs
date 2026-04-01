@@ -62,7 +62,7 @@ namespace RestuarantAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "masterOrders",
+                name: "MasterOrderDTO",
                 columns: table => new
                 {
                     MasterID = table.Column<int>(type: "int", nullable: false)
@@ -115,7 +115,7 @@ namespace RestuarantAPI.Migrations
                     table.ForeignKey(
                         name: "FK_Order_masterOrders_MasterOrderMasterID",
                         column: x => x.MasterOrderMasterID,
-                        principalTable: "masterOrders",
+                        principalTable: "MasterOrderDTO",
                         principalColumn: "MasterID");
                 });
 
@@ -126,12 +126,12 @@ namespace RestuarantAPI.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_masterOrders_RestaurantID",
-                table: "masterOrders",
+                table: "MasterOrderDTO",
                 column: "RestaurantID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_masterOrders_Usercode",
-                table: "masterOrders",
+                table: "MasterOrderDTO",
                 column: "Usercode");
 
             migrationBuilder.CreateIndex(
@@ -161,7 +161,7 @@ namespace RestuarantAPI.Migrations
                 name: "Order");
 
             migrationBuilder.DropTable(
-                name: "masterOrders");
+                name: "MasterOrderDTO");
 
             migrationBuilder.DropTable(
                 name: "Restaurant");

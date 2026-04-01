@@ -30,7 +30,7 @@ public class OrderRepository : BaseRepository<Order>, IOrderRepository
 
     public async Task<int> GetNextMasterIdAsync()
     {
-        var lastMasterId = await _context.masterOrders
+        var lastMasterId = await _context.MasterOrders
             .OrderByDescending(m => m.MasterID)
             .Select(m => m.MasterID)
             .FirstOrDefaultAsync();

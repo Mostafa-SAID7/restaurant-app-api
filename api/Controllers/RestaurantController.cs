@@ -26,7 +26,7 @@ namespace RestuarantAPI.Controllers
     [SwaggerOperation(Summary = "Get all restaurants", Description = "Retrieve all restaurants with optional filtering by category, address, and name")]
     [SwaggerResponse(200, "Success", typeof(IEnumerable<Restaurant>))]
     [SwaggerResponse(404, "No restaurants found")]
-    public async Task<ActionResult> getrestaurants([FromQuery] string category="", string address=null, string name=null)
+    public async Task<ActionResult> getrestaurants([FromQuery] string category="", string? address=null, string? name=null)
     {
         try
         {

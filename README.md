@@ -5,6 +5,7 @@ A premium, high-performance **.NET 8 Web API** for modern restaurant management 
 [![🏗️ .NET CI](https://github.com/Mostafa-SAID7/restaurant-app-api/actions/workflows/dotnet.yml/badge.svg)](https://github.com/Mostafa-SAID7/restaurant-app-api/actions/workflows/dotnet.yml)
 [![🔒 CodeQL Scan](https://github.com/Mostafa-SAID7/restaurant-app-api/actions/workflows/codeql.yml/badge.svg)](https://github.com/Mostafa-SAID7/restaurant-app-api/actions/workflows/codeql.yml)
 [![🕰️ Stale PRs](https://github.com/Mostafa-SAID7/restaurant-app-api/actions/workflows/stale.yml/badge.svg)](https://github.com/Mostafa-SAID7/restaurant-app-api/actions/workflows/stale.yml)
+[![🚀 GitHub Release](https://img.shields.io/github/v/release/Mostafa-SAID7/restaurant-app-api?include_prereleases&logo=github&style=flat-square)](https://github.com/Mostafa-SAID7/restaurant-app-api/releases)
 
 > **Developed as a professional technical task for [Apptunix](https://www.apptunix.com)** — a global product engineering company specializing in AI-powered, enterprise-grade digital solutions.
 

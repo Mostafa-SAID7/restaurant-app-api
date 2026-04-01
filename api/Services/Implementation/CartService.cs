@@ -25,7 +25,7 @@ public class CartService : ICartService
         return await _unitOfWork.Carts.GetByUserIdAsync(user.Usercode);
     }
 
-    public async Task<CartDTO> AddItemToCartAsync(string apiKey, setcart setCart)
+    public async Task<CartDTO> AddItemToCartAsync(string apiKey, SetCart setCart)
     {
         var user = await _unitOfWork.Users.GetByUserCodeAsync(apiKey);
         if (user == null)
@@ -55,7 +55,7 @@ public class CartService : ICartService
         return removed;
     }
 
-    public async Task<getcartDTO> GetCartSummaryAsync(string apiKey)
+    public async Task<GetCartDTO> GetCartSummaryAsync(string apiKey)
     {
         var user = await _unitOfWork.Users.GetByUserCodeAsync(apiKey);
         if (user == null)
@@ -65,7 +65,7 @@ public class CartService : ICartService
         
         var totalAmount = cartItems.Sum(c => c.item.ItemPrice * c.Quantity);
         
-        return new getcartDTO
+        return new GetCartDTO
         {
             cartitems = cartItems.ToList(),
             GrandTotal = totalAmount

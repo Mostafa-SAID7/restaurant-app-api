@@ -111,7 +111,7 @@
 
             <p>Add item to cart</p>
             <div class="docbox">
-              <pre><code>POST /api/Cart</code></pre>
+              <pre><code>POST /api/Cart/{apikey}</code></pre>
             </div>
             <div class="infodiv">
               <i class="fa-solid fa-circle-info"></i>
@@ -129,14 +129,17 @@
 
             <p>Get active cart</p>
             <div class="docbox">
-              <pre><code>GET /api/Cart</code></pre>
+              <pre><code>GET /api/Cart/{apikey}</code></pre>
             </div>
             <button class="button">Show output</button>
             <div class="displaybtn docbox" hidden>
-              <pre><code>[
-  { "cartID": 105, "itemName": "Spicy Ramen", "quantity": 2, "itemPrice": 25 },
-  { "cartID": 106, "itemName": "Green Tea", "quantity": 1, "itemPrice": 5 }
-]</code></pre>
+              <pre><code>{
+  "cartitems": [
+    { "itemID": 105, "itemName": "Spicy Ramen", "quantity": 2, "itemPrice": 25 },
+    { "itemID": 106, "itemName": "Green Tea", "quantity": 1, "itemPrice": 5 }
+  ],
+  "grandTotal": 55
+}</code></pre>
             </div>
         </div>
 

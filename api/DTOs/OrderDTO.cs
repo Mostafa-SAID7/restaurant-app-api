@@ -12,7 +12,7 @@ public class OrderDTO
     public int Quantity { get; set; }
 }
 
-public class setorderDTO
+public class SetOrderDTO
 {
     public string UserID { get; set; }
     public string ItemName { get; set; }
@@ -41,7 +41,7 @@ public class MasterOrderDTO
     public decimal GrandTotal { get; set; }
 }
 
-public class masterorders
+public class MasterOrderItemsDTO
 {
     public List<Order> orders { get; set; }
 }

@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace RestuarantAPI.Models;
 
-public class getcartDTO
+public class GetCartDTO
 {
     public List<Cart> cartitems { get; set; }
     public decimal GrandTotal { get; set; }
@@ -21,7 +21,7 @@ public class CartDTO
     public decimal TotalPrice { get; set; }
 }
 
-public class setcart
+public class SetCart
 {
     public Item item { get; set; }
 

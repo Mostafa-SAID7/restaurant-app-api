@@ -56,7 +56,7 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.MasterID, opt => opt.Ignore());
 
         // Cart mappings
-        CreateMap<setcart, CartDTO>()
+        CreateMap<SetCart, CartDTO>()
             .ForMember(dest => dest.ItemID, opt => opt.MapFrom(src => src.item.ItemID))
             .ForMember(dest => dest.ItemName, opt => opt.MapFrom(src => src.item.ItemName))
             .ForMember(dest => dest.ItemPrice, opt => opt.MapFrom(src => src.item.ItemPrice))

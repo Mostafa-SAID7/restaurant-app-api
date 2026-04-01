@@ -4,7 +4,7 @@ namespace RestuarantAPI.Services.Interfaces;
 
 public interface IRestaurantService
 {
-    Task<IEnumerable<Restaurant>> GetRestaurantsAsync(string category = "", string address = null, string name = null);
+    Task<IEnumerable<Restaurant>> GetRestaurantsAsync(string category = "", string? address = null, string? name = null);
     Task<Restaurant?> GetRestaurantByIdAsync(int restaurantId);
     Task<Restaurant> CreateRestaurantAsync(RestaurantDTO restaurantDTO);
     Task<bool> RestaurantExistsAsync(string restaurantName);
