@@ -13,13 +13,14 @@ public static class SwaggerConfiguration
         {
             c.SwaggerDoc("v1", new OpenApiInfo
             {
-                Title = "Restaurant API",
+                Title = "M.Said's Restaurant API",
                 Version = "v1",
-                Description = "A comprehensive Restaurant Management API with user authentication, menu management, ordering system, and image upload capabilities.",
+                Description = "A comprehensive Restaurant Management API by M.Said. Featuring user authentication, menu management, ordering system, and cinematic design.",
                 Contact = new OpenApiContact
                 {
-                    Name = "Restaurant API Support",
-                    Email = "support@restaurantapi.com"
+                    Name = "M.Said",
+                    Email = "support@restaurantapi.com",
+                    Url = new Uri("https://m-said-portfolio.netlify.app")
                 },
                 License = new OpenApiLicense
                 {

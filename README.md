@@ -1,4 +1,4 @@
-# NooR Restaurant Management System
+# M.Said's Restaurant Management System
 
 A comprehensive restaurant management system built with .NET 8 Web API backend and Angular 19 frontend, featuring modern architecture patterns and clean code principles.
 
@@ -80,8 +80,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🆘 Support
 
-If you encounter any issues or have questions, please [open an issue](https://github.com/Mostafa-SAID7/NooR/issues) on GitHub.
+If you encounter any issues or have questions, please [open an issue](https://github.com/Mostafa-SAID7/restaurant-app-api/issues) on GitHub.
 
 ---
 
-**Built with ❤️ by the NooR Team**
+**Built with ❤️ by [M.Said](https://m-said-portfolio.netlify.app)**

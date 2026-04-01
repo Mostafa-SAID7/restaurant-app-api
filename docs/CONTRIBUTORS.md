@@ -3,9 +3,10 @@
 ## Project Team
 
 ### Lead Developer
-- **Mostafa SAID** - Project Lead & Backend Developer
+- **M.Said** - Project Lead & Backend Developer
   - GitHub: [@Mostafa-SAID7](https://github.com/Mostafa-SAID7)
-  - Repository: [NooR](https://github.com/Mostafa-SAID7/NooR)
+  - Portfolio: [m-said-portfolio.netlify.app](https://m-said-portfolio.netlify.app)
+  - Repository: [restaurant-app-api](https://github.com/Mostafa-SAID7/restaurant-app-api)
 
 ### Original API Base
 - **Aravind Attepu** - Original Fake Restaurant API
@@ -142,7 +143,7 @@ By contributing to this project, you agree that your contributions will be licen
 ## Hall of Fame
 
 ### Major Contributors
-- **Mostafa SAID** - Complete project restructure and clean architecture implementation
+- **M.Said** - Complete project restructure and clean architecture implementation
 - **Aravind Attepu** - Original API foundation and core functionality
 
 ### Feature Contributors
