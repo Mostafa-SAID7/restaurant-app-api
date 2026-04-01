@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "w5ZPLWdoB0c=",
+  "dgSpecHash": "kCSk4O/lCOE=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Memo\\Desktop\\Projects\\Pulls\\Resturent\\backend\\api\\FakeRestuarantAPI.csproj",
+  "projectFilePath": "C:\\Users\\Memo\\Downloads\\backend\\restaurant-app-api\\api\\FakeRestuarantAPI.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Memo\\.nuget\\packages\\automapper\\12.0.1\\automapper.12.0.1.nupkg.sha512",
     "C:\\Users\\Memo\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\12.0.1\\automapper.extensions.microsoft.dependencyinjection.12.0.1.nupkg.sha512",
@@ -167,9 +167,9 @@
       "code": "NU1903",
       "level": "Warning",
       "message": "Package 'AutoMapper' 12.0.1 has a known high severity vulnerability, https://github.com/advisories/GHSA-rvv3-g6hj-g44x",
-      "projectPath": "C:\\Users\\Memo\\Desktop\\Projects\\Pulls\\Resturent\\backend\\api\\FakeRestuarantAPI.csproj",
+      "projectPath": "C:\\Users\\Memo\\Downloads\\backend\\restaurant-app-api\\api\\FakeRestuarantAPI.csproj",
       "warningLevel": 1,
-      "filePath": "C:\\Users\\Memo\\Desktop\\Projects\\Pulls\\Resturent\\backend\\api\\FakeRestuarantAPI.csproj",
+      "filePath": "C:\\Users\\Memo\\Downloads\\backend\\restaurant-app-api\\api\\FakeRestuarantAPI.csproj",
       "libraryId": "AutoMapper",
       "targetGraphs": [
         "net8.0"
