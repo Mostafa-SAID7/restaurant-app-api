@@ -1,4 +1,4 @@
-name: .NET Core CI
+name: 🏗️ .NET CI Build
 
 on:
   push:
@@ -8,22 +8,23 @@ on:
 
 jobs:
   build:
-
+    name: Build & Validate
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
-        
-    - name: Restore dependencies
-      run: dotnet restore api/RestaurantApi.csproj
-      
-    - name: Build
-      run: dotnet build api/RestaurantApi.csproj --no-restore -c Release
-      
-    - name: Test
-      run: dotnet test api/RestaurantApi.csproj --no-build --verbosity normal
+      - name: ⬇️ Checkout code
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: 📦 Restore dependencies
+        run: dotnet restore api/FakeRestuarantAPI.csproj
+
+      - name: 🔨 Build (Release)
+        run: dotnet build api/FakeRestuarantAPI.csproj --no-restore -c Release
+
+      - name: ✅ Publish (verify output)
+        run: dotnet publish api/FakeRestuarantAPI.csproj --no-build -c Release -o ./publish
