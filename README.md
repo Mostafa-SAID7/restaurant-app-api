@@ -1,6 +1,6 @@
-# 🍽️ Cinematic Restaurant API
+# 🍽️ Restaurant API
 
-A premium, high-performance **.NET 8 Web API** for modern restaurant management — featuring a stunning Cinematic glassmorphism UI, robust clean architecture, and production-ready DevOps infrastructure.
+A premium, high-performance **.NET 8 Web API** for modern restaurant management — featuring a stunning glassmorphism UI, robust clean architecture, and production-ready DevOps infrastructure.
 
 > **Developed as a professional technical task for [Apptunix](https://www.apptunix.com)** — a global product engineering company specializing in AI-powered, enterprise-grade digital solutions.
 
@@ -10,7 +10,7 @@ A premium, high-performance **.NET 8 Web API** for modern restaurant management 
 
 | Resource | Description | URL |
 | :--- | :--- | :--- |
-| 🏠 **Home** | Cinematic Landing Page | [`/Home.html`](http://localhost:5124/Home.html) |
+| 🏠 **Home** | Landing Page | [`/Home.html`](http://localhost:5124/Home.html) |
 | 📜 **Docs** | Interactive API Documentation | [`/Docs.html`](http://localhost:5124/Docs.html) |
 | 🛠️ **Swagger** | OpenAPI Explorer & Testing | [`/index.html`](http://localhost:5124/index.html) |
 
@@ -18,7 +18,7 @@ A premium, high-performance **.NET 8 Web API** for modern restaurant management 
 
 ## 🖼️ UI Showcase
 
-![Cinematic Home Page](screenshots/home.png)
+![Home Page](screenshots/home.png)
 
 ---
 
@@ -33,7 +33,7 @@ All detailed guides live in the [`docs/`](docs/) folder:
 | [💻 Technologies Stack](docs/TECHNOLOGIES.md) | Frameworks, tools, and libraries used |
 | [📝 API Endpoints](docs/API_ENDPOINTS.md) | Comprehensive list of all routes and payloads |
 | [📊 Entity Relationship Diagram](docs/ERD.md) | Database schema and relationship visualization |
-| [🎨 Cinematic Design System](docs/STYLES.md) | Premium glassmorphism UI documentation |
+| [🎨 Design System](docs/STYLES.md) | Premium glassmorphism UI documentation |
 | [🛡️ Security Guide](docs/SECURITY.md) | API Key auth, CORS, and best practices |
 | [⚙️ Project Setup](docs/PROJECT_SETUP.md) | Step-by-step local development guide |
 | [🚢 Deployment Strategy](docs/DEPLOYMENT.md) | Docker and production build instructions |
