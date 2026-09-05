@@ -23,8 +23,11 @@ public static class MiddlewareConfiguration
         // 3. Static Files (Home.html, Docs.html, 404.html, css, images)
         app.UseStaticFiles();
 
-        // 4. Swagger UI (Mounts at root namespace /index.html)
-        app.UseSwaggerConfiguration();
+        // 4. Swagger UI (ONLY in Development - SECURITY FIX)
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseSwaggerConfiguration();
+        }
 
         // 5. Routing
         app.UseRouting();

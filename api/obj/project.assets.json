@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "targets": {
     "net8.0": {
       "AutoMapper/13.0.1": {
@@ -5277,23 +5277,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Memo\\.nuget\\packages\\": {},
+    "C:\\Users\\cw_14\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Memo\\Downloads\\backend\\restaurant-app-api\\api\\RestuarantAPI.csproj",
+      "projectUniqueName": "C:\\Users\\cw_14\\Downloads\\New folder\\restaurant-app-api\\api\\RestuarantAPI.csproj",
       "projectName": "RestuarantAPI",
-      "projectPath": "C:\\Users\\Memo\\Downloads\\backend\\restaurant-app-api\\api\\RestuarantAPI.csproj",
-      "packagesPath": "C:\\Users\\Memo\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Memo\\Downloads\\backend\\restaurant-app-api\\api\\obj\\",
+      "projectPath": "C:\\Users\\cw_14\\Downloads\\New folder\\restaurant-app-api\\api\\RestuarantAPI.csproj",
+      "packagesPath": "C:\\Users\\cw_14\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\cw_14\\Downloads\\New folder\\restaurant-app-api\\api\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\Memo\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\cw_14\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -5306,6 +5306,7 @@
       },
       "frameworks": {
         "net8.0": {
+          "framework": "net8.0",
           "targetAlias": "net8.0",
           "projectReferences": {}
         }
@@ -5320,10 +5321,11 @@
         "auditLevel": "low",
         "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "9.0.300"
+      "SdkAnalysisLevel": "10.0.300"
     },
     "frameworks": {
       "net8.0": {
+        "framework": "net8.0",
         "targetAlias": "net8.0",
         "dependencies": {
           "AutoMapper": {
@@ -5376,7 +5378,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.311/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.301/PortableRuntimeIdentifierGraph.json"
       }
     }
   },
