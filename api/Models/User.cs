@@ -1,8 +1,3 @@
-using System;
-using System.ComponentModel.DataAnnotations;
-
-namespace RestuarantAPI.Models;
-
 using System.ComponentModel.DataAnnotations;
 
 namespace RestuarantAPI.Models;

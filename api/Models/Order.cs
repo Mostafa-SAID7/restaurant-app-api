@@ -1,31 +1,50 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.EntityFrameworkCore;
 
 namespace RestuarantAPI.Models;
 
+/// <summary>
+/// Order entity representing individual items in a user's order
+/// </summary>
 public class Order
-{   
-    
-[Key]
-[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-public int OrderID{get;set;}
+{
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int OrderID { get; set; }
 
-public User user{get;set;}
-public string UserID{get;set;}
-public string ItemName{get; set;}
+    [ForeignKey(nameof(User))]
+    public string UserID { get; set; } = null!;
 
-[Range(1,100)]
-public int Quantity{get; set;}
+    [Required]
+    public User User { get; set; } = null!;
 
- [Precision(10, 2)] 
-public decimal ItemPrice{get;set;}
+    [ForeignKey(nameof(Item))]
+    public int ItemID { get; set; }
 
- [Precision(10, 2)] 
-public decimal TotalPrice{get; set;}
+    [Required]
+    public Item Item { get; set; } = null!;
 
-public int  MasterID{get;set;}
+    [Required]
+    [MaxLength(100)]
+    public string ItemName { get; set; } = null!;
 
+    [Range(1, 100)]
+    public int Quantity { get; set; }
+
+    [Precision(10, 2)]
+    [Range(0.01, 999999.99)]
+    public decimal ItemPrice { get; set; }
+
+    [Precision(10, 2)]
+    [Range(0.01, 999999.99)]
+    public decimal TotalPrice { get; set; }
+
+    [ForeignKey(nameof(MasterOrder))]
+    public int MasterID { get; set; }
+
+    [Required]
+    public MasterOrder MasterOrder { get; set; } = null!;
+
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

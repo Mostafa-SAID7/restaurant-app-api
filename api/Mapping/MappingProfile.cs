@@ -15,7 +15,7 @@ public class ImageUrlResolver : IValueResolver<Item, GetItems, string>
 
     public string Resolve(Item source, GetItems destination, string destMember, ResolutionContext context)
     {
-        return _imageService.GetImageUrl(source.imageUrl);
+        return _imageService.GetImageUrl(source.ImageUrl);
     }
 }
 
@@ -29,9 +29,12 @@ public class MappingProfile : Profile
 
         // User mappings
         CreateMap<UserDTO, User>()
-            .ForMember(dest => dest.Usercode, opt => opt.Ignore()); // Usercode is generated
+            .ForMember(dest => dest.Usercode, opt => opt.Ignore()) // Usercode is generated
+            .ForMember(dest => dest.PasswordHash, opt => opt.Ignore()) // Password is hashed separately
+            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow));
+        
         CreateMap<User, UserDTO>()
-            .ForMember(dest => dest.Password, opt => opt.Ignore()); // Don't expose password
+            .ForMember(dest => dest.Password, opt => opt.Ignore()); // Never expose password or hash
 
         // Item mappings
         CreateMap<ItemDTO, Item>()
