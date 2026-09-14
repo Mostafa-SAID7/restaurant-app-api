@@ -7,7 +7,9 @@ using Microsoft.EntityFrameworkCore;
 namespace RestaurantAPI.Repositories.Implementation;
 
 /// <summary>
-/// User repository implementation with specific user operations
+/// User repository for data access only
+/// Password hashing removed (Phase A.2 - moved to IPasswordService)
+/// Usercode methods removed (Phase A.1 - JWT replaces API-key auth)
 /// </summary>
 public class UserRepository : BaseRepository<User>, IUserRepository
 {
@@ -23,23 +25,13 @@ public class UserRepository : BaseRepository<User>, IUserRepository
         return await _dbSet.FirstOrDefaultAsync(u => u.UserEmail == email);
     }
 
-    public async Task<User?> GetByUserCodeAsync(string userCode)
-    {
-        return await _dbSet.FirstOrDefaultAsync(u => u.Usercode == userCode);
-    }
-
     public async Task<bool> EmailExistsAsync(string email)
     {
         return await _dbSet.AnyAsync(u => u.UserEmail == email);
     }
 
-    public async Task<bool> UserCodeExistsAsync(string userCode)
-    {
-        return await _dbSet.AnyAsync(u => u.Usercode == userCode);
-    }
-
     /// <summary>
-    /// Validates user credentials by comparing hashed passwords
+    /// Validates user credentials for authentication (temporary - will move to IAuthService)
     /// </summary>
     public async Task<User?> ValidateUserAsync(string email, string password)
     {
@@ -50,22 +42,5 @@ public class UserRepository : BaseRepository<User>, IUserRepository
         // Verify password hash
         var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
         return result == PasswordVerificationResult.Success ? user : null;
-    }
-
-    /// <summary>
-    /// Hashes a password for secure storage
-    /// </summary>
-    public string HashPassword(User user, string password)
-    {
-        return _passwordHasher.HashPassword(user, password);
-    }
-
-    /// <summary>
-    /// Verifies a password against a hash
-    /// </summary>
-    public bool VerifyPassword(User user, string password)
-    {
-        var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
-        return result == PasswordVerificationResult.Success;
     }
 }

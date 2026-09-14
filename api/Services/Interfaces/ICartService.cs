@@ -3,24 +3,28 @@ using RestaurantAPI.Models;
 
 namespace RestaurantAPI.Services.Interfaces;
 
+/// <summary>
+/// Cart service for authenticated users
+/// Phase A.1: Changed parameter from apiKey to userId (JWT)
+/// </summary>
 public interface ICartService
 {
     /// <summary>
-    /// Get cart items for the authenticated user (returns CartItemDTO, not Cart entities)
+    /// Get cart items for authenticated user (userId from JWT)
     /// </summary>
-    Task<IEnumerable<CartItemDTO>> GetCartItemsAsync(string apiKey);
+    Task<IEnumerable<CartItemDTO>> GetCartItemsAsync(string userId);
     
     /// <summary>
-    /// Add item to cart (returns CartItemDTO)
+    /// Add item to cart (userId from JWT)
     /// </summary>
-    Task<CartItemDTO> AddItemToCartAsync(string apiKey, SetCart setCart);
+    Task<CartItemDTO> AddItemToCartAsync(string userId, SetCart setCart);
     
-    Task<bool> RemoveItemFromCartAsync(string apiKey, int itemId);
+    Task<bool> RemoveItemFromCartAsync(string userId, int itemId);
     
     /// <summary>
-    /// Get cart summary with items (returns CartItemDTO, not Cart entities)
+    /// Get cart summary with items and total (userId from JWT)
     /// </summary>
-    Task<CartDTO> GetCartSummaryAsync(string apiKey);
+    Task<CartDTO> GetCartSummaryAsync(string userId);
     
-    Task ClearCartAsync(string apiKey);
+    Task ClearCartAsync(string userId);
 }

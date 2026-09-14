@@ -6,6 +6,10 @@ using RestaurantAPI.Services.Interfaces;
 
 namespace RestaurantAPI.Services.Implementation;
 
+/// <summary>
+/// Cart service for authenticated users
+/// Phase A.1: Removed apiKey parameter, now uses userId from JWT claims
+/// </summary>
 public class CartService : ICartService
 {
     private readonly IUnitOfWork _unitOfWork;
@@ -17,11 +21,11 @@ public class CartService : ICartService
         _mapper = mapper;
     }
 
-    public async Task<IEnumerable<CartItemDTO>> GetCartItemsAsync(string apiKey)
+    public async Task<IEnumerable<CartItemDTO>> GetCartItemsAsync(string userId)
     {
-        var user = await _unitOfWork.Users.GetByUserCodeAsync(apiKey);
+        var user = await _unitOfWork.Users.GetByIdAsync(userId);
         if (user == null)
-            throw new UnauthorizedAccessException("No user found with given key");
+            throw new UnauthorizedAccessException("User not found");
 
         var cartItems = await _unitOfWork.Carts.GetByUserIdAsync(user.Usercode);
         
@@ -37,11 +41,11 @@ public class CartService : ICartService
         }).ToList();
     }
 
-    public async Task<CartItemDTO> AddItemToCartAsync(string apiKey, SetCart setCart)
+    public async Task<CartItemDTO> AddItemToCartAsync(string userId, SetCart setCart)
     {
-        var user = await _unitOfWork.Users.GetByUserCodeAsync(apiKey);
+        var user = await _unitOfWork.Users.GetByIdAsync(userId);
         if (user == null)
-            throw new UnauthorizedAccessException("No user found with given key");
+            throw new UnauthorizedAccessException("User not found");
 
         // Fetch the Item by ID and validate it exists
         var item = await _unitOfWork.Items.GetByIdAsync(setCart.ItemID);
@@ -71,9 +75,9 @@ public class CartService : ICartService
         };
     }
 
-    public async Task<bool> RemoveItemFromCartAsync(string apiKey, int itemId)
+    public async Task<bool> RemoveItemFromCartAsync(string userId, int itemId)
     {
-        var user = await _unitOfWork.Users.GetByUserCodeAsync(apiKey);
+        var user = await _unitOfWork.Users.GetByIdAsync(userId);
         if (user == null)
             return false;
 
@@ -85,11 +89,11 @@ public class CartService : ICartService
         return removed;
     }
 
-    public async Task<CartDTO> GetCartSummaryAsync(string apiKey)
+    public async Task<CartDTO> GetCartSummaryAsync(string userId)
     {
-        var user = await _unitOfWork.Users.GetByUserCodeAsync(apiKey);
+        var user = await _unitOfWork.Users.GetByIdAsync(userId);
         if (user == null)
-            throw new UnauthorizedAccessException("No user found with given key");
+            throw new UnauthorizedAccessException("User not found");
 
         var cartItems = await _unitOfWork.Carts.GetByUserIdAsync(user.Usercode);
         
@@ -110,11 +114,11 @@ public class CartService : ICartService
         };
     }
 
-    public async Task ClearCartAsync(string apiKey)
+    public async Task ClearCartAsync(string userId)
     {
-        var user = await _unitOfWork.Users.GetByUserCodeAsync(apiKey);
+        var user = await _unitOfWork.Users.GetByIdAsync(userId);
         if (user == null)
-            throw new UnauthorizedAccessException("No user found with given key");
+            throw new UnauthorizedAccessException("User not found");
 
         await _unitOfWork.Carts.ClearByUserIdAsync(user.Usercode);
         await _unitOfWork.SaveChangesAsync();

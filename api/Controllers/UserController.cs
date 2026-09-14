@@ -12,8 +12,8 @@ namespace RestaurantAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [SwaggerTag("User Management (Legacy - use /api/auth for authentication)")]
-    [Obsolete("Use /api/auth endpoints for authentication. This controller is deprecated and will be removed in v2.0")]
+    [SwaggerTag("User Management (Deprecated - use /api/auth)")]
+    [Obsolete("Use /api/auth endpoints for authentication and /api/profile for profile management. This controller will be removed in v2.0")]
     public class UserController : ControllerBase
     {
         private readonly ILogger<UserController> _logger;
@@ -30,7 +30,7 @@ namespace RestaurantAPI.Controllers
         /// </summary>
         [HttpPost("register")]
         [SwaggerOperation(Summary = "[DEPRECATED] Register new user", Description = "DEPRECATED: Use POST /api/auth/register instead")]
-        [SwaggerResponse(201, "User registered successfully", typeof(User))]
+        [SwaggerResponse(201, "User registered successfully")]
         [SwaggerResponse(400, "Invalid input or validation error")]
         [SwaggerResponse(409, "User already exists")]
         public async Task<ActionResult> RegisterAsync([FromBody] UserDTO userDTO)
@@ -53,9 +53,8 @@ namespace RestaurantAPI.Controllers
 
             var user = await _userService.RegisterUserAsync(userDTO);
             return ResponseHelper.Created(new { 
-                usercode = user.Usercode,
                 email = user.UserEmail,
-                message = "DEPRECATED: Use /api/auth/register for new registrations"
+                message = "DEPRECATED: Use /api/auth/register for JWT tokens"
             });
         }
 
@@ -77,19 +76,9 @@ namespace RestaurantAPI.Controllers
                 return ResponseHelper.Error("Email and password are required");
             }
 
-            var userCode = await _userService.GetUserCodeAsync(userDTO.UserEmail, userDTO.Password);
-            
-            if (userCode != null)
-            {
-                return ResponseHelper.Success(new { 
-                    apikey = userCode,
-                    email = userDTO.UserEmail,
-                    message = "DEPRECATED: Use /api/auth/login for JWT tokens"
-                }, "Login successful");
-            }
-            
-            _logger.LogWarning($"Failed login attempt for email: {userDTO.UserEmail}");
-            return ResponseHelper.Unauthorized("Invalid credentials");
+            // API-key authentication removed (Phase A.1)
+            // All authentication now goes through /api/auth with JWT
+            return ResponseHelper.Error("This endpoint is deprecated and will be removed in v2.0. Use POST /api/auth/login instead", 410); // 410 Gone
         }
 
         /// <summary>
@@ -120,44 +109,23 @@ namespace RestaurantAPI.Controllers
         }
 
         /// <summary>
-        /// Update user password (requires authentication with JWT - use POST /api/auth/change-password)
+        /// Update user password (DEPRECATED - use POST /api/auth/change-password)
         /// </summary>
         [HttpPut("password")]
         [Authorize(Policy = AuthorizationPolicies.Authenticated)]
-        [SwaggerOperation(Summary = "Update user password", Description = "Change user's password (requires JWT authentication)")]
+        [SwaggerOperation(Summary = "[DEPRECATED] Update user password", Description = "DEPRECATED: Use POST /api/auth/change-password instead")]
         [SwaggerResponse(200, "Password updated successfully")]
         [SwaggerResponse(400, "Invalid password")]
         [SwaggerResponse(401, "Unauthorized - valid JWT token required")]
         [SwaggerResponse(404, "User not found")]
+        [SwaggerResponse(410, "Endpoint deprecated")]
         [LogRequests]
         public async Task<ActionResult> UpdatePasswordAsync([FromBody] PasswordUpdateDTO passwordUpdate)
         {
-            if (string.IsNullOrEmpty(passwordUpdate?.NewPassword))
-            {
-                return ResponseHelper.Error("New password is required");
-            }
-
-            // Validate password
-            var (isValid, errors) = ValidationHelper.ValidatePassword(passwordUpdate.NewPassword);
-            if (!isValid)
-            {
-                return ResponseHelper.ValidationError(errors);
-            }
-
-            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userId))
-            {
-                return ResponseHelper.Unauthorized("User not identified from JWT");
-            }
-
-            var updatedUser = await _userService.UpdateUserPasswordAsync(userId, passwordUpdate.NewPassword);
+            _logger.LogWarning("Deprecated endpoint /api/user/password called. Use /api/auth/change-password instead");
             
-            if (updatedUser != null)
-            {
-                return ResponseHelper.Success<object>(null, "Password updated successfully");
-            }
-            
-            return ResponseHelper.NotFound("User");
+            // Password changes now go through /api/auth/change-password (Phase A.1)
+            return ResponseHelper.Error("This endpoint is deprecated and will be removed in v2.0. Use POST /api/auth/change-password instead", 410); // 410 Gone
         }
     }
 }
