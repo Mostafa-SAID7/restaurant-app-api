@@ -1,10 +1,17 @@
 name: 📦 Create Release
 
-# How to create a real release:
-# 1. Merge PRs to main (Release Drafter updates the draft)
-# 2. BEST: Create and push a tag: git tag v1.0.0 && git push origin v1.0.0
-#    This automatically creates the GitHub Release and triggers publish-image.yml
-# 3. ALTERNATIVE: Manually trigger workflow dispatch (see below)
+# HOW TO CREATE A RELEASE
+#
+# Recommended (automatic):
+#   git tag v1.0.0
+#   git push origin v1.0.0
+#   → This workflow runs automatically
+#
+# Manual alternative (workflow_dispatch):
+#   1. Go to GitHub Actions → "Create Release"
+#   2. Click "Run workflow"
+#   3. Enter tag name: v1.0.0 (will be created if not exist)
+#   4. Click "Run workflow"
 
 on:
   push:
@@ -13,7 +20,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Release tag (e.g., v1.0.0) - MUST already exist as a git tag'
+        description: 'Release tag (e.g., v1.0.0). If not exists, will be created on current commit.'
         required: true
         type: string
 
@@ -26,12 +33,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: ⬇️ Checkout code
+      - name: ⬇️ Checkout code (with tags)
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          fetch-tags: true
 
-      - name: 📋 Determine release tag
+      - name: 📋 Determine and validate release tag
         id: tag
         run: |
           if [ "${{ github.event_name }}" == "push" ]; then
@@ -43,41 +51,53 @@ jobs:
           # Validate tag format
           if ! [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+ ]]; then
             echo "❌ ERROR: Tag must match format vX.Y.Z (e.g., v1.0.0)"
-            echo "Current tag: $TAG"
-            exit 1
-          fi
-          
-          # Verify tag exists
-          if ! git rev-parse "$TAG" >/dev/null 2>&1; then
-            echo "❌ ERROR: Tag '$TAG' does not exist. Create it with:"
-            echo "  git tag $TAG"
-            echo "  git push origin $TAG"
+            echo "Current input: $TAG"
             exit 1
           fi
           
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
           echo "✅ Release tag: ${TAG}"
 
-      - name: 📝 Get Release Notes
+      - name: 🏷️ Create tag if it does not exist (manual workflow_dispatch)
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          TAG=${{ steps.tag.outputs.tag }}
+          
+          # Check if tag already exists
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "✅ Tag $TAG already exists"
+          else
+            echo "📍 Creating new tag $TAG on commit ${{ github.sha }}"
+            git config --local user.email "action@github.com"
+            git config --local user.name "GitHub Action"
+            git tag "$TAG"
+            git push origin "$TAG"
+            echo "✅ Tag $TAG created and pushed"
+          fi
+
+      - name: 📝 Generate Release Notes
         id: notes
         run: |
-          # Get git log since previous tag
-          PREV_TAG=$(git describe --tags --abbrev=0 ${{ steps.tag.outputs.tag }}^ 2>/dev/null || echo "")
+          TAG=${{ steps.tag.outputs.tag }}
+          
+          # Get previous tag
+          PREV_TAG=$(git describe --tags --abbrev=0 "$TAG"^ 2>/dev/null || echo "")
           
           if [ -z "$PREV_TAG" ]; then
             # First release - get all commits
             CHANGELOG=$(git log --oneline --pretty=format:"- %s" | head -50)
           else
             # Get commits since previous tag
-            CHANGELOG=$(git log $PREV_TAG..${{ steps.tag.outputs.tag }} --oneline --pretty=format:"- %s")
+            CHANGELOG=$(git log "$PREV_TAG".."$TAG" --oneline --pretty=format:"- %s")
           fi
           
+          # Handle multiline output
           echo "changelog<<EOF" >> $GITHUB_OUTPUT
           echo "$CHANGELOG" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
-      - name: 📦 Create Release
-        uses: softprops/action-gh-release@v2.1.0
+      - name: 📦 Create GitHub Release
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.tag.outputs.tag }}
           name: Release ${{ steps.tag.outputs.tag }}
@@ -90,11 +110,14 @@ jobs:
             ---
             📦 **Docker Image:** `ghcr.io/${{ github.repository }}:${{ steps.tag.outputs.tag }}`
 
-            See the full **[Changelog](https://github.com/${{ github.repository }}/blob/main/docs/CHANGELOG.md)** for details.
+            See the **[Changelog](https://github.com/${{ github.repository }}/blob/main/docs/CHANGELOG.md)** for complete details.
           draft: false
           prerelease: false
+          generate_release_notes: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: ✅ Release created successfully
-        run: echo "📦 Release ${{ steps.tag.outputs.tag }} published"
+        run: |
+          echo "📦 Release ${{ steps.tag.outputs.tag }} published"
+          echo "🔗 View at: https://github.com/${{ github.repository }}/releases/tag/${{ steps.tag.outputs.tag }}"

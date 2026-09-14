@@ -3,7 +3,7 @@ name: 📦 Publish Docker Image to GHCR
 # Publishes Docker image to GitHub Container Registry (ghcr.io)
 # Triggers on:
 # - Push of version tags (v1.0.0, v1.0.1, etc.)
-# - Manual workflow dispatch (tag must already exist as git tag)
+# - Manual workflow_dispatch with tag input
 
 on:
   push:
@@ -12,12 +12,12 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Image tag (e.g., v1.0.0) - MUST already exist as a git tag'
+        description: 'Image tag (e.g., v1.0.0). If not exists, will be created on current commit.'
         required: true
         type: string
 
 permissions:
-  contents: read
+  contents: write
   packages: write
 
 env:
@@ -26,32 +26,58 @@ env:
 
 jobs:
   publish:
-    name: Build and Publish Image
+    name: Build and Publish Image to GHCR
     runs-on: ubuntu-latest
 
     steps:
-      - name: ⬇️ Checkout code
+      - name: ⬇️ Checkout code (with tags)
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
 
-      - name: 📋 Determine image tag
+      - name: 📋 Determine and validate image tag
         id: meta
         run: |
           if [ "${{ github.event_name }}" == "push" ]; then
             TAG=${{ github.ref_name }}
-            echo "tag=${TAG}" >> $GITHUB_OUTPUT
-            echo "latest_tag=latest" >> $GITHUB_OUTPUT
+            LATEST_TAG="latest"
           else
             TAG=${{ github.event.inputs.tag }}
-            echo "tag=${TAG}" >> $GITHUB_OUTPUT
-            echo "latest_tag=" >> $GITHUB_OUTPUT
+            LATEST_TAG=""
           fi
+          
+          # Validate tag format
+          if ! [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+ ]]; then
+            echo "❌ ERROR: Tag must match format vX.Y.Z (e.g., v1.0.0)"
+            exit 1
+          fi
+          
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
+          echo "latest_tag=${LATEST_TAG}" >> $GITHUB_OUTPUT
           echo "🏷️ Image tag: ${TAG}"
 
+      - name: 🏷️ Create tag if it does not exist (manual workflow_dispatch)
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          TAG=${{ steps.meta.outputs.tag }}
+          
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "✅ Tag $TAG already exists"
+          else
+            echo "📍 Creating new tag $TAG on commit ${{ github.sha }}"
+            git config --local user.email "action@github.com"
+            git config --local user.name "GitHub Action"
+            git tag "$TAG"
+            git push origin "$TAG"
+            echo "✅ Tag $TAG created and pushed"
+          fi
+
       - name: 🔐 Set up Docker Buildx
-        uses: docker/setup-buildx-action@v4
+        uses: docker/setup-buildx-action@v5
 
       - name: 🔑 Log in to Container Registry
-        uses: docker/login-action@v4
+        uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
