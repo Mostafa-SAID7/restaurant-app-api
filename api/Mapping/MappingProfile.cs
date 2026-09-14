@@ -67,16 +67,6 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.TotalPrice, opt => opt.MapFrom(src => src.TotalPrice));
 
         // Cart mappings
-        CreateMap<SetCart, CartDTO>()
-            .ForMember(dest => dest.ItemID, opt => opt.MapFrom(src => src.item.ItemID))
-            .ForMember(dest => dest.ItemName, opt => opt.MapFrom(src => src.item.ItemName))
-            .ForMember(dest => dest.ItemPrice, opt => opt.MapFrom(src => src.item.ItemPrice))
-            .ForMember(dest => dest.TotalPrice, opt => opt.MapFrom(src => src.item.ItemPrice * src.Quantity))
-            .ForMember(dest => dest.UserID, opt => opt.Ignore());
-
-        CreateMap<Cart, CartDTO>()
-            .ForMember(dest => dest.TotalPrice, opt => opt.MapFrom(src => src.ItemPrice * src.Quantity));
-
         CreateMap<Cart, CartItemDTO>()
             .ForMember(dest => dest.TotalPrice, opt => opt.MapFrom(src => src.ItemPrice * src.Quantity));
 

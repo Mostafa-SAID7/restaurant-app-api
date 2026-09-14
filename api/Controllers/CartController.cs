@@ -42,7 +42,8 @@ namespace RestaurantAPI.Controllers
         [HttpPost("{apikey}")]
         [SwaggerOperation(Summary = "Add item to cart", Description = "Add an item to user's cart")]
         [SwaggerResponse(201, "Item added to cart successfully")]
-        [SwaggerResponse(404, "User not found")]
+        [SwaggerResponse(404, "User or item not found")]
+        [SwaggerResponse(400, "Invalid request")]
         public async Task<ActionResult> AddItemToCart(string apikey, [FromBody] SetCart setCart)
         {
             try
@@ -51,6 +52,10 @@ namespace RestaurantAPI.Controllers
                 return ResponseHelper.Created(cartDTO);
             }
             catch (UnauthorizedAccessException ex)
+            {
+                return ResponseHelper.NotFound(ex.Message);
+            }
+            catch (KeyNotFoundException ex)
             {
                 return ResponseHelper.NotFound(ex.Message);
             }

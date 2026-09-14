@@ -43,12 +43,17 @@ public class CartService : ICartService
         if (user == null)
             throw new UnauthorizedAccessException("No user found with given key");
 
+        // Fetch the Item by ID and validate it exists
+        var item = await _unitOfWork.Items.GetByIdAsync(setCart.ItemID);
+        if (item == null)
+            throw new KeyNotFoundException($"Item with ID {setCart.ItemID} not found");
+
         var cart = new Cart
         {
             UserID = user.Usercode,
-            ItemID = setCart.item.ItemID,
-            ItemName = setCart.item.ItemName,
-            ItemPrice = setCart.item.ItemPrice,
+            ItemID = item.ItemID,
+            ItemName = item.ItemName,
+            ItemPrice = item.ItemPrice,
             Quantity = setCart.Quantity
         };
 

@@ -33,31 +33,13 @@ public class CartItemDTO
 }
 
 /// <summary>
-/// DTO for cart operations
-/// </summary>
-public class CartDTO
-{
-    public string UserID { get; set; }
-    public int ItemID { get; set; }
-    public string ItemName { get; set; }
-
-    [Range(1, 100)]
-    public int Quantity { get; set; }
-    
-    [Precision(10, 2)]
-    public decimal ItemPrice { get; set; }
-
-    [Precision(10, 2)]
-    public decimal TotalPrice { get; set; }
-}
-
-/// <summary>
 /// DTO for adding item to cart (input)
+/// Simplified to use ItemID instead of embedding Item entity
 /// </summary>
 public class SetCart
 {
-    [Required(ErrorMessage = "Item is required")]
-    public Item item { get; set; }
+    [Required(ErrorMessage = "ItemID is required")]
+    public int ItemID { get; set; }
 
     [Required]
     [Range(1, 100, ErrorMessage = "Quantity must be between 1 and 100")]
