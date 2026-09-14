@@ -88,7 +88,17 @@ public class ApiKeyAuthorizationFilterTests
         // Assert
         context.Result.Should().BeOfType<UnauthorizedObjectResult>();
         var result = (UnauthorizedObjectResult)context.Result;
-        result.Value.Should().BeOfType<object>();
+        result.StatusCode.Should().Be(401);
+        result.Value.Should().NotBeNull();
+
+        // Anonymous type: assert via reflection since BeOfType<object>() fails for compiler-generated types
+        var value = result.Value!;
+        var messageProp = value.GetType().GetProperty("message");
+        messageProp.Should().NotBeNull("Anonymous type should contain 'message' property");
+        messageProp!.GetValue(value)?.ToString().Should().Contain("Invalid API key format");
+
+        var timestampProp = value.GetType().GetProperty("timestamp");
+        timestampProp.Should().NotBeNull("Anonymous type should contain 'timestamp' property");
     }
 
     [Fact]
