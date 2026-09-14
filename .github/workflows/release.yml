@@ -10,7 +10,7 @@ name: 📦 Create Release
 # Manual alternative (workflow_dispatch):
 #   1. Go to GitHub Actions → "Create Release"
 #   2. Click "Run workflow"
-#   3. Enter tag name: v1.0.0 (will be created if not exist)
+#   3. Enter tag name: v1.0.0 (MUST already exist as a git tag)
 #   4. Click "Run workflow"
 
 on:
@@ -20,7 +20,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Release tag (e.g., v1.0.0). If not exists, will be created on current commit.'
+        description: 'Release tag (e.g., v1.0.0) - MUST already exist as a git tag'
         required: true
         type: string
 
@@ -55,25 +55,22 @@ jobs:
             exit 1
           fi
           
+          # For manual dispatch, verify tag exists
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            if ! git rev-parse "$TAG" >/dev/null 2>&1; then
+              echo "❌ ERROR: Tag '$TAG' does not exist as a git tag."
+              echo ""
+              echo "To create and push the tag:"
+              echo "  git tag $TAG"
+              echo "  git push origin $TAG"
+              echo ""
+              echo "Then run this workflow again."
+              exit 1
+            fi
+          fi
+          
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
           echo "✅ Release tag: ${TAG}"
-
-      - name: 🏷️ Create tag if it does not exist (manual workflow_dispatch)
-        if: github.event_name == 'workflow_dispatch'
-        run: |
-          TAG=${{ steps.tag.outputs.tag }}
-          
-          # Check if tag already exists
-          if git rev-parse "$TAG" >/dev/null 2>&1; then
-            echo "✅ Tag $TAG already exists"
-          else
-            echo "📍 Creating new tag $TAG on commit ${{ github.sha }}"
-            git config --local user.email "action@github.com"
-            git config --local user.name "GitHub Action"
-            git tag "$TAG"
-            git push origin "$TAG"
-            echo "✅ Tag $TAG created and pushed"
-          fi
 
       - name: 📝 Generate Release Notes
         id: notes
