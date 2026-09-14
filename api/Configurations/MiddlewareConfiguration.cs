@@ -1,6 +1,7 @@
 namespace RestaurantAPI.Configurations;
 
 using RestaurantAPI.Middleware;
+using RestaurantAPI.Auth.Extensions;
 
 public static class MiddlewareConfiguration
 {
@@ -36,10 +37,9 @@ public static class MiddlewareConfiguration
 
         // 7. Routing
         app.UseRouting();
-        // Note: UseAuthorization() removed - API key authentication is handled by ApiKeyAuthorizationFilter attribute
-        // Add this when JWT/Identity authentication is implemented in the future
 
-        // 8. MapHealthChecks (before MapControllers for priority routing)
+        // 8. Authentication & Authorization (JWT Bearer tokens)
+        app.UseAuthMiddleware();
         app.MapHealthChecks("/health", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
         {
             ResponseWriter = async (context, report) =>

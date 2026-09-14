@@ -12,7 +12,7 @@ builder.Services.AddFilterConfiguration();
 builder.Services.AddCorsConfiguration();
 builder.Services.AddSwaggerConfiguration();
 builder.Services.AddDatabaseConfiguration(builder.Configuration);
-builder.Services.AddApplicationServices();
+builder.Services.AddApplicationServices(builder.Configuration);
 
 // Add health checks
 var healthChecks = builder.Services.AddHealthChecks();
