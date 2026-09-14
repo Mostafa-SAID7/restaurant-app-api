@@ -1,5 +1,7 @@
 namespace RestuarantAPI.Configurations;
 
+using RestuarantAPI.Middleware;
+
 public static class MiddlewareConfiguration
 {
     public static WebApplication ConfigureMiddleware(this WebApplication app)
@@ -14,32 +16,35 @@ public static class MiddlewareConfiguration
             app.UseHsts();
         }
 
-        // 1. CORS First
+        // 1. Security Headers
+        app.UseSecurityHeaders();
+
+        // 2. CORS
         app.UseCorsConfiguration();
 
-        // 2. HTTP Redirection
+        // 3. HTTP Redirection (redirect HTTP to HTTPS in production)
         app.UseHttpsRedirection();
 
-        // 3. Static Files (Home.html, Docs.html, 404.html, css, images)
+        // 4. Static Files (Home.html, Docs.html, 404.html, css, images)
         app.UseStaticFiles();
 
-        // 4. Swagger UI (ONLY in Development - SECURITY FIX)
+        // 5. Swagger UI (ONLY in Development - SECURITY FIX)
         if (app.Environment.IsDevelopment())
         {
             app.UseSwaggerConfiguration();
         }
 
-        // 5. Routing
+        // 6. Routing
         app.UseRouting();
         app.UseAuthorization();
 
-        // 6. Explicit Root Redirect to the New Home Page
+        // 7. Explicit Root Redirect to the New Home Page
         app.MapGet("/", () => Results.Redirect("/Home.html"));
 
-        // 7. Controllers
+        // 8. Controllers
         app.MapControllers();
 
-        // 8. Custom 404 Fallback for all other unmatched routes
+        // 9. Custom 404 Fallback for all other unmatched routes
         app.MapFallback(async context =>
         {
             context.Response.Redirect("/404.html");

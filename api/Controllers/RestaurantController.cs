@@ -145,52 +145,91 @@ namespace RestuarantAPI.Controllers
         }
 
         [HttpPost("upload-image")]
-        [SwaggerOperation(Summary = "Upload image file", Description = "Upload an image file for menu items")]
+        [SwaggerOperation(Summary = "Upload image file", Description = "Upload an image file for menu items (requires authentication)")]
         [SwaggerResponse(200, "Image uploaded successfully")]
         [SwaggerResponse(400, "Invalid image file")]
+        [SwaggerResponse(401, "Unauthorized - authentication required")]
+        [SwaggerResponse(413, "File too large")]
+        [RequireApiKey]
+        [RateLimit(maxRequests: 20, timeWindowMinutes: 1)]
         public async Task<ActionResult> UploadImage(IFormFile image)
         {
             try
             {
                 if (image == null || image.Length == 0)
                 {
-                    return BadRequest("No image file provided");
+                    return BadRequest(new { message = "No image file provided" });
+                }
+
+                if (!FileHelper.IsValidImage(image))
+                {
+                    return BadRequest(new { message = "Invalid image file. Allowed formats: JPEG, PNG, GIF, WebP. Max size: 5MB" });
                 }
 
                 var imagePath = await _imageService.SaveImageAsync(image);
                 var imageUrl = _imageService.GetImageUrl(imagePath);
 
-                return Ok(new { imagePath, imageUrl });
+                return Ok(new { 
+                    message = "Image uploaded successfully",
+                    imagePath, 
+                    imageUrl 
+                });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error uploading image");
-                return StatusCode(500, "Error uploading image");
+                return StatusCode(500, new { message = "Error uploading image" });
             }
         }
 
         [HttpPost("upload-base64-image")]
-        [SwaggerOperation(Summary = "Upload base64 image", Description = "Upload an image from base64 string")]
+        [SwaggerOperation(Summary = "Upload base64 image", Description = "Upload an image from base64 string (requires authentication)")]
         [SwaggerResponse(200, "Image uploaded successfully")]
         [SwaggerResponse(400, "Invalid image data")]
+        [SwaggerResponse(401, "Unauthorized - authentication required")]
+        [SwaggerResponse(413, "File too large")]
+        [RequireApiKey]
+        [RateLimit(maxRequests: 20, timeWindowMinutes: 1)]
         public async Task<ActionResult> UploadBase64Image([FromBody] ImageRequest request)
         {
             try
             {
-                if (string.IsNullOrEmpty(request.Base64Image))
+                if (string.IsNullOrEmpty(request?.Base64Image))
                 {
-                    return BadRequest("No image data provided");
+                    return BadRequest(new { message = "No image data provided" });
                 }
 
-                var imagePath = await _imageService.SaveBase64ImageAsync(request.Base64Image, request.FileName ?? "item");
+                // Validate base64 string
+                try
+                {
+                    var base64Data = request.Base64Image.Contains(",") 
+                        ? request.Base64Image.Split(',')[1] 
+                        : request.Base64Image;
+                    Convert.FromBase64String(base64Data);
+                }
+                catch
+                {
+                    return BadRequest(new { message = "Invalid base64 image data" });
+                }
+
+                // Sanitize filename
+                var fileName = string.IsNullOrWhiteSpace(request.FileName) 
+                    ? "item" 
+                    : request.FileName.Replace("\\", "").Replace("/", "").Replace("..", "");
+
+                var imagePath = await _imageService.SaveBase64ImageAsync(request.Base64Image, fileName);
                 var imageUrl = _imageService.GetImageUrl(imagePath);
 
-                return Ok(new { imagePath, imageUrl });
+                return Ok(new { 
+                    message = "Base64 image uploaded successfully",
+                    imagePath, 
+                    imageUrl 
+                });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error uploading base64 image");
-                return StatusCode(500, "Error uploading image");
+                return StatusCode(500, new { message = "Error uploading image" });
             }
         }
 

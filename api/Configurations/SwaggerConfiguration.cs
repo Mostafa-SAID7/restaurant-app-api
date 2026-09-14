@@ -29,12 +29,12 @@ public static class SwaggerConfiguration
                 }
             });
 
-            // Add API Key authentication
+            // Add API Key authentication (header-based)
             c.AddSecurityDefinition("ApiKey", new OpenApiModels.OpenApiSecurityScheme
             {
-                Description = "API Key needed to access the endpoints. Format: 'your-api-key'",
-                In = OpenApiModels.ParameterLocation.Query,
-                Name = "apikey",
+                Description = "API Key header required to access protected endpoints. Use X-API-Key header or Authorization: Bearer header",
+                In = OpenApiModels.ParameterLocation.Header,
+                Name = "X-API-Key",
                 Type = OpenApiModels.SecuritySchemeType.ApiKey,
                 Scheme = "ApiKeyScheme"
             });
