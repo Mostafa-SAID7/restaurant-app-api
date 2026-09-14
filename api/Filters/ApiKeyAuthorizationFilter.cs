@@ -1,6 +1,7 @@
 using RestaurantAPI.Data;
 using RestaurantAPI.Extensions;
 using RestaurantAPI.Helpers;
+using RestaurantAPI.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
@@ -14,12 +15,12 @@ namespace RestaurantAPI.Filters;
 public class ApiKeyAuthorizationFilter : IAsyncAuthorizationFilter
 {
     private readonly ILogger<ApiKeyAuthorizationFilter> _logger;
-    private readonly AppDbContext _dbContext;
+    private readonly IUserRepository _userRepository;
 
-    public ApiKeyAuthorizationFilter(ILogger<ApiKeyAuthorizationFilter> logger, AppDbContext dbContext)
+    public ApiKeyAuthorizationFilter(ILogger<ApiKeyAuthorizationFilter> logger, IUserRepository userRepository)
     {
         _logger = logger;
-        _dbContext = dbContext;
+        _userRepository = userRepository;
     }
 
     public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
@@ -49,7 +50,7 @@ public class ApiKeyAuthorizationFilter : IAsyncAuthorizationFilter
         }
 
         // Validate that the API key belongs to an existing user
-        var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Usercode == apiKey);
+        var user = await _userRepository.GetByUserCodeAsync(apiKey);
         if (user == null)
         {
             _logger.LogWarning($"API request received with non-existent API key: {apiKey}");

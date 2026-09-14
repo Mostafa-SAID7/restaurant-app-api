@@ -39,13 +39,16 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: Restore dependencies
-        run: dotnet restore api/RestaurantAPI.csproj
+        run: dotnet restore
 
       - name: Build (Release)
-        run: dotnet build api/RestaurantAPI.csproj --no-restore -c Release
+        run: dotnet build --no-restore -c Release
 
-      - name: Run tests
-        run: dotnet test api/RestaurantAPI.csproj --no-build -c Release --verbosity normal || true
+      - name: Run Unit Tests
+        run: dotnet test tests/RestaurantAPI.UnitTests/RestaurantAPI.UnitTests.csproj --no-build -c Release --verbosity normal --logger "trx;LogFileName=test-results.trx"
+
+      - name: Run Integration Tests
+        run: dotnet test tests/RestaurantAPI.IntegrationTests/RestaurantAPI.IntegrationTests.csproj --no-build -c Release --verbosity normal --logger "trx;LogFileName=test-results.trx"
 
       - name: Publish application
         run: dotnet publish api/RestaurantAPI.csproj --no-build -c Release -o ./publish

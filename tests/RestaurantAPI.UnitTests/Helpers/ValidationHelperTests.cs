@@ -47,7 +47,7 @@ public class ValidationHelperTests
     [Fact]
     public void ValidateUserRegistration_WithPasswordTooLong_ReturnsFalse()
     {
-        var (isValid, errors) = ValidationHelper.ValidateUserRegistration("user@test.com", "Password123LongPassword123456");
+        var (isValid, errors) = ValidationHelper.ValidateUserRegistration("user@test.com", "Password123LongPassword123456789");
 
         isValid.Should().BeFalse();
         errors.Should().Contain("Password cannot exceed 30 characters");

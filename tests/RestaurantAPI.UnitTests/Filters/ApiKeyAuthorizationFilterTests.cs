@@ -2,12 +2,10 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
-using RestaurantAPI.Data;
 using RestaurantAPI.Filters;
-using RestaurantAPI.Models;
+using RestaurantAPI.Repositories.Interfaces;
 using RestaurantAPI.UnitTests.TestHelpers;
 using Xunit;
 
@@ -16,14 +14,14 @@ namespace RestaurantAPI.UnitTests.Filters;
 public class ApiKeyAuthorizationFilterTests
 {
     private readonly Mock<ILogger<ApiKeyAuthorizationFilter>> _mockLogger;
-    private readonly Mock<AppDbContext> _mockDbContext;
+    private readonly Mock<IUserRepository> _mockUserRepository;
     private readonly ApiKeyAuthorizationFilter _filter;
 
     public ApiKeyAuthorizationFilterTests()
     {
         _mockLogger = new Mock<ILogger<ApiKeyAuthorizationFilter>>();
-        _mockDbContext = new Mock<AppDbContext>();
-        _filter = new ApiKeyAuthorizationFilter(_mockLogger.Object, _mockDbContext.Object);
+        _mockUserRepository = new Mock<IUserRepository>();
+        _filter = new ApiKeyAuthorizationFilter(_mockLogger.Object, _mockUserRepository.Object);
     }
 
     private AuthorizationFilterContext CreateFilterContext(string? apiKey = null, string? headerName = "X-API-Key")
@@ -124,12 +122,9 @@ public class ApiKeyAuthorizationFilterTests
         var validGuid = Guid.NewGuid().ToString();
         var context = CreateFilterContext(apiKey: validGuid);
 
-        // Mock DbContext to return no user
-        var mockUserSet = new Mock<DbSet<User>>();
-        mockUserSet.Setup(s => s.FirstOrDefaultAsync(It.IsAny<System.Linq.Expressions.Expression<System.Func<User, bool>>>(), It.IsAny<System.Threading.CancellationToken>()))
-            .ReturnsAsync((User?)null);
-
-        _mockDbContext.Setup(d => d.Users).Returns(mockUserSet.Object);
+        // Mock repository to return no user
+        _mockUserRepository.Setup(r => r.GetByUserCodeAsync(validGuid))
+            .ReturnsAsync((RestaurantAPI.Models.User?)null);
 
         // Act
         await _filter.OnAuthorizationAsync(context);
@@ -150,11 +145,8 @@ public class ApiKeyAuthorizationFilterTests
         var user = TestDataFactory.CreateUser(userCode: validGuid);
         var context = CreateFilterContext(apiKey: validGuid);
 
-        var mockUserSet = new Mock<DbSet<User>>();
-        mockUserSet.Setup(s => s.FirstOrDefaultAsync(It.IsAny<System.Linq.Expressions.Expression<System.Func<User, bool>>>(), It.IsAny<System.Threading.CancellationToken>()))
+        _mockUserRepository.Setup(r => r.GetByUserCodeAsync(validGuid))
             .ReturnsAsync(user);
-
-        _mockDbContext.Setup(d => d.Users).Returns(mockUserSet.Object);
 
         // Act
         await _filter.OnAuthorizationAsync(context);
@@ -175,11 +167,8 @@ public class ApiKeyAuthorizationFilterTests
         var user = TestDataFactory.CreateUser(userCode: validGuid);
         var context = CreateFilterContext(apiKey: validGuid);
 
-        var mockUserSet = new Mock<DbSet<User>>();
-        mockUserSet.Setup(s => s.FirstOrDefaultAsync(It.IsAny<System.Linq.Expressions.Expression<System.Func<User, bool>>>(), It.IsAny<System.Threading.CancellationToken>()))
+        _mockUserRepository.Setup(r => r.GetByUserCodeAsync(validGuid))
             .ReturnsAsync(user);
-
-        _mockDbContext.Setup(d => d.Users).Returns(mockUserSet.Object);
 
         // Act
         await _filter.OnAuthorizationAsync(context);
@@ -203,11 +192,8 @@ public class ApiKeyAuthorizationFilterTests
         var user = TestDataFactory.CreateUser(userCode: validGuid);
         var context = CreateFilterContext(apiKey: validGuid);
 
-        var mockUserSet = new Mock<DbSet<User>>();
-        mockUserSet.Setup(s => s.FirstOrDefaultAsync(It.IsAny<System.Linq.Expressions.Expression<System.Func<User, bool>>>(), It.IsAny<System.Threading.CancellationToken>()))
+        _mockUserRepository.Setup(r => r.GetByUserCodeAsync(validGuid))
             .ReturnsAsync(user);
-
-        _mockDbContext.Setup(d => d.Users).Returns(mockUserSet.Object);
 
         // Act
         await _filter.OnAuthorizationAsync(context);
@@ -230,14 +216,14 @@ public class ApiKeyAuthorizationFilterTests
         var context = CreateFilterContext(apiKey: validGuid, headerName: "Authorization");
         context.HttpContext.Request.Headers["Authorization"] = $"Bearer {validGuid}";
 
-        var mockUserSet = new Mock<DbSet<User>>();
-        mockUserSet.Setup(s => s.FirstOrDefaultAsync(It.IsAny<System.Linq.Expressions.Expression<System.Func<User, bool>>>(), It.IsAny<System.Threading.CancellationToken>()))
+        _mockUserRepository.Setup(r => r.GetByUserCodeAsync(validGuid))
             .ReturnsAsync(user);
 
-        _mockDbContext.Setup(d => d.Users).Returns(mockUserSet.Object);
+        // Act
+        await _filter.OnAuthorizationAsync(context);
 
-        // Act & Assert - Should either pass or fail based on implementation
-        // This is a placeholder for format testing
+        // Assert - Should either pass or fail based on implementation
+        context.Result.Should().BeNull();
     }
 
     #endregion

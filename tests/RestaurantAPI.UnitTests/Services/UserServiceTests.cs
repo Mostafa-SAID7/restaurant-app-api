@@ -280,12 +280,15 @@ public class UserServiceTests
         // Arrange
         var apiKey = Guid.NewGuid().ToString();
         var user = TestDataFactory.CreateUser(userCode: apiKey);
+        var originalPassword = user.PasswordHash;
         var newPassword = "NewSecurePassword123!";
 
+        User? capturedUser = null;
         _mockUnitOfWork.Setup(u => u.Users.GetByUserCodeAsync(apiKey))
             .ReturnsAsync(user);
 
         _mockUnitOfWork.Setup(u => u.Users.UpdateAsync(It.IsAny<User>()))
+            .Callback<User>(u => capturedUser = u)
             .ReturnsAsync(user);
 
         // Act
@@ -293,7 +296,7 @@ public class UserServiceTests
 
         // Assert
         result.Should().NotBeNull();
-        result?.PasswordHash.Should().NotBe(user.PasswordHash);
+        capturedUser?.PasswordHash.Should().NotBe(originalPassword);
         _mockUnitOfWork.Verify(u => u.Users.UpdateAsync(It.IsAny<User>()), Times.Once);
         _mockUnitOfWork.Verify(u => u.SaveChangesAsync(), Times.Once);
     }
