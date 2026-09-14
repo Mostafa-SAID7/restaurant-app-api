@@ -35,10 +35,13 @@ public static class MiddlewareConfiguration
             app.UseSwaggerConfiguration();
         }
 
-        // 7. Routing
+        // 7. Response Wrapper Middleware (Phase B.2) - Track execution time and add request IDs
+        app.UseResponseWrapper();
+
+        // 8. Routing
         app.UseRouting();
 
-        // 8. Authentication & Authorization (JWT Bearer tokens)
+        // 9. Authentication & Authorization (JWT Bearer tokens)
         app.UseAuthMiddleware();
         app.MapHealthChecks("/health", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
         {
@@ -62,13 +65,13 @@ public static class MiddlewareConfiguration
             }
         });
 
-        // 9. Root Route - Explicit redirect to home page
+        // 10. Root Route - Explicit redirect to home page
         app.MapGet("/", () => Results.Redirect("/Home.html"));
 
-        // 10. API Controllers
+        // 11. API Controllers
         app.MapControllers();
 
-        // 11. Fallback 404 Handler - Catch all unmatched routes last
+        // 12. Fallback 404 Handler - Catch all unmatched routes last
         app.MapFallback(async context =>
         {
             context.Response.Redirect("/404.html");

@@ -6,6 +6,7 @@ namespace RestaurantAPI.Helpers;
 /// <summary>
 /// Response helper for standardized API responses
 /// Phase A.4: Uses unified ApiResponse<T> contract
+/// Phase B.2: Extended with ApiResponseWrapper for request tracking
 /// </summary>
 public static class ResponseHelper
 {
@@ -19,6 +20,15 @@ public static class ResponseHelper
     }
 
     /// <summary>
+    /// Creates a wrapped success response with request tracking
+    /// </summary>
+    public static ActionResult SuccessWrapped<T>(T data, string? message = null)
+    {
+        var wrapper = ApiResponseWrapper<T>.CreateSuccess(data, message ?? "Operation completed successfully");
+        return new OkObjectResult(wrapper);
+    }
+
+    /// <summary>
     /// Creates a standardized error response
     /// </summary>
     public static ActionResult Error(string message, int statusCode = 400, object? details = null)
@@ -28,12 +38,30 @@ public static class ResponseHelper
     }
 
     /// <summary>
+    /// Creates a wrapped error response with request tracking
+    /// </summary>
+    public static ActionResult ErrorWrapped(string message, int statusCode = 400, object? details = null)
+    {
+        var wrapper = ApiResponseWrapper<object>.CreateError(message, statusCode, details);
+        return new ObjectResult(wrapper) { StatusCode = statusCode };
+    }
+
+    /// <summary>
     /// Creates a validation error response
     /// </summary>
     public static ActionResult ValidationError(List<string> errors)
     {
         var response = ApiResponse<object>.CreateValidationError(errors);
         return new BadRequestObjectResult(response);
+    }
+
+    /// <summary>
+    /// Creates a wrapped validation error response
+    /// </summary>
+    public static ActionResult ValidationErrorWrapped(List<string> errors)
+    {
+        var wrapper = ApiResponseWrapper<object>.CreateValidationError(errors);
+        return new ObjectResult(wrapper) { StatusCode = 422 };
     }
 
     /// <summary>
@@ -50,12 +78,39 @@ public static class ResponseHelper
     }
 
     /// <summary>
+    /// Creates a wrapped not found response
+    /// </summary>
+    public static ActionResult NotFoundWrapped(string message = "Resource not found")
+    {
+        var wrapper = ApiResponseWrapper<object>.CreateNotFound(message);
+        return new ObjectResult(wrapper) { StatusCode = 404 };
+    }
+
+    /// <summary>
     /// Creates an unauthorized response
     /// </summary>
     public static ActionResult Unauthorized(string message = "Unauthorized access")
     {
         var response = ApiResponse<object>.CreateError(message);
         return new UnauthorizedObjectResult(response);
+    }
+
+    /// <summary>
+    /// Creates a wrapped unauthorized response
+    /// </summary>
+    public static ActionResult UnauthorizedWrapped(string message = "Unauthorized access")
+    {
+        var wrapper = ApiResponseWrapper<object>.CreateUnauthorized(message);
+        return new ObjectResult(wrapper) { StatusCode = 401 };
+    }
+
+    /// <summary>
+    /// Creates a forbidden response
+    /// </summary>
+    public static ActionResult Forbidden(string message = "Access forbidden")
+    {
+        var wrapper = ApiResponseWrapper<object>.CreateForbidden(message);
+        return new ObjectResult(wrapper) { StatusCode = 403 };
     }
 
     /// <summary>
@@ -94,5 +149,14 @@ public static class ResponseHelper
         var result = new ObjectResult(response) { StatusCode = 201 };
         
         return result;
+    }
+
+    /// <summary>
+    /// Creates a wrapped created response (201)
+    /// </summary>
+    public static ActionResult CreatedWrapped<T>(T data, string? message = null)
+    {
+        var wrapper = ApiResponseWrapper<T>.CreateCreated(data, message ?? "Resource created successfully");
+        return new ObjectResult(wrapper) { StatusCode = 201 };
     }
 }
