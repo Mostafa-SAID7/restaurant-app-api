@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace RestaurantAPI.Models;
+namespace RestaurantAPI.DTOs;
 
 /// <summary>
 /// DTO for password update requests

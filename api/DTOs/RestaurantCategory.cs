@@ -1,4 +1,4 @@
-namespace RestaurantAPI.Models;
+namespace RestaurantAPI.DTOs;
 
 public enum RestaurantCategory
 {
