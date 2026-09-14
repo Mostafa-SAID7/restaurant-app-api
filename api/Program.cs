@@ -1,10 +1,14 @@
 using System.Runtime.CompilerServices;
 using RestaurantAPI.Configurations;
+using Serilog;
 
 [assembly: InternalsVisibleTo("RestaurantAPI.UnitTests")]
 [assembly: InternalsVisibleTo("RestaurantAPI.IntegrationTests")]
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Add logging configuration first (Phase B.3)
+builder.AddLoggingConfiguration();
 
 // Add services to the container
 builder.Services.AddApiConfiguration();
