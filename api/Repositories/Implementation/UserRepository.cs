@@ -1,10 +1,10 @@
-using RestuarantAPI.Data;
-using RestuarantAPI.Models;
-using RestuarantAPI.Repositories.Interfaces;
+using RestaurantAPI.Data;
+using RestaurantAPI.Models;
+using RestaurantAPI.Repositories.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace RestuarantAPI.Repositories.Implementation;
+namespace RestaurantAPI.Repositories.Implementation;
 
 /// <summary>
 /// User repository implementation with specific user operations

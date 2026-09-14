@@ -1,4 +1,4 @@
-namespace RestuarantAPI.Models;
+namespace RestaurantAPI.Models;
 
 public class GetItems
 {

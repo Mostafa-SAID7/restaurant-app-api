@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 
-namespace RestuarantAPI.Models;
+namespace RestaurantAPI.Models;
 
 public class OrderDTO
 {

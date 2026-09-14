@@ -1,6 +1,6 @@
-using RestuarantAPI.Extensions;
+using RestaurantAPI.Extensions;
 
-namespace RestuarantAPI.Helpers;
+namespace RestaurantAPI.Helpers;
 
 public static class FileHelper
 {

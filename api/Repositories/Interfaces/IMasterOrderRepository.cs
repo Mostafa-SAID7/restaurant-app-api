@@ -1,6 +1,6 @@
-using RestuarantAPI.Models;
+using RestaurantAPI.Models;
 
-namespace RestuarantAPI.Repositories.Interfaces;
+namespace RestaurantAPI.Repositories.Interfaces;
 
 /// <summary>
 /// Master Order repository interface with specific master order operations

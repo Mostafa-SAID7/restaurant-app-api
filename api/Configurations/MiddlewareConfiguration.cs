@@ -1,6 +1,6 @@
-namespace RestuarantAPI.Configurations;
+namespace RestaurantAPI.Configurations;
 
-using RestuarantAPI.Middleware;
+using RestaurantAPI.Middleware;
 
 public static class MiddlewareConfiguration
 {

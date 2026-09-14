@@ -1,6 +1,6 @@
-using RestuarantAPI.Filters;
+using RestaurantAPI.Filters;
 
-namespace RestuarantAPI.Configurations;
+namespace RestaurantAPI.Configurations;
 
 public static class FilterConfiguration
 {

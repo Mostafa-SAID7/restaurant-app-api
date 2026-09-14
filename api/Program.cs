@@ -1,4 +1,4 @@
-using RestuarantAPI.Configurations;
+using RestaurantAPI.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 

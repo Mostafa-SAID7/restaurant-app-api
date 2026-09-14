@@ -1,8 +1,8 @@
-using RestuarantAPI.Helpers;
+using RestaurantAPI.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace RestuarantAPI.Filters;
+namespace RestaurantAPI.Filters;
 
 /// <summary>
 /// Action filter to validate model state and return standardized validation errors

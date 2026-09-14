@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace RestuarantAPI.Helpers;
+namespace RestaurantAPI.Helpers;
 
 public static class ResponseHelper
 {

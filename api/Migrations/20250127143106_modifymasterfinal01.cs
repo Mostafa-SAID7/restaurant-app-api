@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace RestuarantAPI.Migrations
+namespace RestaurantAPI.Migrations
 {
     /// <inheritdoc />
     public partial class modifymasterfinal01 : Migration

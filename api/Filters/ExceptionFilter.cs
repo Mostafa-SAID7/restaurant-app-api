@@ -1,9 +1,9 @@
-using RestuarantAPI.Helpers;
+using RestaurantAPI.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Net;
 
-namespace RestuarantAPI.Filters;
+namespace RestaurantAPI.Filters;
 
 /// <summary>
 /// Global exception filter to handle unhandled exceptions and return standardized error responses

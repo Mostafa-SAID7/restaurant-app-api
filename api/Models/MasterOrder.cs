@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace RestuarantAPI.Models;
+namespace RestaurantAPI.Models;
 
 /// <summary>
 /// MasterOrder entity representing the summary of a user's order at a restaurant

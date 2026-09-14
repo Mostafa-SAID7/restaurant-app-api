@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace RestuarantAPI.Models;
+namespace RestaurantAPI.Models;
 
 /// <summary>
 /// Restaurant entity representing a restaurant business

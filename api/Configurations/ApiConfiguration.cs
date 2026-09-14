@@ -1,8 +1,8 @@
-using RestuarantAPI.Filters;
+using RestaurantAPI.Filters;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json.Serialization;
 
-namespace RestuarantAPI.Configurations;
+namespace RestaurantAPI.Configurations;
 
 public static class ApiConfiguration
 {

@@ -1,8 +1,8 @@
-using RestuarantAPI.Filters;
+using RestaurantAPI.Filters;
 using OpenApiModels = Microsoft.OpenApi.Models;
 using System.Reflection;
 
-namespace RestuarantAPI.Configurations;
+namespace RestaurantAPI.Configurations;
 
 public static class SwaggerConfiguration
 {

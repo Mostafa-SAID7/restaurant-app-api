@@ -1,9 +1,9 @@
-using RestuarantAPI.Data;
-using RestuarantAPI.Repositories.Interfaces;
+using RestaurantAPI.Data;
+using RestaurantAPI.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
-namespace RestuarantAPI.Repositories.Implementation;
+namespace RestaurantAPI.Repositories.Implementation;
 
 /// <summary>
 /// Base repository implementation with common CRUD operations

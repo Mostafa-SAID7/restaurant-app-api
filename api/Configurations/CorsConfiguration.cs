@@ -1,4 +1,4 @@
-namespace RestuarantAPI.Configurations;
+namespace RestaurantAPI.Configurations;
 
 public static class CorsConfiguration
 {

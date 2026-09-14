@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace RestuarantAPI.Models;
+namespace RestaurantAPI.Models;
 
 /// <summary>
 /// Order entity representing individual items in a user's order

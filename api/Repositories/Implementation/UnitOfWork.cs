@@ -1,9 +1,9 @@
-using RestuarantAPI.Data;
-using RestuarantAPI.Repositories.Interfaces;
+using RestaurantAPI.Data;
+using RestaurantAPI.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
-namespace RestuarantAPI.Repositories.Implementation;
+namespace RestaurantAPI.Repositories.Implementation;
 
 /// <summary>
 /// Unit of Work implementation for managing transactions and repository access

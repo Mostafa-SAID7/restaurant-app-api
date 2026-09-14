@@ -1,9 +1,9 @@
-using RestuarantAPI.Extensions;
+using RestaurantAPI.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Diagnostics;
 
-namespace RestuarantAPI.Filters;
+namespace RestaurantAPI.Filters;
 
 /// <summary>
 /// Action filter to log request and response information

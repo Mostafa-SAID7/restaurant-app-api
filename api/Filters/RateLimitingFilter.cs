@@ -1,9 +1,9 @@
-using RestuarantAPI.Extensions;
+using RestaurantAPI.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace RestuarantAPI.Filters;
+namespace RestaurantAPI.Filters;
 
 /// <summary>
 /// Action filter to implement basic rate limiting

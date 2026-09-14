@@ -1,7 +1,7 @@
-using RestuarantAPI.Extensions;
+using RestaurantAPI.Extensions;
 using System.Text.RegularExpressions;
 
-namespace RestuarantAPI.Helpers;
+namespace RestaurantAPI.Helpers;
 
 public static class ValidationHelper
 {

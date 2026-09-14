@@ -1,6 +1,6 @@
-using RestuarantAPI.Models;
+using RestaurantAPI.Models;
 
-namespace RestuarantAPI.Services.Interfaces;
+namespace RestaurantAPI.Services.Interfaces;
 
 public interface IOrderService
 {

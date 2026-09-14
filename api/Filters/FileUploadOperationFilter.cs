@@ -2,7 +2,7 @@ using OpenApiModels = Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
 
-namespace RestuarantAPI.Filters;
+namespace RestaurantAPI.Filters;
 
 public class FileUploadOperationFilter : IOperationFilter
 {

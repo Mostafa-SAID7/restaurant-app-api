@@ -1,6 +1,6 @@
-using RestuarantAPI.Models;
+using RestaurantAPI.Models;
 
-namespace RestuarantAPI.Repositories.Interfaces;
+namespace RestaurantAPI.Repositories.Interfaces;
 
 /// <summary>
 /// User repository interface with specific user operations

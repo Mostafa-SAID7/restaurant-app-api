@@ -1,9 +1,9 @@
-using RestuarantAPI.Data;
-using RestuarantAPI.Models;
-using RestuarantAPI.Repositories.Interfaces;
+using RestaurantAPI.Data;
+using RestaurantAPI.Models;
+using RestaurantAPI.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace RestuarantAPI.Repositories.Implementation;
+namespace RestaurantAPI.Repositories.Implementation;
 
 /// <summary>
 /// Restaurant repository implementation with specific restaurant operations

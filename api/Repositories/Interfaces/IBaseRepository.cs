@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 
-namespace RestuarantAPI.Repositories.Interfaces;
+namespace RestaurantAPI.Repositories.Interfaces;
 
 /// <summary>
 /// Base repository interface with common CRUD operations

@@ -1,7 +1,7 @@
-using RestuarantAPI.Models;
+using RestaurantAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace RestuarantAPI.Data;
+namespace RestaurantAPI.Data;
 
 /// <summary>
 /// Application database context with all entity configurations

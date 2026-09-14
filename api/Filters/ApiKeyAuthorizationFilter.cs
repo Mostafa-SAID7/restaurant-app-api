@@ -1,11 +1,11 @@
-using RestuarantAPI.Data;
-using RestuarantAPI.Extensions;
-using RestuarantAPI.Helpers;
+using RestaurantAPI.Data;
+using RestaurantAPI.Extensions;
+using RestaurantAPI.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 
-namespace RestuarantAPI.Filters;
+namespace RestaurantAPI.Filters;
 
 /// <summary>
 /// Authorization filter to validate API keys (user codes) against the database

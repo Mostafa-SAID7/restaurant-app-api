@@ -3,17 +3,17 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 # Copy csproj and restore as distinct layers
-COPY ["api/RestuarantAPI.csproj", "api/"]
-RUN dotnet restore "api/RestuarantAPI.csproj"
+COPY ["api/RestaurantAPI.csproj", "api/"]
+RUN dotnet restore "api/RestaurantAPI.csproj"
 
 # Copy everything else and build
 COPY . .
 WORKDIR "/src/api"
-RUN dotnet build "RestuarantAPI.csproj" -c Release -o /app/build
+RUN dotnet build "RestaurantAPI.csproj" -c Release -o /app/build
 
 # Publish Stage
 FROM build AS publish
-RUN dotnet publish "RestuarantAPI.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "RestaurantAPI.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 # Final Runtime Image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
@@ -23,4 +23,4 @@ COPY --from=publish /app/publish .
 # Expose port 8080 (standard for .NET 8 in Docker)
 EXPOSE 8080
 
-ENTRYPOINT ["dotnet", "RestuarantAPI.dll"]
+ENTRYPOINT ["dotnet", "RestaurantAPI.dll"]

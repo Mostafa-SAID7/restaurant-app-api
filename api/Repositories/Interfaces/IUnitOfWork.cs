@@ -1,4 +1,4 @@
-namespace RestuarantAPI.Repositories.Interfaces;
+namespace RestaurantAPI.Repositories.Interfaces;
 
 /// <summary>
 /// Unit of Work interface for managing transactions and repository access

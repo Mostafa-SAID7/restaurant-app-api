@@ -1,10 +1,10 @@
-using RestuarantAPI.Filters;
-using RestuarantAPI.Models;
-using RestuarantAPI.Services.Interfaces;
+using RestaurantAPI.Filters;
+using RestaurantAPI.Models;
+using RestaurantAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
-namespace RestuarantAPI.Controllers
+namespace RestaurantAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

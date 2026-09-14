@@ -1,4 +1,4 @@
-namespace RestuarantAPI.Middleware;
+namespace RestaurantAPI.Middleware;
 
 /// <summary>
 /// Middleware to add security headers to all HTTP responses
