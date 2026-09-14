@@ -17,12 +17,21 @@ namespace RestaurantAPI.Controllers
     {
         private readonly ILogger<RestaurantController> _logger;
         private readonly IRestaurantService _restaurantService;
+        private readonly IMenuService _menuService;
+        private readonly IItemService _itemService;
         private readonly IImageService _imageService;
 
-        public RestaurantController(ILogger<RestaurantController> logger, IRestaurantService restaurantService, IImageService imageService)
+        public RestaurantController(
+            ILogger<RestaurantController> logger, 
+            IRestaurantService restaurantService,
+            IMenuService menuService,
+            IItemService itemService,
+            IImageService imageService)
         {
             _logger = logger;
             _restaurantService = restaurantService;
+            _menuService = menuService;
+            _itemService = itemService;
             _imageService = imageService;
         }
 
@@ -103,7 +112,7 @@ namespace RestaurantAPI.Controllers
                 return ResponseHelper.NotFound("Restaurant", restaurantId);
             }
 
-            var menu = await _restaurantService.GetMenuAsync(restaurantId, sortbyprice);
+            var menu = await _menuService.GetMenuAsync(restaurantId, sortbyprice);
             return ResponseHelper.Success(menu);
         }
 
@@ -124,7 +133,7 @@ namespace RestaurantAPI.Controllers
                 return ResponseHelper.NotFound("Restaurant", restaurantId);
             }
 
-            var newItem = await _restaurantService.AddItemToMenuAsync(restaurantId, itemDTO);
+            var newItem = await _itemService.AddItemToMenuAsync(restaurantId, itemDTO);
             return ResponseHelper.Created(newItem);
         }
 
@@ -215,7 +224,7 @@ namespace RestaurantAPI.Controllers
         [SwaggerResponse(404, "No items found")]
         public async Task<ActionResult> GetAllItems([FromQuery] string itemName = "", string sortbyprice = "")
         {
-            var items = await _restaurantService.GetAllItemsAsync(itemName, sortbyprice);
+            var items = await _itemService.GetAllItemsAsync(itemName, sortbyprice);
 
             if (items.Any())
             {

@@ -32,6 +32,8 @@ public static class ServiceConfiguration
 
         // Register Application Services
         services.AddScoped<IRestaurantService, RestaurantService>();
+        services.AddScoped<IMenuService, MenuService>();
+        services.AddScoped<IItemService, ItemService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<ICartService, CartService>();

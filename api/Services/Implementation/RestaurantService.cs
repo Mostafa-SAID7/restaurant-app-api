@@ -6,6 +6,10 @@ using RestaurantAPI.Services.Interfaces;
 
 namespace RestaurantAPI.Services.Implementation;
 
+/// <summary>
+/// Restaurant service for restaurant management operations
+/// Phase A.3: Menu and item operations extracted to IMenuService and IItemService for SRP
+/// </summary>
 public class RestaurantService : IRestaurantService
 {
     private readonly IUnitOfWork _unitOfWork;
@@ -40,29 +44,6 @@ public class RestaurantService : IRestaurantService
     public async Task<bool> RestaurantExistsAsync(string restaurantName)
     {
         return await _unitOfWork.Restaurants.RestaurantExistsByNameAsync(restaurantName);
-    }
-
-    public async Task<IEnumerable<GetItemsDTO>> GetMenuAsync(int restaurantId, string sortByPrice = "")
-    {
-        var items = await _unitOfWork.Items.GetMenuByRestaurantIdAsync(restaurantId, sortByPrice);
-        return _mapper.Map<IEnumerable<GetItemsDTO>>(items);
-    }
-
-    public async Task<Item> AddItemToMenuAsync(int restaurantId, ItemDTO itemDTO)
-    {
-        var item = _mapper.Map<Item>(itemDTO);
-        item.RestaurantID = restaurantId;
-        
-        await _unitOfWork.Items.AddAsync(item);
-        await _unitOfWork.SaveChangesAsync();
-        
-        return item;
-    }
-
-    public async Task<IEnumerable<GetItemsDTO>> GetAllItemsAsync(string itemName = "", string sortByPrice = "")
-    {
-        var items = await _unitOfWork.Items.GetByFiltersAsync(itemName, sortByPrice);
-        return _mapper.Map<IEnumerable<GetItemsDTO>>(items);
     }
 
     public async Task UpdateImageUrlsAsync(int restaurantId, string[] urls)
