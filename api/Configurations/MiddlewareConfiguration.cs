@@ -6,39 +6,40 @@ public static class MiddlewareConfiguration
 {
     public static WebApplication ConfigureMiddleware(this WebApplication app)
     {
-        if (app.Environment.IsDevelopment())
+        // Middleware pipeline order (critical for correct request handling):
+        // Exception handling is managed by GlobalExceptionFilter (registered in ApiConfiguration)
+        // This ensures all exceptions return JSON responses, not HTML error pages
+
+        // 1. HSTS (HTTP Strict Transport Security) - Production only
+        if (!app.Environment.IsDevelopment())
         {
-            app.UseDeveloperExceptionPage();
-        }
-        else
-        {
-            app.UseExceptionHandler("/Error");
             app.UseHsts();
         }
 
-        // 1. Security Headers
+        // 2. Security Headers Middleware
         app.UseSecurityHeaders();
 
-        // 2. CORS
+        // 3. CORS - Must come before UseRouting for proper CORS handling
         app.UseCorsConfiguration();
 
-        // 3. HTTP Redirection (redirect HTTP to HTTPS in production)
+        // 4. HTTPS Redirection - Redirect HTTP to HTTPS in production
         app.UseHttpsRedirection();
 
-        // 4. Static Files (Home.html, Docs.html, 404.html, css, images)
+        // 5. Static Files (Home.html, Docs.html, 404.html, css, images)
         app.UseStaticFiles();
 
-        // 5. Swagger UI (ONLY in Development - SECURITY FIX)
+        // 6. Swagger UI - Development only (security best practice)
         if (app.Environment.IsDevelopment())
         {
             app.UseSwaggerConfiguration();
         }
 
-        // 6. Routing
+        // 7. Routing
         app.UseRouting();
-        app.UseAuthorization();
+        // Note: UseAuthorization() removed - API key authentication is handled by ApiKeyAuthorizationFilter attribute
+        // Add this when JWT/Identity authentication is implemented in the future
 
-        // 7. Health Checks
+        // 8. MapHealthChecks (before MapControllers for priority routing)
         app.MapHealthChecks("/health", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
         {
             ResponseWriter = async (context, report) =>
@@ -61,13 +62,13 @@ public static class MiddlewareConfiguration
             }
         });
 
-        // 8. Explicit Root Redirect to the New Home Page
+        // 9. Root Route - Explicit redirect to home page
         app.MapGet("/", () => Results.Redirect("/Home.html"));
 
-        // 9. Controllers
+        // 10. API Controllers
         app.MapControllers();
 
-        // 10. Custom 404 Fallback for all other unmatched routes
+        // 11. Fallback 404 Handler - Catch all unmatched routes last
         app.MapFallback(async context =>
         {
             context.Response.Redirect("/404.html");

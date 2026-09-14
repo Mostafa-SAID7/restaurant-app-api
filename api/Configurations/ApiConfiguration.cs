@@ -10,9 +10,9 @@ public static class ApiConfiguration
     {
         services.AddControllers(options =>
         {
-            // Global filters
+            // Global filters - only GlobalExceptionFilter (handles all unhandled exceptions)
+            // ValidationFilter removed - validation is handled by InvalidModelStateResponseFactory below
             options.Filters.Add<GlobalExceptionFilter>();
-            options.Filters.Add<ValidationFilter>();
             
             // Global settings
             options.SuppressAsyncSuffixInActionNames = false;
@@ -32,15 +32,17 @@ public static class ApiConfiguration
             {
                 var errors = context.ModelState
                     .Where(x => x.Value?.Errors.Count > 0)
-                    .ToDictionary(
-                        kvp => kvp.Key,
-                        kvp => kvp.Value?.Errors.Select(e => e.ErrorMessage).ToArray() ?? Array.Empty<string>()
-                    );
+                    .SelectMany(x => x.Value.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
 
+                // Return consistent JSON response matching GlobalExceptionFilter format
                 return new BadRequestObjectResult(new
                 {
+                    Success = false,
                     Message = "Validation failed",
-                    Errors = errors
+                    Details = errors,
+                    Timestamp = DateTime.UtcNow
                 });
             };
         });

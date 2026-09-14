@@ -8,7 +8,6 @@ public static class FilterConfiguration
     {
         // Register filters as services for dependency injection
         services.AddScoped<ApiKeyAuthorizationFilter>();
-        services.AddScoped<ValidationFilter>();
         services.AddScoped<GlobalExceptionFilter>();
         services.AddScoped<LoggingFilter>();
         services.AddScoped<RateLimitingFilter>();
@@ -23,14 +22,11 @@ public static class FilterConfiguration
     {
         services.AddControllers(options =>
         {
-            // Add global exception filter
+            // Add global exception filter only
             options.Filters.Add<GlobalExceptionFilter>();
             
-            // Add global validation filter
-            options.Filters.Add<ValidationFilter>();
-            
-            // Add global logging filter (optional - can be applied selectively)
-            // options.Filters.Add<LoggingFilter>();
+            // Validation is handled by InvalidModelStateResponseFactory in ApiConfiguration
+            // Other filters (LoggingFilter, RateLimitingFilter, ApiKeyAuthorizationFilter) are applied selectively via attributes
         });
 
         return services;
