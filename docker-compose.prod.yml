@@ -1,0 +1,82 @@
+services:
+  # SQL Server Database (Production)
+  sql-server:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: restaurant-sql-server-prod
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=${DB_PASSWORD:-YourProductionStrong!Passw0rd123}
+      - MSSQL_PID=Standard
+    ports:
+      - "1433:1433"
+    volumes:
+      - sql_data_prod:/var/opt/mssql
+      - ./scripts:/docker-entrypoint-initdb.d
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P ${DB_PASSWORD:-YourProductionStrong!Passw0rd123} -Q 'SELECT 1' || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    networks:
+      - restaurant-network
+
+  # Restaurant API (Production)
+  api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+      target: final
+    container_name: restaurant-api-prod
+    ports:
+      - "80:8080"
+      - "443:8443"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Server=sql-server,1433;Database=RestaurantDB;User Id=sa;Password=${DB_PASSWORD:-YourProductionStrong!Passw0rd123};Encrypt=True;TrustServerCertificate=True;MultipleActiveResultSets=True;
+      - ASPNETCORE_LOGGING__LOGLEVEL__DEFAULT=Warning
+      - ASPNETCORE_LOGGING__LOGLEVEL__MICROSOFT=Error
+    depends_on:
+      sql-server:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    networks:
+      - restaurant-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+
+  # Nginx Reverse Proxy (Optional - for SSL termination)
+  nginx:
+    image: nginx:alpine
+    container_name: restaurant-nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - api
+    restart: unless-stopped
+    networks:
+      - restaurant-network
+
+networks:
+  restaurant-network:
+    driver: bridge
+
+volumes:
+  sql_data_prod:
+    driver: local

@@ -38,13 +38,36 @@ public static class MiddlewareConfiguration
         app.UseRouting();
         app.UseAuthorization();
 
-        // 7. Explicit Root Redirect to the New Home Page
+        // 7. Health Checks
+        app.MapHealthChecks("/health", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+        {
+            ResponseWriter = async (context, report) =>
+            {
+                context.Response.ContentType = "application/json";
+                var response = new
+                {
+                    status = report.Status.ToString(),
+                    checks = report.Entries.Select(x => new
+                    {
+                        name = x.Key,
+                        status = x.Value.Status.ToString(),
+                        description = x.Value.Description,
+                        duration = x.Value.Duration.TotalMilliseconds
+                    }),
+                    totalDuration = report.TotalDuration.TotalMilliseconds,
+                    timestamp = DateTime.UtcNow
+                };
+                await context.Response.WriteAsync(System.Text.Json.JsonSerializer.Serialize(response));
+            }
+        });
+
+        // 8. Explicit Root Redirect to the New Home Page
         app.MapGet("/", () => Results.Redirect("/Home.html"));
 
-        // 8. Controllers
+        // 9. Controllers
         app.MapControllers();
 
-        // 9. Custom 404 Fallback for all other unmatched routes
+        // 10. Custom 404 Fallback for all other unmatched routes
         app.MapFallback(async context =>
         {
             context.Response.Redirect("/404.html");

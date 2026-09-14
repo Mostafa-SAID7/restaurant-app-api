@@ -10,6 +10,14 @@ builder.Services.AddSwaggerConfiguration();
 builder.Services.AddDatabaseConfiguration(builder.Configuration);
 builder.Services.AddApplicationServices();
 
+// Add health checks
+builder.Services.AddHealthChecks()
+    .AddSqlServer(
+        connectionString: builder.Configuration.GetConnectionString("DefaultConnection")!,
+        name: "sql-server",
+        tags: new[] { "database", "sql", "sqlserver" })
+    .AddCheck("api", () => Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult.Healthy("API is running"));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline
