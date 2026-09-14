@@ -31,11 +31,10 @@ public static class MockUnitOfWorkFactory
     {
         var mockRepo = new Mock<IUserRepository>();
 
-        // Default behavior: return null for GetByUserCodeAsync
-        mockRepo.Setup(r => r.GetByUserCodeAsync(It.IsAny<string>())).ReturnsAsync((User?)null);
+        // Phase A.1-A.2: Removed API-key and password methods
+        // Only data access methods remain
+        mockRepo.Setup(r => r.GetByEmailAsync(It.IsAny<string>())).ReturnsAsync((User?)null);
         mockRepo.Setup(r => r.EmailExistsAsync(It.IsAny<string>())).ReturnsAsync(false);
-        mockRepo.Setup(r => r.UserCodeExistsAsync(It.IsAny<string>())).ReturnsAsync(false);
-        mockRepo.Setup(r => r.ValidateUserAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync((User?)null);
         mockRepo.Setup(r => r.AddAsync(It.IsAny<User>())).ReturnsAsync((User?)null);
         mockRepo.Setup(r => r.UpdateAsync(It.IsAny<User>())).ReturnsAsync((User?)null);
         mockRepo.Setup(r => r.DeleteAsync(It.IsAny<User>())).ReturnsAsync(false);

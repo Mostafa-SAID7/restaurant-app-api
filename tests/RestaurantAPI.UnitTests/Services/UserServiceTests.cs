@@ -1,6 +1,7 @@
 using AutoMapper;
 using FluentAssertions;
 using Moq;
+using RestaurantAPI.Auth.Services.Interfaces;
 using RestaurantAPI.DTOs;
 using RestaurantAPI.Mapping;
 using RestaurantAPI.Models;
@@ -11,21 +12,27 @@ using Xunit;
 
 namespace RestaurantAPI.UnitTests.Services;
 
+/// <summary>
+/// Tests for UserService
+/// Phase A.1-A.2: Tests for removed API-key and password methods have been deleted
+/// </summary>
 public class UserServiceTests
 {
     private readonly Mock<IUnitOfWork> _mockUnitOfWork;
+    private readonly Mock<IPasswordService> _mockPasswordService;
     private readonly IMapper _mapper;
     private readonly UserService _userService;
 
     public UserServiceTests()
     {
         _mockUnitOfWork = MockUnitOfWorkFactory.CreateMockUnitOfWork();
+        _mockPasswordService = new Mock<IPasswordService>();
         
         // Setup AutoMapper
         var config = new MapperConfiguration(cfg => cfg.AddProfile<MappingProfile>());
         _mapper = config.CreateMapper();
 
-        _userService = new UserService(_mockUnitOfWork.Object, _mapper);
+        _userService = new UserService(_mockUnitOfWork.Object, _mapper, _mockPasswordService.Object);
     }
 
     #region RegisterUserAsync Tests
@@ -40,13 +47,14 @@ public class UserServiceTests
             Password = "SecurePassword123!"
         };
 
+        var hashedPassword = "hashed_password_from_service";
+        _mockPasswordService.Setup(p => p.HashPassword(It.IsAny<string>()))
+            .Returns(hashedPassword);
+
         User? capturedUser = null;
         _mockUnitOfWork.Setup(u => u.Users.AddAsync(It.IsAny<User>()))
             .Callback<User>(u => capturedUser = u)
             .ReturnsAsync(capturedUser);
-
-        _mockUnitOfWork.Setup(u => u.Users.UserCodeExistsAsync(It.IsAny<string>()))
-            .ReturnsAsync(false);
 
         // Act
         var result = await _userService.RegisterUserAsync(userDto);
@@ -55,8 +63,9 @@ public class UserServiceTests
         result.Should().NotBeNull();
         result.UserEmail.Should().Be(userDto.UserEmail);
         result.Usercode.Should().NotBeNullOrEmpty();
-        result.PasswordHash.Should().NotBe(userDto.Password);
+        result.PasswordHash.Should().Be(hashedPassword);
         capturedUser.Should().NotBeNull();
+        _mockPasswordService.Verify(p => p.HashPassword(userDto.Password), Times.Once);
         _mockUnitOfWork.Verify(u => u.Users.AddAsync(It.IsAny<User>()), Times.Once);
         _mockUnitOfWork.Verify(u => u.SaveChangesAsync(), Times.Once);
     }
@@ -71,13 +80,14 @@ public class UserServiceTests
             Password = "Password123!"
         };
 
+        var hashedPassword = "hashed_password";
+        _mockPasswordService.Setup(p => p.HashPassword(It.IsAny<string>()))
+            .Returns(hashedPassword);
+
         var generatedCodes = new List<string>();
         _mockUnitOfWork.Setup(u => u.Users.AddAsync(It.IsAny<User>()))
             .Callback<User>(u => generatedCodes.Add(u.Usercode))
             .ReturnsAsync((User?)null);
-
-        _mockUnitOfWork.Setup(u => u.Users.UserCodeExistsAsync(It.IsAny<string>()))
-            .ReturnsAsync(false);
 
         // Act
         var user1 = await _userService.RegisterUserAsync(userDto);
@@ -98,15 +108,16 @@ public class UserServiceTests
             Password = "Password123!"
         };
 
+        var hashedPassword = "hashed_password";
+        _mockPasswordService.Setup(p => p.HashPassword(It.IsAny<string>()))
+            .Returns(hashedPassword);
+
         var beforeRegistration = DateTime.UtcNow;
         User? capturedUser = null;
 
         _mockUnitOfWork.Setup(u => u.Users.AddAsync(It.IsAny<User>()))
             .Callback<User>(u => capturedUser = u)
             .ReturnsAsync((User?)null);
-
-        _mockUnitOfWork.Setup(u => u.Users.UserCodeExistsAsync(It.IsAny<string>()))
-            .ReturnsAsync(false);
 
         // Act
         await _userService.RegisterUserAsync(userDto);
@@ -153,100 +164,23 @@ public class UserServiceTests
 
     #endregion
 
-    #region GetUserCodeAsync Tests
-
-    [Fact]
-    public async Task GetUserCodeAsync_WithValidCredentials_ReturnsUserCode()
-    {
-        // Arrange
-        var email = "user@test.com";
-        var password = "ValidPassword123!";
-        var userCode = Guid.NewGuid().ToString();
-        var user = TestDataFactory.CreateUser(userCode: userCode, email: email);
-
-        _mockUnitOfWork.Setup(u => u.Users.ValidateUserAsync(email, password))
-            .ReturnsAsync(user);
-
-        // Act
-        var result = await _userService.GetUserCodeAsync(email, password);
-
-        // Assert
-        result.Should().Be(userCode);
-    }
-
-    [Fact]
-    public async Task GetUserCodeAsync_WithInvalidPassword_ReturnsNull()
-    {
-        // Arrange
-        var email = "user@test.com";
-        var password = "WrongPassword";
-
-        _mockUnitOfWork.Setup(u => u.Users.ValidateUserAsync(email, password))
-            .ReturnsAsync((User?)null);
-
-        // Act
-        var result = await _userService.GetUserCodeAsync(email, password);
-
-        // Assert
-        result.Should().BeNull();
-    }
-
-    #endregion
-
-    #region GetUserByCodeAsync Tests
-
-    [Fact]
-    public async Task GetUserByCodeAsync_WithValidCode_ReturnsUser()
-    {
-        // Arrange
-        var userCode = Guid.NewGuid().ToString();
-        var user = TestDataFactory.CreateUser(userCode: userCode);
-
-        _mockUnitOfWork.Setup(u => u.Users.GetByUserCodeAsync(userCode))
-            .ReturnsAsync(user);
-
-        // Act
-        var result = await _userService.GetUserByCodeAsync(userCode);
-
-        // Assert
-        result.Should().NotBeNull();
-        result?.Usercode.Should().Be(userCode);
-    }
-
-    [Fact]
-    public async Task GetUserByCodeAsync_WithInvalidCode_ReturnsNull()
-    {
-        // Arrange
-        var invalidCode = Guid.NewGuid().ToString();
-        _mockUnitOfWork.Setup(u => u.Users.GetByUserCodeAsync(invalidCode))
-            .ReturnsAsync((User?)null);
-
-        // Act
-        var result = await _userService.GetUserByCodeAsync(invalidCode);
-
-        // Assert
-        result.Should().BeNull();
-    }
-
-    #endregion
-
     #region DeleteUserAsync Tests
 
     [Fact]
-    public async Task DeleteUserAsync_WithValidApiKey_DeletesUserAndReturnsTrue()
+    public async Task DeleteUserAsync_WithValidUserId_DeletesUserAndReturnsTrue()
     {
         // Arrange
-        var apiKey = Guid.NewGuid().ToString();
-        var user = TestDataFactory.CreateUser(userCode: apiKey);
+        var userId = "user123";
+        var user = TestDataFactory.CreateUser();
 
-        _mockUnitOfWork.Setup(u => u.Users.GetByUserCodeAsync(apiKey))
+        _mockUnitOfWork.Setup(u => u.Users.GetByIdAsync(userId))
             .ReturnsAsync(user);
 
         _mockUnitOfWork.Setup(u => u.Users.DeleteAsync(user))
             .ReturnsAsync(true);
 
         // Act
-        var result = await _userService.DeleteUserAsync(apiKey);
+        var result = await _userService.DeleteUserAsync(userId);
 
         // Assert
         result.Should().BeTrue();
@@ -255,15 +189,15 @@ public class UserServiceTests
     }
 
     [Fact]
-    public async Task DeleteUserAsync_WithInvalidApiKey_ReturnsFalse()
+    public async Task DeleteUserAsync_WithInvalidUserId_ReturnsFalse()
     {
         // Arrange
-        var invalidKey = Guid.NewGuid().ToString();
-        _mockUnitOfWork.Setup(u => u.Users.GetByUserCodeAsync(invalidKey))
+        var invalidUserId = "invalid_user";
+        _mockUnitOfWork.Setup(u => u.Users.GetByIdAsync(invalidUserId))
             .ReturnsAsync((User?)null);
 
         // Act
-        var result = await _userService.DeleteUserAsync(invalidKey);
+        var result = await _userService.DeleteUserAsync(invalidUserId);
 
         // Assert
         result.Should().BeFalse();
@@ -272,51 +206,39 @@ public class UserServiceTests
 
     #endregion
 
-    #region UpdateUserPasswordAsync Tests
+    #region GetUserByIdAsync Tests
 
     [Fact]
-    public async Task UpdateUserPasswordAsync_WithValidApiKey_UpdatesPasswordAndReturnsUser()
+    public async Task GetUserByIdAsync_WithValidId_ReturnsUser()
     {
         // Arrange
-        var apiKey = Guid.NewGuid().ToString();
-        var user = TestDataFactory.CreateUser(userCode: apiKey);
-        var originalPassword = user.PasswordHash;
-        var newPassword = "NewSecurePassword123!";
+        var userId = "user123";
+        var user = TestDataFactory.CreateUser();
 
-        User? capturedUser = null;
-        _mockUnitOfWork.Setup(u => u.Users.GetByUserCodeAsync(apiKey))
-            .ReturnsAsync(user);
-
-        _mockUnitOfWork.Setup(u => u.Users.UpdateAsync(It.IsAny<User>()))
-            .Callback<User>(u => capturedUser = u)
+        _mockUnitOfWork.Setup(u => u.Users.GetByIdAsync(userId))
             .ReturnsAsync(user);
 
         // Act
-        var result = await _userService.UpdateUserPasswordAsync(apiKey, newPassword);
+        var result = await _userService.GetUserByIdAsync(userId);
 
         // Assert
         result.Should().NotBeNull();
-        capturedUser?.PasswordHash.Should().NotBe(originalPassword);
-        _mockUnitOfWork.Verify(u => u.Users.UpdateAsync(It.IsAny<User>()), Times.Once);
-        _mockUnitOfWork.Verify(u => u.SaveChangesAsync(), Times.Once);
+        result.Should().Be(user);
     }
 
     [Fact]
-    public async Task UpdateUserPasswordAsync_WithInvalidApiKey_ReturnsNull()
+    public async Task GetUserByIdAsync_WithInvalidId_ReturnsNull()
     {
         // Arrange
-        var invalidKey = Guid.NewGuid().ToString();
-        var newPassword = "NewPassword123!";
-
-        _mockUnitOfWork.Setup(u => u.Users.GetByUserCodeAsync(invalidKey))
+        var invalidUserId = "invalid_user";
+        _mockUnitOfWork.Setup(u => u.Users.GetByIdAsync(invalidUserId))
             .ReturnsAsync((User?)null);
 
         // Act
-        var result = await _userService.UpdateUserPasswordAsync(invalidKey, newPassword);
+        var result = await _userService.GetUserByIdAsync(invalidUserId);
 
         // Assert
         result.Should().BeNull();
-        _mockUnitOfWork.Verify(u => u.Users.UpdateAsync(It.IsAny<User>()), Times.Never);
     }
 
     #endregion
