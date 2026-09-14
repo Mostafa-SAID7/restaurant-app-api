@@ -1,7 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
+using RestaurantAPI.DTOs;
 
 namespace RestaurantAPI.Helpers;
 
+/// <summary>
+/// Response helper for standardized API responses
+/// Phase A.4: Uses unified ApiResponse<T> contract
+/// </summary>
 public static class ResponseHelper
 {
     /// <summary>
@@ -9,14 +14,7 @@ public static class ResponseHelper
     /// </summary>
     public static ActionResult Success<T>(T data, string? message = null)
     {
-        var response = new
-        {
-            Success = true,
-            Message = message ?? "Operation completed successfully",
-            Data = data,
-            Timestamp = DateTime.UtcNow
-        };
-
+        var response = ApiResponse<T>.CreateSuccess(data, message ?? "Operation completed successfully");
         return new OkObjectResult(response);
     }
 
@@ -25,14 +23,7 @@ public static class ResponseHelper
     /// </summary>
     public static ActionResult Error(string message, int statusCode = 400, object? details = null)
     {
-        var response = new
-        {
-            Success = false,
-            Message = message,
-            Details = details,
-            Timestamp = DateTime.UtcNow
-        };
-
+        var response = ApiResponse<object>.CreateError(message, details);
         return new ObjectResult(response) { StatusCode = statusCode };
     }
 
@@ -41,14 +32,7 @@ public static class ResponseHelper
     /// </summary>
     public static ActionResult ValidationError(List<string> errors)
     {
-        var response = new
-        {
-            Success = false,
-            Message = "Validation failed",
-            Errors = errors,
-            Timestamp = DateTime.UtcNow
-        };
-
+        var response = ApiResponse<object>.CreateValidationError(errors);
         return new BadRequestObjectResult(response);
     }
 
@@ -61,13 +45,7 @@ public static class ResponseHelper
             ? $"{resource} with identifier '{identifier}' was not found"
             : $"{resource} not found";
 
-        var response = new
-        {
-            Success = false,
-            Message = message,
-            Timestamp = DateTime.UtcNow
-        };
-
+        var response = ApiResponse<object>.CreateError(message);
         return new NotFoundObjectResult(response);
     }
 
@@ -76,13 +54,7 @@ public static class ResponseHelper
     /// </summary>
     public static ActionResult Unauthorized(string message = "Unauthorized access")
     {
-        var response = new
-        {
-            Success = false,
-            Message = message,
-            Timestamp = DateTime.UtcNow
-        };
-
+        var response = ApiResponse<object>.CreateError(message);
         return new UnauthorizedObjectResult(response);
     }
 
@@ -93,11 +65,12 @@ public static class ResponseHelper
     {
         var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
         
-        var response = new
+        var response = new ApiResponse<IEnumerable<T>>
         {
             Success = true,
             Data = data,
-            Pagination = new
+            Message = "Operation completed successfully",
+            Pagination = new PaginationMetadata
             {
                 Page = page,
                 PageSize = pageSize,
@@ -113,25 +86,13 @@ public static class ResponseHelper
     }
 
     /// <summary>
-    /// Creates a created response
+    /// Creates a created response (201)
     /// </summary>
     public static ActionResult Created<T>(T data, string? location = null)
     {
-        var response = new
-        {
-            Success = true,
-            Message = "Resource created successfully",
-            Data = data,
-            Timestamp = DateTime.UtcNow
-        };
-
+        var response = ApiResponse<T>.CreateSuccess(data, "Resource created successfully");
         var result = new ObjectResult(response) { StatusCode = 201 };
         
-        if (!string.IsNullOrEmpty(location))
-        {
-            result.Value = response;
-        }
-
         return result;
     }
 }

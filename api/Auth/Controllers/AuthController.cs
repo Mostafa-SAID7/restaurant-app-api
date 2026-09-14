@@ -2,13 +2,15 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RestaurantAPI.Auth.DTOs;
 using RestaurantAPI.Auth.Services.Interfaces;
+using RestaurantAPI.DTOs;
 using Swashbuckle.AspNetCore.Annotations;
+using RestaurantAPI.Auth.Services.Interfaces;
 
 namespace RestaurantAPI.Auth.Controllers;
 
 /// <summary>
 /// Authentication controller for user registration, login, token refresh, and logout.
-/// All endpoints return consistent response format: { success, message, data, errors, timestamp }
+/// Phase A.4: Uses unified ApiResponse<T> contract for all responses.
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
@@ -34,7 +36,7 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     [AllowAnonymous]
     [SwaggerOperation(Summary = "Register new user account", Description = "Create a new user with email and password")]
-    [SwaggerResponse(201, "User registered successfully", typeof(TokenResponseDto))]
+    [SwaggerResponse(201, "User registered successfully", typeof(ApiResponse<AuthResultData>))]
     [SwaggerResponse(400, "Validation error or user already exists")]
     public async Task<ActionResult> RegisterAsync([FromBody] RegisterRequestDto registerDto)
     {
@@ -42,48 +44,31 @@ public class AuthController : ControllerBase
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new
-                {
-                    success = false,
-                    message = "Validation failed",
-                    errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)),
-                    timestamp = DateTime.UtcNow
-                });
+                var errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).ToList();
+                var response = ApiResponse<object>.CreateValidationError(errors);
+                return BadRequest(response);
             }
 
             var result = await _authService.RegisterAsync(registerDto.Email, registerDto.Password);
 
             if (!result.Success)
             {
-                return BadRequest(new
-                {
-                    success = false,
-                    message = result.Message,
-                    errors = result.Errors,
-                    timestamp = DateTime.UtcNow
-                });
+                var response = ApiResponse<object>.CreateError(result.Message);
+                response.Errors = result.Errors;
+                return BadRequest(response);
             }
 
             _logger.LogInformation("User registered: {Email}", registerDto.Email);
 
-            return CreatedAtAction(nameof(RegisterAsync), new
-            {
-                success = true,
-                message = result.Message,
-                data = result.Data,
-                timestamp = DateTime.UtcNow
-            });
+            var successResponse = ApiResponse<AuthResultData>.CreateSuccess(result.Data, result.Message);
+            return CreatedAtAction(nameof(RegisterAsync), successResponse);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error in RegisterAsync");
-            return StatusCode(500, new
-            {
-                success = false,
-                message = "Internal server error",
-                errors = new[] { "An unexpected error occurred" },
-                timestamp = DateTime.UtcNow
-            });
+            var response = ApiResponse<object>.CreateError("Internal server error");
+            response.Errors = new List<string> { "An unexpected error occurred" };
+            return StatusCode(500, response);
         }
     }
 
@@ -97,7 +82,7 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     [AllowAnonymous]
     [SwaggerOperation(Summary = "Authenticate user", Description = "Login with email and password to receive JWT tokens")]
-    [SwaggerResponse(200, "Login successful", typeof(TokenResponseDto))]
+    [SwaggerResponse(200, "Login successful", typeof(ApiResponse<TokenResponseDto>))]
     [SwaggerResponse(400, "Invalid credentials")]
     [SwaggerResponse(429, "Rate limit exceeded")]
     public async Task<ActionResult> LoginAsync([FromBody] LoginRequestDto loginDto)
@@ -106,13 +91,9 @@ public class AuthController : ControllerBase
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new
-                {
-                    success = false,
-                    message = "Validation failed",
-                    errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)),
-                    timestamp = DateTime.UtcNow
-                });
+                var errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).ToList();
+                var response = ApiResponse<object>.CreateValidationError(errors);
+                return BadRequest(response);
             }
 
             var result = await _authService.LoginAsync(loginDto.Email, loginDto.Password);
@@ -120,35 +101,22 @@ public class AuthController : ControllerBase
             if (!result.Success)
             {
                 // Don't expose whether email exists (security best practice)
-                return Unauthorized(new
-                {
-                    success = false,
-                    message = result.Message,
-                    errors = result.Errors,
-                    timestamp = DateTime.UtcNow
-                });
+                var response = ApiResponse<object>.CreateError(result.Message);
+                response.Errors = result.Errors;
+                return Unauthorized(response);
             }
 
             _logger.LogInformation("User logged in: {Email}", loginDto.Email);
 
-            return Ok(new
-            {
-                success = true,
-                message = result.Message,
-                data = result.Data,
-                timestamp = DateTime.UtcNow
-            });
+            var successResponse = ApiResponse<AuthResultData>.CreateSuccess(result.Data, result.Message);
+            return Ok(successResponse);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error in LoginAsync");
-            return StatusCode(500, new
-            {
-                success = false,
-                message = "Internal server error",
-                errors = new[] { "An unexpected error occurred" },
-                timestamp = DateTime.UtcNow
-            });
+            var response = ApiResponse<object>.CreateError("Internal server error");
+            response.Errors = new List<string> { "An unexpected error occurred" };
+            return StatusCode(500, response);
         }
     }
 
@@ -162,7 +130,7 @@ public class AuthController : ControllerBase
     [HttpPost("refresh")]
     [AllowAnonymous]
     [SwaggerOperation(Summary = "Refresh access token", Description = "Use refresh token to get new access token without re-entering password")]
-    [SwaggerResponse(200, "Token refreshed successfully", typeof(TokenResponseDto))]
+    [SwaggerResponse(200, "Token refreshed successfully", typeof(ApiResponse<TokenResponseDto>))]
     [SwaggerResponse(400, "Invalid or expired refresh token")]
     public async Task<ActionResult> RefreshAsync([FromBody] RefreshTokenRequestDto refreshDto)
     {
@@ -170,48 +138,31 @@ public class AuthController : ControllerBase
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new
-                {
-                    success = false,
-                    message = "Validation failed",
-                    errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)),
-                    timestamp = DateTime.UtcNow
-                });
+                var errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).ToList();
+                var response = ApiResponse<object>.CreateValidationError(errors);
+                return BadRequest(response);
             }
 
             var result = await _authService.RefreshAsync(refreshDto.RefreshToken);
 
             if (!result.Success)
             {
-                return BadRequest(new
-                {
-                    success = false,
-                    message = result.Message,
-                    errors = result.Errors,
-                    timestamp = DateTime.UtcNow
-                });
+                var response = ApiResponse<object>.CreateError(result.Message);
+                response.Errors = result.Errors;
+                return BadRequest(response);
             }
 
             _logger.LogInformation("Token refreshed for user: {UserId}", result.Data?.UserId);
 
-            return Ok(new
-            {
-                success = true,
-                message = result.Message,
-                data = result.Data,
-                timestamp = DateTime.UtcNow
-            });
+            var successResponse = ApiResponse<AuthResultData>.CreateSuccess(result.Data, result.Message);
+            return Ok(successResponse);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error in RefreshAsync");
-            return StatusCode(500, new
-            {
-                success = false,
-                message = "Internal server error",
-                errors = new[] { "An unexpected error occurred" },
-                timestamp = DateTime.UtcNow
-            });
+            var response = ApiResponse<object>.CreateError("Internal server error");
+            response.Errors = new List<string> { "An unexpected error occurred" };
+            return StatusCode(500, response);
         }
     }
 
@@ -233,47 +184,31 @@ public class AuthController : ControllerBase
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new
-                {
-                    success = false,
-                    message = "Validation failed",
-                    errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)),
-                    timestamp = DateTime.UtcNow
-                });
+                var errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).ToList();
+                var response = ApiResponse<object>.CreateValidationError(errors);
+                return BadRequest(response);
             }
 
             var result = await _authService.LogoutAsync(refreshDto.RefreshToken);
 
             if (!result.Success)
             {
-                return BadRequest(new
-                {
-                    success = false,
-                    message = result.Message,
-                    errors = result.Errors,
-                    timestamp = DateTime.UtcNow
-                });
+                var response = ApiResponse<object>.CreateError(result.Message);
+                response.Errors = result.Errors;
+                return BadRequest(response);
             }
 
             _logger.LogInformation("User logged out");
 
-            return Ok(new
-            {
-                success = true,
-                message = result.Message,
-                timestamp = DateTime.UtcNow
-            });
+            var successResponse = ApiResponse<object>.CreateSuccess(null, result.Message);
+            return Ok(successResponse);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error in LogoutAsync");
-            return StatusCode(500, new
-            {
-                success = false,
-                message = "Internal server error",
-                errors = new[] { "An unexpected error occurred" },
-                timestamp = DateTime.UtcNow
-            });
+            var response = ApiResponse<object>.CreateError("Internal server error");
+            response.Errors = new List<string> { "An unexpected error occurred" };
+            return StatusCode(500, response);
         }
     }
 
@@ -296,59 +231,39 @@ public class AuthController : ControllerBase
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new
-                {
-                    success = false,
-                    message = "Validation failed",
-                    errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)),
-                    timestamp = DateTime.UtcNow
-                });
+                var errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).ToList();
+                var response = ApiResponse<object>.CreateValidationError(errors);
+                return BadRequest(response);
             }
 
             // Get current user ID from JWT
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userId))
             {
-                return Unauthorized(new
-                {
-                    success = false,
-                    message = "User not identified",
-                    timestamp = DateTime.UtcNow
-                });
+                var response = ApiResponse<object>.CreateError("User not identified");
+                return Unauthorized(response);
             }
 
             var result = await _authService.ChangePasswordAsync(userId, changePasswordDto.CurrentPassword, changePasswordDto.NewPassword);
 
             if (!result.Success)
             {
-                return BadRequest(new
-                {
-                    success = false,
-                    message = result.Message,
-                    errors = result.Errors,
-                    timestamp = DateTime.UtcNow
-                });
+                var response = ApiResponse<object>.CreateError(result.Message);
+                response.Errors = result.Errors;
+                return BadRequest(response);
             }
 
             _logger.LogInformation("Password changed for user: {UserId}", userId);
 
-            return Ok(new
-            {
-                success = true,
-                message = result.Message,
-                timestamp = DateTime.UtcNow
-            });
+            var successResponse = ApiResponse<object>.CreateSuccess(null, result.Message);
+            return Ok(successResponse);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error in ChangePasswordAsync");
-            return StatusCode(500, new
-            {
-                success = false,
-                message = "Internal server error",
-                errors = new[] { "An unexpected error occurred" },
-                timestamp = DateTime.UtcNow
-            });
+            var response = ApiResponse<object>.CreateError("Internal server error");
+            response.Errors = new List<string> { "An unexpected error occurred" };
+            return StatusCode(500, response);
         }
     }
 }
