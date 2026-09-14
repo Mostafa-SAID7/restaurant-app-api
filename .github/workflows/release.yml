@@ -1,4 +1,4 @@
-name: 📦 Create Release
+name: Create Release
 
 # HOW TO CREATE A RELEASE
 #
@@ -16,7 +16,7 @@ name: 📦 Create Release
 on:
   push:
     tags:
-      - 'v*'  # Trigger on tags like v1.0.0, v1.0.1, etc.
+      - 'v*'
   workflow_dispatch:
     inputs:
       tag:
@@ -33,13 +33,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: ⬇️ Checkout code (with tags)
+      - name: Checkout code (with tags)
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           fetch-tags: true
 
-      - name: 📋 Determine and validate release tag
+      - name: Determine and validate release tag
         id: tag
         run: |
           if [ "${{ github.event_name }}" == "push" ]; then
@@ -50,7 +50,7 @@ jobs:
           
           # Validate tag format
           if ! [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+ ]]; then
-            echo "❌ ERROR: Tag must match format vX.Y.Z (e.g., v1.0.0)"
+            echo "ERROR: Tag must match format vX.Y.Z (e.g., v1.0.0)"
             echo "Current input: $TAG"
             exit 1
           fi
@@ -58,7 +58,7 @@ jobs:
           # For manual dispatch, verify tag exists
           if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
             if ! git rev-parse "$TAG" >/dev/null 2>&1; then
-              echo "❌ ERROR: Tag '$TAG' does not exist as a git tag."
+              echo "ERROR: Tag '$TAG' does not exist as a git tag."
               echo ""
               echo "To create and push the tag:"
               echo "  git tag $TAG"
@@ -70,9 +70,9 @@ jobs:
           fi
           
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
-          echo "✅ Release tag: ${TAG}"
+          echo "Release tag: ${TAG}"
 
-      - name: 📝 Generate Release Notes
+      - name: Generate Release Notes
         id: notes
         run: |
           TAG=${{ steps.tag.outputs.tag }}
@@ -93,7 +93,7 @@ jobs:
           echo "$CHANGELOG" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
-      - name: 📦 Create GitHub Release
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.tag.outputs.tag }}
@@ -105,16 +105,17 @@ jobs:
             ${{ steps.notes.outputs.changelog }}
 
             ---
-            📦 **Docker Image:** `ghcr.io/${{ github.repository }}:${{ steps.tag.outputs.tag }}`
+            Docker Image: ghcr.io/${{ github.repository }}:${{ steps.tag.outputs.tag }}
 
-            See the **[Changelog](https://github.com/${{ github.repository }}/blob/main/docs/CHANGELOG.md)** for complete details.
+            See the Changelog for complete details:
+            https://github.com/${{ github.repository }}/blob/main/docs/CHANGELOG.md
           draft: false
           prerelease: false
           generate_release_notes: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: ✅ Release created successfully
+      - name: Release created successfully
         run: |
-          echo "📦 Release ${{ steps.tag.outputs.tag }} published"
-          echo "🔗 View at: https://github.com/${{ github.repository }}/releases/tag/${{ steps.tag.outputs.tag }}"
+          echo "Release ${{ steps.tag.outputs.tag }} published"
+          echo "View at: https://github.com/${{ github.repository }}/releases/tag/${{ steps.tag.outputs.tag }}"
