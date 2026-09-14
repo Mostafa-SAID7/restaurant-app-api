@@ -37,22 +37,45 @@ namespace RestaurantAPI.Controllers
 
         /// <summary>
         /// Get all restaurants (public endpoint)
+        /// Phase B.4: Supports pagination via pageNumber and pageSize query parameters
         /// </summary>
         [HttpGet]
         [AllowAnonymous]
-        [SwaggerOperation(Summary = "Get all restaurants", Description = "Retrieve all restaurants with optional filtering")]
+        [SwaggerOperation(Summary = "Get all restaurants", Description = "Retrieve all restaurants with optional filtering and pagination")]
         [SwaggerResponse(200, "Success", typeof(IEnumerable<RestaurantDTO>))]
         [SwaggerResponse(404, "No restaurants found")]
-        public async Task<ActionResult> GetRestaurants([FromQuery] string category = "", string? address = null, string? name = null)
+        public async Task<ActionResult> GetRestaurants(
+            [FromQuery] string category = "", 
+            [FromQuery] string? address = null, 
+            [FromQuery] string? name = null,
+            [FromQuery(Name = "pageNumber")] string? pageNumberStr = null,
+            [FromQuery(Name = "pageSize")] string? pageSizeStr = null)
         {
+            // Extract and validate pagination parameters
+            var paginationParams = PaginationHelper.ExtractFromQuery(pageNumberStr, pageSizeStr);
+            
             var restaurants = await _restaurantService.GetRestaurantsAsync(category, address, name);
+            var restaurantList = restaurants.ToList();
             
-            if (restaurants.Any())
+            if (!restaurantList.Any())
             {
-                return ResponseHelper.Success(restaurants);
+                return ResponseHelper.NotFound("Restaurants");
             }
-            
-            return ResponseHelper.NotFound("Restaurants");
+
+            // Apply pagination manually (until service layer is updated)
+            var totalCount = restaurantList.Count;
+            var paginatedRestaurants = restaurantList
+                .Skip(paginationParams.GetOffset())
+                .Take(paginationParams.PageSize)
+                .ToList();
+
+            var paginatedResponse = PaginatedResponse<RestaurantDTO>.Create(
+                paginatedRestaurants, 
+                paginationParams.PageNumber, 
+                paginationParams.PageSize, 
+                totalCount);
+
+            return ResponseHelper.PaginatedStandard(paginatedResponse);
         }
 
         /// <summary>
@@ -216,22 +239,44 @@ namespace RestaurantAPI.Controllers
 
         /// <summary>
         /// Get all menu items (public endpoint)
+        /// Phase B.4: Supports pagination via pageNumber and pageSize query parameters
         /// </summary>
         [HttpGet("items/all")]
         [AllowAnonymous]
-        [SwaggerOperation(Summary = "Get all menu items", Description = "Retrieve all menu items across all restaurants")]
+        [SwaggerOperation(Summary = "Get all menu items", Description = "Retrieve all menu items across all restaurants with pagination")]
         [SwaggerResponse(200, "Success", typeof(IEnumerable<ItemResponseDTO>))]
         [SwaggerResponse(404, "No items found")]
-        public async Task<ActionResult> GetAllItems([FromQuery] string itemName = "", string sortbyprice = "")
+        public async Task<ActionResult> GetAllItems(
+            [FromQuery] string itemName = "", 
+            [FromQuery] string sortbyprice = "",
+            [FromQuery(Name = "pageNumber")] string? pageNumberStr = null,
+            [FromQuery(Name = "pageSize")] string? pageSizeStr = null)
         {
+            // Extract and validate pagination parameters
+            var paginationParams = PaginationHelper.ExtractFromQuery(pageNumberStr, pageSizeStr);
+            
             var items = await _itemService.GetAllItemsAsync(itemName, sortbyprice);
+            var itemList = items.ToList();
 
-            if (items.Any())
+            if (!itemList.Any())
             {
-                return ResponseHelper.Success(items);
+                return ResponseHelper.NotFound("Items");
             }
 
-            return ResponseHelper.NotFound("Items");
+            // Apply pagination manually (until service layer is updated)
+            var totalCount = itemList.Count;
+            var paginatedItems = itemList
+                .Skip(paginationParams.GetOffset())
+                .Take(paginationParams.PageSize)
+                .ToList();
+
+            var paginatedResponse = PaginatedResponse<ItemResponseDTO>.Create(
+                paginatedItems, 
+                paginationParams.PageNumber, 
+                paginationParams.PageSize, 
+                totalCount);
+
+            return ResponseHelper.PaginatedStandard(paginatedResponse);
         }
     }
 }

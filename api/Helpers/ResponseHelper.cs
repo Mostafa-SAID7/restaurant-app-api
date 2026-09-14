@@ -141,6 +141,61 @@ public static class ResponseHelper
     }
 
     /// <summary>
+    /// Creates a standardized paginated response (Phase B.4)
+    /// </summary>
+    public static ActionResult PaginatedStandard<T>(PaginatedResponse<T> paginatedData)
+    {
+        var response = new ApiResponse<List<T>>
+        {
+            Success = true,
+            Data = paginatedData.Data,
+            Message = "Operation completed successfully",
+            Pagination = new PaginationMetadata
+            {
+                Page = paginatedData.Pagination.PageNumber,
+                PageSize = paginatedData.Pagination.PageSize,
+                TotalCount = paginatedData.Pagination.TotalCount,
+                TotalPages = paginatedData.Pagination.TotalPages,
+                HasNextPage = paginatedData.Pagination.HasNextPage,
+                HasPreviousPage = paginatedData.Pagination.HasPreviousPage
+            },
+            Timestamp = DateTime.UtcNow
+        };
+
+        return new OkObjectResult(response);
+    }
+
+    /// <summary>
+    /// Creates a wrapped paginated response with request tracking (Phase B.4)
+    /// </summary>
+    public static ActionResult PaginatedWrapped<T>(PaginatedResponse<T> paginatedData)
+    {
+        var wrapper = new ApiResponseWrapper<List<T>>
+        {
+            StatusCode = 200,
+            Response = new ApiResponse<List<T>>
+            {
+                Success = true,
+                Data = paginatedData.Data,
+                Message = "Operation completed successfully",
+                Pagination = new PaginationMetadata
+                {
+                    Page = paginatedData.Pagination.PageNumber,
+                    PageSize = paginatedData.Pagination.PageSize,
+                    TotalCount = paginatedData.Pagination.TotalCount,
+                    TotalPages = paginatedData.Pagination.TotalPages,
+                    HasNextPage = paginatedData.Pagination.HasNextPage,
+                    HasPreviousPage = paginatedData.Pagination.HasPreviousPage
+                },
+                Timestamp = DateTime.UtcNow
+            },
+            Timestamp = DateTime.UtcNow
+        };
+
+        return new OkObjectResult(wrapper);
+    }
+
+    /// <summary>
     /// Creates a created response (201)
     /// </summary>
     public static ActionResult Created<T>(T data, string? location = null)

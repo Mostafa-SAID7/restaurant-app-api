@@ -57,12 +57,15 @@ namespace RestaurantAPI.Controllers
 
         /// <summary>
         /// Get all orders for authenticated user
+        /// Phase B.4: Supports pagination via pageNumber and pageSize query parameters
         /// </summary>
         [HttpGet]
-        [SwaggerOperation(Summary = "Get user orders", Description = "Retrieve all orders for authenticated user")]
+        [SwaggerOperation(Summary = "Get user orders", Description = "Retrieve all orders for authenticated user with pagination")]
         [SwaggerResponse(200, "Success", typeof(IEnumerable<OrderResponseDTO>))]
         [SwaggerResponse(401, "Unauthorized - JWT token required")]
-        public async Task<ActionResult> GetOrders()
+        public async Task<ActionResult> GetOrders(
+            [FromQuery(Name = "pageNumber")] string? pageNumberStr = null,
+            [FromQuery(Name = "pageSize")] string? pageSizeStr = null)
         {
             try
             {
@@ -72,8 +75,31 @@ namespace RestaurantAPI.Controllers
                     return ResponseHelper.Unauthorized("User not identified from JWT");
                 }
 
+                // Extract and validate pagination parameters
+                var paginationParams = PaginationHelper.ExtractFromQuery(pageNumberStr, pageSizeStr);
+
                 var orders = await _orderService.GetUserOrdersAsync(userId);
-                return ResponseHelper.Success(orders);
+                var orderList = orders.ToList();
+
+                if (!orderList.Any())
+                {
+                    return ResponseHelper.NotFound("Orders");
+                }
+
+                // Apply pagination manually (until service layer is updated)
+                var totalCount = orderList.Count;
+                var paginatedOrders = orderList
+                    .Skip(paginationParams.GetOffset())
+                    .Take(paginationParams.PageSize)
+                    .ToList();
+
+                var paginatedResponse = PaginatedResponse<object>.Create(
+                    paginatedOrders, 
+                    paginationParams.PageNumber, 
+                    paginationParams.PageSize, 
+                    totalCount);
+
+                return ResponseHelper.PaginatedStandard(paginatedResponse);
             }
             catch (UnauthorizedAccessException ex)
             {
