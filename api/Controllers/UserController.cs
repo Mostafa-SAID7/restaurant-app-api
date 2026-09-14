@@ -32,34 +32,25 @@ namespace RestaurantAPI.Controllers
         [SwaggerResponse(409, "User already exists")]
         public async Task<ActionResult> RegisterAsync([FromBody] UserDTO userDTO)
         {
-            try
+            // Validate input
+            var (isValid, errors) = ValidationHelper.ValidateUserRegistration(userDTO.UserEmail, userDTO.Password);
+            if (!isValid)
             {
-                // Validate input
-                var (isValid, errors) = ValidationHelper.ValidateUserRegistration(userDTO.UserEmail, userDTO.Password);
-                if (!isValid)
-                {
-                    return BadRequest(new { message = "Validation failed", errors });
-                }
-
-                // Check if user exists
-                var userExists = await _userService.UserExistsAsync(userDTO.UserEmail);
-                if (userExists)
-                {
-                    return StatusCode(409, new { message = "User already exists" });
-                }
-
-                var user = await _userService.RegisterUserAsync(userDTO);
-                return StatusCode(201, new { 
-                    message = "User registered successfully",
-                    usercode = user.Usercode,
-                    email = user.UserEmail
-                });
+                return ResponseHelper.ValidationError(errors);
             }
-            catch (Exception ex)
+
+            // Check if user exists
+            var userExists = await _userService.UserExistsAsync(userDTO.UserEmail);
+            if (userExists)
             {
-                _logger.LogError(ex, "Error registering user");
-                return StatusCode(500, new { message = "Internal server error" });
+                return ResponseHelper.Error("User already exists", 409);
             }
+
+            var user = await _userService.RegisterUserAsync(userDTO);
+            return ResponseHelper.Created(new { 
+                usercode = user.Usercode,
+                email = user.UserEmail
+            });
         }
 
         /// <summary>
@@ -73,32 +64,23 @@ namespace RestaurantAPI.Controllers
         [RateLimit(maxRequests: 10, timeWindowMinutes: 1)] // Rate limit login attempts
         public async Task<ActionResult> LoginAsync([FromBody] UserDTO userDTO)
         {
-            try
+            if (string.IsNullOrWhiteSpace(userDTO.UserEmail) || string.IsNullOrWhiteSpace(userDTO.Password))
             {
-                if (string.IsNullOrWhiteSpace(userDTO.UserEmail) || string.IsNullOrWhiteSpace(userDTO.Password))
-                {
-                    return BadRequest(new { message = "Email and password are required" });
-                }
+                return ResponseHelper.Error("Email and password are required");
+            }
 
-                var userCode = await _userService.GetUserCodeAsync(userDTO.UserEmail, userDTO.Password);
-                
-                if (userCode != null)
-                {
-                    return Ok(new { 
-                        message = "Login successful",
-                        apikey = userCode,
-                        email = userDTO.UserEmail
-                    });
-                }
-                
-                _logger.LogWarning($"Failed login attempt for email: {userDTO.UserEmail}");
-                return Unauthorized(new { message = "Invalid credentials" });
-            }
-            catch (Exception ex)
+            var userCode = await _userService.GetUserCodeAsync(userDTO.UserEmail, userDTO.Password);
+            
+            if (userCode != null)
             {
-                _logger.LogError(ex, "Error during login");
-                return StatusCode(500, new { message = "Internal server error" });
+                return ResponseHelper.Success(new { 
+                    apikey = userCode,
+                    email = userDTO.UserEmail
+                }, "Login successful");
             }
+            
+            _logger.LogWarning($"Failed login attempt for email: {userDTO.UserEmail}");
+            return ResponseHelper.Unauthorized("Invalid credentials");
         }
 
         /// <summary>
@@ -112,28 +94,20 @@ namespace RestaurantAPI.Controllers
         [RequireApiKey]
         public async Task<ActionResult> DeleteAccountAsync()
         {
-            try
+            var apiKey = HttpContext.Items["ApiKey"]?.ToString();
+            if (string.IsNullOrEmpty(apiKey))
             {
-                var apiKey = HttpContext.Items["ApiKey"]?.ToString();
-                if (string.IsNullOrEmpty(apiKey))
-                {
-                    return Unauthorized(new { message = "API key is required" });
-                }
+                return ResponseHelper.Unauthorized("API key is required");
+            }
 
-                var deleted = await _userService.DeleteUserAsync(apiKey);
-                
-                if (deleted)
-                {
-                    return Ok(new { message = "User account deleted successfully" });
-                }
-                
-                return NotFound(new { message = "User not found" });
-            }
-            catch (Exception ex)
+            var deleted = await _userService.DeleteUserAsync(apiKey);
+            
+            if (deleted)
             {
-                _logger.LogError(ex, "Error deleting user account");
-                return StatusCode(500, new { message = "Internal server error" });
+                return ResponseHelper.Success(null, "User account deleted successfully");
             }
+            
+            return ResponseHelper.NotFound("User");
         }
 
         /// <summary>
@@ -149,40 +123,32 @@ namespace RestaurantAPI.Controllers
         [LogRequests]
         public async Task<ActionResult> UpdatePasswordAsync([FromBody] PasswordUpdateDTO passwordUpdate)
         {
-            try
+            if (string.IsNullOrEmpty(passwordUpdate?.NewPassword))
             {
-                if (string.IsNullOrEmpty(passwordUpdate?.NewPassword))
-                {
-                    return BadRequest(new { message = "New password is required" });
-                }
-
-                // Validate password
-                var (isValid, errors) = ValidationHelper.ValidatePassword(passwordUpdate.NewPassword);
-                if (!isValid)
-                {
-                    return BadRequest(new { message = "Password validation failed", errors });
-                }
-
-                var apiKey = HttpContext.Items["ApiKey"]?.ToString();
-                if (string.IsNullOrEmpty(apiKey))
-                {
-                    return Unauthorized(new { message = "API key is required" });
-                }
-
-                var updatedUser = await _userService.UpdateUserPasswordAsync(apiKey, passwordUpdate.NewPassword);
-                
-                if (updatedUser != null)
-                {
-                    return Ok(new { message = "Password updated successfully" });
-                }
-                
-                return NotFound(new { message = "User not found" });
+                return ResponseHelper.Error("New password is required");
             }
-            catch (Exception ex)
+
+            // Validate password
+            var (isValid, errors) = ValidationHelper.ValidatePassword(passwordUpdate.NewPassword);
+            if (!isValid)
             {
-                _logger.LogError(ex, "Error updating user password");
-                return StatusCode(500, new { message = "Internal server error" });
+                return ResponseHelper.ValidationError(errors);
             }
+
+            var apiKey = HttpContext.Items["ApiKey"]?.ToString();
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                return ResponseHelper.Unauthorized("API key is required");
+            }
+
+            var updatedUser = await _userService.UpdateUserPasswordAsync(apiKey, passwordUpdate.NewPassword);
+            
+            if (updatedUser != null)
+            {
+                return ResponseHelper.Success(null, "Password updated successfully");
+            }
+            
+            return ResponseHelper.NotFound("User");
         }
     }
 }
