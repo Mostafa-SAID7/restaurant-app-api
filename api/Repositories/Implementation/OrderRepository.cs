@@ -27,14 +27,4 @@ public class OrderRepository : BaseRepository<Order>, IOrderRepository
             .Where(o => o.MasterID == masterId)
             .ToListAsync();
     }
-
-    public async Task<int> GetNextMasterIdAsync()
-    {
-        var lastMasterId = await _context.MasterOrders
-            .OrderByDescending(m => m.MasterID)
-            .Select(m => m.MasterID)
-            .FirstOrDefaultAsync();
-
-        return lastMasterId + 1;
-    }
 }
