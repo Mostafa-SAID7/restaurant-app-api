@@ -7,7 +7,7 @@
 ## Backend Structure (.NET 8 Web API)
 
 ```
-RestuarantAPI/
+RestaurantAPI/
 ├── api/                     # .NET 8 Web API Source
 │   ├── Configurations/      # DI and service setup
 │   ├── Controllers/         # API endpoints
@@ -23,11 +23,11 @@ RestuarantAPI/
 │   ├── Services/            # Business logic layer
 │   ├── wwwroot/             # Static UI files
 │   ├── appsettings.json     # Configuration
-│   ├── RestuarantAPI.csproj # Project file
+│   ├── RestaurantAPI.csproj # Project file
 │   └── Program.cs           # Entry point
 ├── docs/                    # Detailed documentation
 ├── screenshots/             # UI previews
-├── RestuarantAPI.sln        # Solution file
+├── RestaurantAPI.sln        # Solution file
 └── docker-compose.yml       # Docker orchestration
 ```
 ```
