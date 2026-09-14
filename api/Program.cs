@@ -1,4 +1,8 @@
+using System.Runtime.CompilerServices;
 using RestaurantAPI.Configurations;
+
+[assembly: InternalsVisibleTo("RestaurantAPI.UnitTests")]
+[assembly: InternalsVisibleTo("RestaurantAPI.IntegrationTests")]
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,12 +15,18 @@ builder.Services.AddDatabaseConfiguration(builder.Configuration);
 builder.Services.AddApplicationServices();
 
 // Add health checks
-builder.Services.AddHealthChecks()
-    .AddSqlServer(
+var healthChecks = builder.Services.AddHealthChecks();
+
+// Only add SQL Server health check if not in test environment
+if (!builder.Environment.IsEnvironment("Test"))
+{
+    healthChecks.AddSqlServer(
         connectionString: builder.Configuration.GetConnectionString("DefaultConnection")!,
         name: "sql-server",
-        tags: new[] { "database", "sql", "sqlserver" })
-    .AddCheck("api", () => Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult.Healthy("API is running"));
+        tags: new[] { "database", "sql", "sqlserver" });
+}
+
+healthChecks.AddCheck("api", () => Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult.Healthy("API is running"));
 
 var app = builder.Build();
 
@@ -24,3 +34,5 @@ var app = builder.Build();
 app.ConfigureMiddleware();
 
 app.Run();
+
+public partial class Program { }
