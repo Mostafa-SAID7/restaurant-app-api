@@ -8,7 +8,7 @@ namespace RestaurantAPI.Services.Implementation;
 
 /// <summary>
 /// Item service for menu item operations
-/// Phase A.3: Extracted from RestaurantService for SRP
+/// Phase A.5: Returns DTOs only, never entities
 /// </summary>
 public class ItemService : IItemService
 {
@@ -24,7 +24,7 @@ public class ItemService : IItemService
     /// <summary>
     /// Add a new item to a restaurant menu
     /// </summary>
-    public async Task<Item> AddItemToMenuAsync(int restaurantId, ItemDTO itemDTO)
+    public async Task<ItemDTO> AddItemToMenuAsync(int restaurantId, ItemDTO itemDTO)
     {
         var item = _mapper.Map<Item>(itemDTO);
         item.RestaurantID = restaurantId;
@@ -32,7 +32,7 @@ public class ItemService : IItemService
         await _unitOfWork.Items.AddAsync(item);
         await _unitOfWork.SaveChangesAsync();
         
-        return item;
+        return _mapper.Map<ItemDTO>(item);
     }
 
     /// <summary>
@@ -44,3 +44,4 @@ public class ItemService : IItemService
         return _mapper.Map<IEnumerable<GetItemsDTO>>(items);
     }
 }
+

@@ -1,11 +1,10 @@
 using RestaurantAPI.DTOs;
-using RestaurantAPI.Models;
 
 namespace RestaurantAPI.Services.Interfaces;
 
 /// <summary>
 /// Order service for creating and managing orders
-/// Phase A.1: Changed parameters from apiKey to userId (JWT)
+/// Phase A.5: Returns DTOs only, never entities
 /// </summary>
 public interface IOrderService
 {
@@ -16,7 +15,7 @@ public interface IOrderService
     Task<OrderResponseDTO> CreateOrderAsync(int restaurantId, string userId, MenuDTO menuDTO);
     
     Task<IEnumerable<object>> GetUserOrdersAsync(string userId);
-    Task<IEnumerable<Order>> GetOrdersByMasterIdAsync(string userId, int masterId);
+    Task<IEnumerable<OrderDTO>> GetOrdersByMasterIdAsync(string userId, int masterId);
     Task<bool> DeleteOrderAsync(int orderId, string userId);
     Task<object> DeleteMasterOrderAsync(int masterId, string userId);
 }

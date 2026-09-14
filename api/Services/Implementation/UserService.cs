@@ -10,7 +10,7 @@ namespace RestaurantAPI.Services.Implementation;
 /// <summary>
 /// User service for profile management and user operations
 /// Authentication and password changes are delegated to IAuthService
-/// Phase A.1: API-key methods removed (JWT replaces Usercode-based auth)
+/// Phase A.5: Returns DTOs only, never entities
 /// </summary>
 public class UserService : IUserService
 {
@@ -28,7 +28,7 @@ public class UserService : IUserService
     /// <summary>
     /// Registers a new user with hashed password (delegated to IPasswordService)
     /// </summary>
-    public async Task<User> RegisterUserAsync(UserDTO userDTO)
+    public async Task<UserDTO> RegisterUserAsync(UserDTO userDTO)
     {
         var user = _mapper.Map<User>(userDTO);
         user.Usercode = Guid.NewGuid().ToString(); // Keep for backward compat, not used for auth
@@ -38,7 +38,7 @@ public class UserService : IUserService
         await _unitOfWork.Users.AddAsync(user);
         await _unitOfWork.SaveChangesAsync();
 
-        return user;
+        return _mapper.Map<UserDTO>(user);
     }
 
     /// <summary>
@@ -52,17 +52,19 @@ public class UserService : IUserService
     /// <summary>
     /// Gets all registered users (warning: sensitive operation, should be restricted)
     /// </summary>
-    public async Task<IEnumerable<User>> GetAllUsersAsync()
+    public async Task<IEnumerable<UserDTO>> GetAllUsersAsync()
     {
-        return await _unitOfWork.Users.GetAllAsync();
+        var users = await _unitOfWork.Users.GetAllAsync();
+        return _mapper.Map<IEnumerable<UserDTO>>(users);
     }
 
     /// <summary>
     /// Gets user by ID (for profile retrieval)
     /// </summary>
-    public async Task<User?> GetUserByIdAsync(string userId)
+    public async Task<UserDTO?> GetUserByIdAsync(string userId)
     {
-        return await _unitOfWork.Users.GetByIdAsync(userId);
+        var user = await _unitOfWork.Users.GetByIdAsync(userId);
+        return user == null ? null : _mapper.Map<UserDTO>(user);
     }
 
     /// <summary>

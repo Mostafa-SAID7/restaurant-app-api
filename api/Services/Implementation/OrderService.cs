@@ -8,7 +8,7 @@ namespace RestaurantAPI.Services.Implementation;
 
 /// <summary>
 /// Order service for creating and managing orders
-/// Phase A.1: Changed parameters from apiKey to userId (JWT)
+/// Phase A.5: Returns DTOs only, never entities
 /// </summary>
 public class OrderService : IOrderService
 {
@@ -163,13 +163,14 @@ public class OrderService : IOrderService
         });
     }
 
-    public async Task<IEnumerable<Order>> GetOrdersByMasterIdAsync(string userId, int masterId)
+    public async Task<IEnumerable<OrderDTO>> GetOrdersByMasterIdAsync(string userId, int masterId)
     {
         var customer = await _unitOfWork.Users.GetByIdAsync(userId);
         if (customer == null)
             throw new UnauthorizedAccessException("User not found");
 
-        return await _unitOfWork.Orders.GetByMasterIdAsync(masterId);
+        var orders = await _unitOfWork.Orders.GetByMasterIdAsync(masterId);
+        return _mapper.Map<IEnumerable<OrderDTO>>(orders);
     }
 
     public async Task<bool> DeleteOrderAsync(int orderId, string userId)

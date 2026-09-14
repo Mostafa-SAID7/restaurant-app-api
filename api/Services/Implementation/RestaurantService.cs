@@ -8,7 +8,7 @@ namespace RestaurantAPI.Services.Implementation;
 
 /// <summary>
 /// Restaurant service for restaurant management operations
-/// Phase A.3: Menu and item operations extracted to IMenuService and IItemService for SRP
+/// Phase A.5: Returns DTOs only, never entities (SRP, DIP)
 /// </summary>
 public class RestaurantService : IRestaurantService
 {
@@ -21,24 +21,26 @@ public class RestaurantService : IRestaurantService
         _mapper = mapper;
     }
 
-    public async Task<IEnumerable<Restaurant>> GetRestaurantsAsync(string category = "", string? address = null, string? name = null)
+    public async Task<IEnumerable<RestaurantDTO>> GetRestaurantsAsync(string category = "", string? address = null, string? name = null)
     {
-        return await _unitOfWork.Restaurants.GetByFiltersAsync(category, address, name);
+        var restaurants = await _unitOfWork.Restaurants.GetByFiltersAsync(category, address, name);
+        return _mapper.Map<IEnumerable<RestaurantDTO>>(restaurants);
     }
 
-    public async Task<Restaurant?> GetRestaurantByIdAsync(int restaurantId)
+    public async Task<RestaurantDTO?> GetRestaurantByIdAsync(int restaurantId)
     {
-        return await _unitOfWork.Restaurants.GetByIdAsync(restaurantId);
+        var restaurant = await _unitOfWork.Restaurants.GetByIdAsync(restaurantId);
+        return restaurant == null ? null : _mapper.Map<RestaurantDTO>(restaurant);
     }
 
-    public async Task<Restaurant> CreateRestaurantAsync(RestaurantDTO restaurantDTO)
+    public async Task<RestaurantDTO> CreateRestaurantAsync(RestaurantDTO restaurantDTO)
     {
         var restaurant = _mapper.Map<Restaurant>(restaurantDTO);
         
         await _unitOfWork.Restaurants.AddAsync(restaurant);
         await _unitOfWork.SaveChangesAsync();
         
-        return restaurant;
+        return _mapper.Map<RestaurantDTO>(restaurant);
     }
 
     public async Task<bool> RestaurantExistsAsync(string restaurantName)
