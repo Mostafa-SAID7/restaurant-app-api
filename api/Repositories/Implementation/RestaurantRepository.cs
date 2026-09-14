@@ -6,7 +6,19 @@ using Microsoft.EntityFrameworkCore;
 namespace RestaurantAPI.Repositories.Implementation;
 
 /// <summary>
-/// Restaurant repository implementation with specific restaurant operations
+/// Restaurant repository implementation.
+/// Phase A.7: Pure data layer - filtering and querying only.
+/// 
+/// This repository handles:
+/// - Querying restaurants with optional filters (category, address, name)
+/// - Checking if restaurant exists by name
+/// - Getting restaurant with related items
+/// 
+/// Filtering logic (Contains checks) is acceptable here because:
+/// - It's a data-layer concern (WHAT data to retrieve)
+/// - Not business logic (HOW to process/calculate data)
+/// 
+/// Business validation (e.g., "restaurant name must be unique") belongs in services.
 /// </summary>
 public class RestaurantRepository : BaseRepository<Restaurant>, IRestaurantRepository
 {

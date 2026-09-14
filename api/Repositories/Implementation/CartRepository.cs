@@ -6,7 +6,15 @@ using Microsoft.EntityFrameworkCore;
 namespace RestaurantAPI.Repositories.Implementation;
 
 /// <summary>
-/// Cart repository implementation with specific cart operations
+/// Cart repository implementation.
+/// Phase A.7: Pure data layer - no business logic.
+/// 
+/// This repository handles:
+/// - Querying cart items for a user
+/// - Finding specific user-item combinations
+/// - Clearing/removing cart items
+/// 
+/// Cart total calculations and quantity validation belong in services.
 /// </summary>
 public class CartRepository : BaseRepository<Cart>, ICartRepository
 {

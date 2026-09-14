@@ -3,7 +3,19 @@ using System.Linq.Expressions;
 namespace RestaurantAPI.Repositories.Interfaces;
 
 /// <summary>
-/// Base repository interface with common CRUD operations
+/// Base repository interface with common CRUD operations.
+/// Phase A.7: Pure data access layer - no business logic allowed.
+/// 
+/// CONSTRAINTS:
+/// - Repositories MUST NOT contain validation logic
+/// - Repositories MUST NOT contain business calculations or transformations
+/// - Repositories MUST NOT call services (would create circular dependencies)
+/// - Repositories MUST NOT throw business exceptions (use data exceptions only)
+/// - Repositories SHOULD only query, insert, update, or delete data
+/// - Entity mapping to DTOs happens in SERVICES, not repositories
+/// - Complex data operations (sorting, filtering) are OK here - they're data-layer concerns
+/// 
+/// All business logic belongs in Services (IUserService, IAuthService, etc.)
 /// </summary>
 /// <typeparam name="T">Entity type</typeparam>
 public interface IBaseRepository<T> where T : class

@@ -6,7 +6,21 @@ using System.Linq.Expressions;
 namespace RestaurantAPI.Repositories.Implementation;
 
 /// <summary>
-/// Base repository implementation with common CRUD operations
+/// Base repository implementation with common CRUD operations.
+/// Phase A.7: Pure data access layer - no business logic.
+/// 
+/// This class is strictly for data operations:
+/// - Query/filter entities from database
+/// - Insert/update/delete entities in database
+/// - Include navigation properties for eager loading
+/// 
+/// This class does NOT:
+/// - Validate business rules (validation belongs in services)
+/// - Transform entities to DTOs (mapping belongs in services)
+/// - Execute business logic (belongs in services)
+/// - Call services (would break layering)
+/// 
+/// Repositories return ENTITIES only. Services handle entity→DTO conversion (Phase A.5).
 /// </summary>
 /// <typeparam name="T">Entity type</typeparam>
 public class BaseRepository<T> : IBaseRepository<T> where T : class

@@ -6,7 +6,16 @@ using Microsoft.EntityFrameworkCore;
 namespace RestaurantAPI.Repositories.Implementation;
 
 /// <summary>
-/// Item repository implementation with specific item operations
+/// Item repository implementation.
+/// Phase A.7: Pure data layer - filtering, sorting, and querying only.
+/// 
+/// This repository handles:
+/// - Querying items by restaurant
+/// - Querying items with optional name filter and price sorting
+/// - Finding specific items by name and restaurant
+/// 
+/// Sorting and filtering are data-layer concerns (what to retrieve).
+/// Item pricing calculations and discounts belong in services.
 /// </summary>
 public class ItemRepository : BaseRepository<Item>, IItemRepository
 {
