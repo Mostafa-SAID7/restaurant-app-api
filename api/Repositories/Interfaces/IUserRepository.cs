@@ -12,4 +12,6 @@ public interface IUserRepository : IBaseRepository<User>
     Task<bool> EmailExistsAsync(string email);
     Task<bool> UserCodeExistsAsync(string userCode);
     Task<User?> ValidateUserAsync(string email, string password);
+    string HashPassword(User user, string password);
+    bool VerifyPassword(User user, string password);
 }

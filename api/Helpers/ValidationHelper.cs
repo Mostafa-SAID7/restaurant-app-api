@@ -53,6 +53,23 @@ public static class ValidationHelper
     }
 
     /// <summary>
+    /// Validates new password for updates
+    /// </summary>
+    public static (bool IsValid, List<string> Errors) ValidatePassword(string password)
+    {
+        var errors = new List<string>();
+
+        if (password.IsNullOrWhiteSpace())
+            errors.Add("Password is required");
+        else if (password.Length < 6)
+            errors.Add("Password must be at least 6 characters long");
+        else if (password.Length > 30)
+            errors.Add("Password cannot exceed 30 characters");
+
+        return (errors.Count == 0, errors);
+    }
+
+    /// <summary>
     /// Validates menu item data
     /// </summary>
     public static (bool IsValid, List<string> Errors) ValidateMenuItem(string name, decimal price, string? description)

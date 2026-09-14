@@ -21,10 +21,27 @@ public static class HttpContextExtensions
     }
 
     /// <summary>
-    /// Gets the API key from query string
+    /// <summary>
+    /// Gets the API key from Authorization header (X-API-Key) or query string (legacy fallback)
+    /// Prefers header-based authentication for security
     /// </summary>
     public static string? GetApiKey(this HttpContext context)
     {
+        // Priority 1: X-API-Key header (recommended)
+        var headerKey = context.Request.Headers["X-API-Key"].FirstOrDefault();
+        if (!string.IsNullOrEmpty(headerKey))
+        {
+            return headerKey;
+        }
+
+        // Priority 2: Authorization header (Bearer token format)
+        var authHeader = context.Request.Headers["Authorization"].FirstOrDefault();
+        if (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+        {
+            return authHeader.Substring("Bearer ".Length).Trim();
+        }
+
+        // Priority 3: Query parameter (legacy fallback - not recommended for production)
         return context.Request.Query["apikey"].FirstOrDefault();
     }
 

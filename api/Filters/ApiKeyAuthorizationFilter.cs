@@ -1,3 +1,4 @@
+using RestuarantAPI.Data;
 using RestuarantAPI.Extensions;
 using RestuarantAPI.Helpers;
 using Microsoft.AspNetCore.Mvc;
@@ -6,50 +7,69 @@ using Microsoft.AspNetCore.Mvc.Filters;
 namespace RestuarantAPI.Filters;
 
 /// <summary>
-/// Authorization filter to validate API keys for protected endpoints
+/// Authorization filter to validate API keys (user codes) against the database
+/// Supports X-API-Key header, Authorization Bearer token, or legacy query parameter
 /// </summary>
-public class ApiKeyAuthorizationFilter : IAuthorizationFilter
+public class ApiKeyAuthorizationFilter : IAsyncAuthorizationFilter
 {
     private readonly ILogger<ApiKeyAuthorizationFilter> _logger;
+    private readonly AppDbContext _dbContext;
 
-    public ApiKeyAuthorizationFilter(ILogger<ApiKeyAuthorizationFilter> logger)
+    public ApiKeyAuthorizationFilter(ILogger<ApiKeyAuthorizationFilter> logger, AppDbContext dbContext)
     {
         _logger = logger;
+        _dbContext = dbContext;
     }
 
-    public void OnAuthorization(AuthorizationFilterContext context)
+    public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
     {
         var apiKey = context.HttpContext.GetApiKey();
 
         if (apiKey.IsNullOrWhiteSpace())
         {
+            _logger.LogWarning("API request received without API key");
             context.Result = new UnauthorizedObjectResult(new
             {
-                Success = false,
-                Message = "API key is required",
-                Timestamp = DateTime.UtcNow
+                message = "API key is required",
+                timestamp = DateTime.UtcNow
             });
             return;
         }
 
         if (!ValidationHelper.IsValidApiKey(apiKey))
         {
+            _logger.LogWarning($"API request received with invalid API key format: {apiKey}");
             context.Result = new UnauthorizedObjectResult(new
             {
-                Success = false,
-                Message = "Invalid API key format",
-                Timestamp = DateTime.UtcNow
+                message = "Invalid API key format",
+                timestamp = DateTime.UtcNow
             });
             return;
         }
 
-        // Store the API key in HttpContext for use in controllers
+        // Validate that the API key belongs to an existing user
+        var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Usercode == apiKey);
+        if (user == null)
+        {
+            _logger.LogWarning($"API request received with non-existent API key: {apiKey}");
+            context.Result = new UnauthorizedObjectResult(new
+            {
+                message = "Invalid API key - user not found",
+                timestamp = DateTime.UtcNow
+            });
+            return;
+        }
+
+        // Store the API key and user in HttpContext for use in controllers
         context.HttpContext.Items["ApiKey"] = apiKey;
+        context.HttpContext.Items["User"] = user;
+
+        _logger.LogInformation($"API request authorized for user: {user.UserEmail}");
     }
 }
 
 /// <summary>
-/// Attribute to apply API key authorization to controllers or actions
+/// Attribute to require API key authorization on controllers or actions
 /// </summary>
 public class RequireApiKeyAttribute : TypeFilterAttribute
 {
