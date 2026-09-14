@@ -63,7 +63,7 @@ public class CartService : ICartService
 
         var cartItems = await _unitOfWork.Carts.GetByUserIdAsync(user.Usercode);
         
-        var totalAmount = cartItems.Sum(c => c.item.ItemPrice * c.Quantity);
+        var totalAmount = cartItems.Sum(c => c.Item.ItemPrice * c.Quantity);
         
         return new GetCartDTO
         {

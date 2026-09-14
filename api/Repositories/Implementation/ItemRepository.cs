@@ -24,7 +24,7 @@ public class ItemRepository : BaseRepository<Item>, IItemRepository
     public async Task<IEnumerable<Item>> GetByFiltersAsync(string itemName = "", string sortByPrice = "")
     {
         var query = _dbSet
-            .Include(i => i.restaurant)
+            .Include(i => i.Restaurant)
             .AsQueryable();
 
         if (!string.IsNullOrEmpty(itemName))

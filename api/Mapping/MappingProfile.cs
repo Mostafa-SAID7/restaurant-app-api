@@ -40,19 +40,19 @@ public class MappingProfile : Profile
         CreateMap<ItemDTO, Item>()
             .ForMember(dest => dest.ItemID, opt => opt.Ignore())
             .ForMember(dest => dest.RestaurantID, opt => opt.Ignore())
-            .ForMember(dest => dest.restaurant, opt => opt.Ignore());
+            .ForMember(dest => dest.Restaurant, opt => opt.Ignore());
 
         CreateMap<Item, ItemDTO>();
 
         // GetItems mapping (for menu display)
         CreateMap<Item, GetItems>()
-            .ForMember(dest => dest.RestaurantName, opt => opt.MapFrom(src => src.restaurant.RestaurantName))
+            .ForMember(dest => dest.RestaurantName, opt => opt.MapFrom(src => src.Restaurant.RestaurantName))
             .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom<ImageUrlResolver>());
 
         // Order mappings
         CreateMap<OrderDTO, Order>()
             .ForMember(dest => dest.OrderID, opt => opt.Ignore())
-            .ForMember(dest => dest.user, opt => opt.Ignore())
+            .ForMember(dest => dest.User, opt => opt.Ignore())
             .ForMember(dest => dest.UserID, opt => opt.Ignore())
             .ForMember(dest => dest.ItemPrice, opt => opt.Ignore())
             .ForMember(dest => dest.TotalPrice, opt => opt.Ignore())
@@ -72,7 +72,7 @@ public class MappingProfile : Profile
         // MasterOrder mappings
         CreateMap<MasterOrder, MasterOrderDTO>();
         CreateMap<MasterOrderDTO, MasterOrder>()
-            .ForMember(dest => dest.user, opt => opt.Ignore())
-            .ForMember(dest => dest.restaurant, opt => opt.Ignore());
+            .ForMember(dest => dest.User, opt => opt.Ignore())
+            .ForMember(dest => dest.Restaurant, opt => opt.Ignore());
     }
 }

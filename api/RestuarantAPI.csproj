@@ -1,19 +1,20 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>7b9adbcc-3891-45ec-8105-18b5d215e485</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- AutoMapper 13: Extensions package merged into main, CVE fixed -->
-    <PackageReference Include="AutoMapper" Version="13.0.1" />
+    <!-- AutoMapper: Updated to patch GHSA-rvv3-g6hj-g44x vulnerability -->
+    <PackageReference Include="AutoMapper" Version="13.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.1.0" />
     <!-- EF Core: all packages must share the same version to avoid NU1605 -->
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.20" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.20" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.4">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.20">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>

@@ -89,7 +89,7 @@ public class OrderService : IOrderService
         {
             masterID = t.MasterID,
             userID = t.UserID,
-            usercode = t.user?.Usercode,
+            usercode = t.User?.Usercode,
             RestaurantID = t.RestaurantID,
             Grandtotal = t.GrandTotal
         });

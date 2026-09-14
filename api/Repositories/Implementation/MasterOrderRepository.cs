@@ -24,16 +24,16 @@ public class MasterOrderRepository : BaseRepository<MasterOrder>, IMasterOrderRe
     public async Task<MasterOrder?> GetWithDetailsAsync(int masterId)
     {
         return await _dbSet
-            .Include(m => m.user)
-            .Include(m => m.restaurant)
+            .Include(m => m.User)
+            .Include(m => m.Restaurant)
             .FirstOrDefaultAsync(m => m.MasterID == masterId);
     }
 
     public async Task<IEnumerable<MasterOrder>> GetWithRestaurantByUserIdAsync(string userId)
     {
         return await _dbSet
-            .Include(m => m.restaurant)
-            .Include(m => m.user)
+            .Include(m => m.Restaurant)
+            .Include(m => m.User)
             .Where(m => m.UserID == userId)
             .ToListAsync();
     }

@@ -48,7 +48,7 @@ public class UserRepository : BaseRepository<User>, IUserRepository
             return null;
 
         // Verify password hash
-        var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash);
+        var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
         return result == PasswordVerificationResult.Success ? user : null;
     }
 
@@ -65,7 +65,7 @@ public class UserRepository : BaseRepository<User>, IUserRepository
     /// </summary>
     public bool VerifyPassword(User user, string password)
     {
-        var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash);
+        var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
         return result == PasswordVerificationResult.Success;
     }
 }
