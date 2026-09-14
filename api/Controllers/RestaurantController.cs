@@ -30,22 +30,14 @@ namespace RestaurantAPI.Controllers
     [SwaggerResponse(404, "No restaurants found")]
     public async Task<ActionResult> getrestaurants([FromQuery] string category="", string? address=null, string? name=null)
     {
-        try
+        var restaurants = await _restaurantService.GetRestaurantsAsync(category, address, name);
+        
+        if (restaurants.Any())
         {
-            var restaurants = await _restaurantService.GetRestaurantsAsync(category, address, name);
-            
-            if (restaurants.Any())
-            {
-                return Ok(restaurants);
-            }
-            
-            return StatusCode(404, "No Restaurants Found");
+            return ResponseHelper.Success(restaurants);
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error getting restaurants");
-            return StatusCode(500, "Internal server error");
-        }
+        
+        return ResponseHelper.NotFound("Restaurants");
     }
 
     [HttpPost]
@@ -54,22 +46,14 @@ namespace RestaurantAPI.Controllers
     [SwaggerResponse(409, "Restaurant already exists")]
     public async Task<ActionResult> addrestaurant(RestaurantDTO restaurantDTO)
     {
-        try
+        var restaurantExists = await _restaurantService.RestaurantExistsAsync(restaurantDTO.RestaurantName);
+        if (restaurantExists)
         {
-            var restaurantExists = await _restaurantService.RestaurantExistsAsync(restaurantDTO.RestaurantName);
-            if (restaurantExists)
-            {
-                return Conflict(new { message = "Restaurant Already Exists" });
-            }
+            return ResponseHelper.Error("Restaurant already exists", 409);
+        }
 
-            var newRestaurant = await _restaurantService.CreateRestaurantAsync(restaurantDTO);
-            return StatusCode(201, newRestaurant);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error creating restaurant");
-            return StatusCode(500, "Internal server error");
-        }
+        var newRestaurant = await _restaurantService.CreateRestaurantAsync(restaurantDTO);
+        return ResponseHelper.Created(newRestaurant);
     }
 
      [HttpGet("{Restaurant_id}")]
@@ -78,22 +62,14 @@ namespace RestaurantAPI.Controllers
      [SwaggerResponse(404, "Restaurant not found")]
      public async Task<ActionResult> getrestaurantbyid([FromRoute] int Restaurant_id)
      {
-        try
+        var restaurant = await _restaurantService.GetRestaurantByIdAsync(Restaurant_id);
+        
+        if (restaurant != null)
         {
-            var restaurant = await _restaurantService.GetRestaurantByIdAsync(Restaurant_id);
-            
-            if (restaurant != null)
-            {
-                return Ok(restaurant);
-            }
-            
-            return StatusCode(404, $"No Restaurant Exists with {Restaurant_id}");
+            return ResponseHelper.Success(restaurant);
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error getting restaurant by id");
-            return StatusCode(500, "Internal server error");
-        }
+        
+        return ResponseHelper.NotFound("Restaurant", Restaurant_id);
      }
 
 
@@ -104,22 +80,14 @@ namespace RestaurantAPI.Controllers
         [SwaggerResponse(404, "Restaurant not found")]
         public async Task<ActionResult> getmenu(int Restaurant_id,[FromQuery] string sortbyprice = "")
         {
-            try
+            var restaurant = await _restaurantService.GetRestaurantByIdAsync(Restaurant_id);
+            if (restaurant == null)
             {
-                var restaurant = await _restaurantService.GetRestaurantByIdAsync(Restaurant_id);
-                if (restaurant == null)
-                {
-                    return StatusCode(404, $"No Restaurant Exists with id:{Restaurant_id}");
-                }
+                return ResponseHelper.NotFound("Restaurant", Restaurant_id);
+            }
 
-                var menu = await _restaurantService.GetMenuAsync(Restaurant_id, sortbyprice);
-                return Ok(menu);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error getting menu");
-                return StatusCode(500, "Internal server error");
-            }
+            var menu = await _restaurantService.GetMenuAsync(Restaurant_id, sortbyprice);
+            return ResponseHelper.Success(menu);
         }
 
         [HttpPost("{Restaurant_id}/additem")]
@@ -128,22 +96,14 @@ namespace RestaurantAPI.Controllers
         [SwaggerResponse(404, "Restaurant not found")]
         public async Task<ActionResult> setmenu(int Restaurant_id, [FromBody] ItemDTO itemDTO)
         {
-            try
+            var restaurant = await _restaurantService.GetRestaurantByIdAsync(Restaurant_id);
+            if (restaurant == null)
             {
-                var restaurant = await _restaurantService.GetRestaurantByIdAsync(Restaurant_id);
-                if (restaurant == null)
-                {
-                    return StatusCode(404, $"No Restaurant Exists with id:{Restaurant_id}");
-                }
+                return ResponseHelper.NotFound("Restaurant", Restaurant_id);
+            }
 
-                var newItem = await _restaurantService.AddItemToMenuAsync(Restaurant_id, itemDTO);
-                return StatusCode(201, newItem);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error adding item to menu");
-                return StatusCode(500, "Internal server error");
-            }
+            var newItem = await _restaurantService.AddItemToMenuAsync(Restaurant_id, itemDTO);
+            return ResponseHelper.Created(newItem);
         }
 
         [HttpPost("upload-image")]
@@ -156,32 +116,23 @@ namespace RestaurantAPI.Controllers
         [RateLimit(maxRequests: 20, timeWindowMinutes: 1)]
         public async Task<ActionResult> UploadImage(IFormFile image)
         {
-            try
+            if (image == null || image.Length == 0)
             {
-                if (image == null || image.Length == 0)
-                {
-                    return BadRequest(new { message = "No image file provided" });
-                }
-
-                if (!FileHelper.IsValidImage(image))
-                {
-                    return BadRequest(new { message = "Invalid image file. Allowed formats: JPEG, PNG, GIF, WebP. Max size: 5MB" });
-                }
-
-                var imagePath = await _imageService.SaveImageAsync(image);
-                var imageUrl = _imageService.GetImageUrl(imagePath);
-
-                return Ok(new { 
-                    message = "Image uploaded successfully",
-                    imagePath, 
-                    imageUrl 
-                });
+                return ResponseHelper.Error("No image file provided");
             }
-            catch (Exception ex)
+
+            if (!FileHelper.IsValidImage(image))
             {
-                _logger.LogError(ex, "Error uploading image");
-                return StatusCode(500, new { message = "Error uploading image" });
+                return ResponseHelper.Error("Invalid image file. Allowed formats: JPEG, PNG, GIF, WebP. Max size: 5MB");
             }
+
+            var imagePath = await _imageService.SaveImageAsync(image);
+            var imageUrl = _imageService.GetImageUrl(imagePath);
+
+            return ResponseHelper.Success(new { 
+                imagePath, 
+                imageUrl 
+            }, "Image uploaded successfully");
         }
 
         [HttpPost("upload-base64-image")]
@@ -194,45 +145,36 @@ namespace RestaurantAPI.Controllers
         [RateLimit(maxRequests: 20, timeWindowMinutes: 1)]
         public async Task<ActionResult> UploadBase64Image([FromBody] ImageRequest request)
         {
+            if (string.IsNullOrEmpty(request?.Base64Image))
+            {
+                return ResponseHelper.Error("No image data provided");
+            }
+
+            // Validate base64 string
             try
             {
-                if (string.IsNullOrEmpty(request?.Base64Image))
-                {
-                    return BadRequest(new { message = "No image data provided" });
-                }
-
-                // Validate base64 string
-                try
-                {
-                    var base64Data = request.Base64Image.Contains(",") 
-                        ? request.Base64Image.Split(',')[1] 
-                        : request.Base64Image;
-                    Convert.FromBase64String(base64Data);
-                }
-                catch
-                {
-                    return BadRequest(new { message = "Invalid base64 image data" });
-                }
-
-                // Sanitize filename
-                var fileName = string.IsNullOrWhiteSpace(request.FileName) 
-                    ? "item" 
-                    : request.FileName.Replace("\\", "").Replace("/", "").Replace("..", "");
-
-                var imagePath = await _imageService.SaveBase64ImageAsync(request.Base64Image, fileName);
-                var imageUrl = _imageService.GetImageUrl(imagePath);
-
-                return Ok(new { 
-                    message = "Base64 image uploaded successfully",
-                    imagePath, 
-                    imageUrl 
-                });
+                var base64Data = request.Base64Image.Contains(",") 
+                    ? request.Base64Image.Split(',')[1] 
+                    : request.Base64Image;
+                Convert.FromBase64String(base64Data);
             }
-            catch (Exception ex)
+            catch
             {
-                _logger.LogError(ex, "Error uploading base64 image");
-                return StatusCode(500, new { message = "Error uploading image" });
+                return ResponseHelper.Error("Invalid base64 image data");
             }
+
+            // Sanitize filename
+            var fileName = string.IsNullOrWhiteSpace(request.FileName) 
+                ? "item" 
+                : request.FileName.Replace("\\", "").Replace("/", "").Replace("..", "");
+
+            var imagePath = await _imageService.SaveBase64ImageAsync(request.Base64Image, fileName);
+            var imageUrl = _imageService.GetImageUrl(imagePath);
+
+            return ResponseHelper.Success(new { 
+                imagePath, 
+                imageUrl 
+            }, "Base64 image uploaded successfully");
         }
 
         [HttpGet("items")]
@@ -241,22 +183,14 @@ namespace RestaurantAPI.Controllers
         [SwaggerResponse(404, "No items found")]
         public async Task<ActionResult> getitems([FromQuery] string ItemName = "", string sortbyprice = "")
         {
-            try
-            {
-                var items = await _restaurantService.GetAllItemsAsync(ItemName, sortbyprice);
+            var items = await _restaurantService.GetAllItemsAsync(ItemName, sortbyprice);
 
-                if (items.Any())
-                {
-                    return Ok(items);
-                }
-
-                return StatusCode(404, "No items Found");
-            }
-            catch (Exception ex)
+            if (items.Any())
             {
-                _logger.LogError(ex, "Error getting items");
-                return StatusCode(500, "Internal server error");
+                return ResponseHelper.Success(items);
             }
+
+            return ResponseHelper.NotFound("Items");
         }
     }
 }
