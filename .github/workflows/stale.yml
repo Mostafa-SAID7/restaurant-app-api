@@ -1,4 +1,4 @@
-name: 🕰️ Stale PR Manager
+name: Stale PR Manager
 
 on:
   schedule:

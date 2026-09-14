@@ -1,4 +1,4 @@
-name: 🔒 CodeQL Security Scan
+name: CodeQL Security Scan
 
 on:
   push:
@@ -18,27 +18,27 @@ jobs:
       security-events: write
 
     steps:
-      - name: ⬇️ Checkout code
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: ⚙️ Setup .NET 8
+      - name: Setup .NET 8
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
 
-      - name: 🔍 Initialize CodeQL
+      - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
           languages: csharp
           queries: security-and-quality
 
-      - name: 📦 Restore dependencies
+      - name: Restore dependencies
         run: dotnet restore api/RestaurantAPI.csproj
 
-      - name: 🔨 Build for analysis
+      - name: Build for analysis
         run: dotnet build api/RestaurantAPI.csproj --no-restore -c Release
 
-      - name: 📊 Perform CodeQL Analysis
+      - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
         with:
           category: "/language:csharp"

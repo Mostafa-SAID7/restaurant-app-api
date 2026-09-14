@@ -1,6 +1,6 @@
-name: 🚀 Manual Deploy
+name: Manual Deploy
 
-# ⚠️ MANUAL TRIGGER ONLY - No automatic deploys for safety
+# MANUAL TRIGGER ONLY - No automatic deploys for safety
 on:
   workflow_dispatch:
     inputs:
@@ -28,43 +28,37 @@ jobs:
       name: ${{ github.event.inputs.environment }}
 
     steps:
-      - name: ⬇️ Checkout code
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: 🔍 Verify environment
+      - name: Verify environment
         run: |
           ENV="${{ github.event.inputs.environment }}"
-          echo "🚀 Deploying to: $ENV"
+          echo "Deploying to: $ENV"
           
           if [ "$ENV" = "production" ]; then
-            echo "⚠️  PRODUCTION DEPLOYMENT"
+            echo "WARNING: PRODUCTION DEPLOYMENT"
             echo "This is a manual deployment to production."
             echo "Ensure all tests pass and the release is ready."
           fi
 
-      - name: 📋 Deployment Information
+      - name: Deployment Information
         run: |
-          echo "📦 Image tag: ${{ github.event.inputs.image_tag || 'latest' }}"
-          echo "🔗 Repository: ${{ github.repository }}"
-          echo "📍 Commit: ${{ github.sha }}"
-          echo "👤 Triggered by: ${{ github.actor }}"
+          echo "Image tag: ${{ github.event.inputs.image_tag || 'latest' }}"
+          echo "Repository: ${{ github.repository }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Triggered by: ${{ github.actor }}"
 
-      - name: 🔐 Security Check
+      - name: Security Check
         run: |
-          echo "✅ Placeholder deployment step"
-          echo "🔒 In production, this would authenticate with deployment credentials"
-          echo "📍 Current environment: ${{ github.event.inputs.environment }}"
+          echo "Placeholder deployment step"
+          echo "In production, this would authenticate with deployment credentials"
+          echo "Current environment: ${{ github.event.inputs.environment }}"
 
-      # TODO: Add real deployment steps here
-      # - Build/push Docker image to registry
-      # - Update Kubernetes/ECS/App Service configuration
-      # - Run smoke tests
-      # - Notify team on Slack
-
-      - name: ✅ Deployment placeholder complete
+      - name: Deployment placeholder complete
         run: |
-          echo "📦 Ready for deployment to ${{ github.event.inputs.environment }}"
-          echo "⚠️  NOTE: Actual deployment implementation required"
+          echo "Ready for deployment to ${{ github.event.inputs.environment }}"
+          echo "NOTE: Actual deployment implementation required"
           echo "   - Add Docker registry push credentials"
           echo "   - Configure infrastructure deployment steps"
           echo "   - Set up environment-specific secrets"

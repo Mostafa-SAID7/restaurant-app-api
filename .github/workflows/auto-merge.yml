@@ -1,4 +1,4 @@
-name: 🚀 Dependabot Auto-Merge
+name: Dependabot Auto-Merge
 
 on: pull_request
 
@@ -11,10 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.actor == 'dependabot[bot]' }}
     steps:
-      - name: ⬇️ Checkout code
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: ⚙️ Auto-merge dependabot PRs
+      - name: Auto-merge dependabot PRs
         uses: fastify/github-action-merge-dependabot@v3
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
