@@ -1,4 +1,5 @@
 using RestaurantAPI.Mapping;
+using RestaurantAPI.DTOs.External;
 using RestaurantAPI.Services.Interfaces;
 using RestaurantAPI.Services.Implementation;
 using RestaurantAPI.Repositories.Interfaces;
@@ -11,8 +12,8 @@ public static class ServiceConfiguration
 {
     public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
     {
-        // Add AutoMapper
-        services.AddAutoMapper(typeof(MappingProfile));
+        // Add AutoMapper with both internal and external profiles
+        services.AddAutoMapper(typeof(MappingProfile), typeof(ExternalMappingProfile));
 
         // Register Auth Services (must be before authorization)
         services.AddAuthServices(configuration);
