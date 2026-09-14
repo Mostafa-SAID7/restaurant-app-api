@@ -11,5 +11,5 @@ public interface IMenuService
     /// <summary>
     /// Get menu items for a specific restaurant
     /// </summary>
-    Task<IEnumerable<GetItemsDTO>> GetMenuAsync(int restaurantId, string sortByPrice = "");
+    Task<IEnumerable<ItemResponseDTO>> GetMenuAsync(int restaurantId, string sortByPrice = "");
 }

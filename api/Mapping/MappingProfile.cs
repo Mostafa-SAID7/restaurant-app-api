@@ -5,7 +5,7 @@ using RestaurantAPI.Services.Interfaces;
 
 namespace RestaurantAPI.Mapping;
 
-public class ImageUrlResolver : IValueResolver<Item, GetItemsDTO, string>
+public class ImageUrlResolver : IValueResolver<Item, ItemResponseDTO, string>
 {
     private readonly IImageService _imageService;
 
@@ -14,7 +14,7 @@ public class ImageUrlResolver : IValueResolver<Item, GetItemsDTO, string>
         _imageService = imageService;
     }
 
-    public string Resolve(Item source, GetItemsDTO destination, string destMember, ResolutionContext context)
+    public string Resolve(Item source, ItemResponseDTO destination, string destMember, ResolutionContext context)
     {
         return _imageService.GetImageUrl(source.ImageUrl);
     }
@@ -46,6 +46,11 @@ public class MappingProfile : Profile
         CreateMap<Item, ItemDTO>();
 
         // GetItems mapping (for menu display)
+        CreateMap<Item, ItemResponseDTO>()
+            .ForMember(dest => dest.RestaurantName, opt => opt.MapFrom(src => src.Restaurant.RestaurantName))
+            .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom<ImageUrlResolver>());
+
+        // Backward compatibility alias
         CreateMap<Item, GetItemsDTO>()
             .ForMember(dest => dest.RestaurantName, opt => opt.MapFrom(src => src.Restaurant.RestaurantName))
             .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom<ImageUrlResolver>());

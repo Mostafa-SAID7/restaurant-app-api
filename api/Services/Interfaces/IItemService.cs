@@ -16,5 +16,5 @@ public interface IItemService
     /// <summary>
     /// Get all menu items (across all restaurants) with optional filtering
     /// </summary>
-    Task<IEnumerable<GetItemsDTO>> GetAllItemsAsync(string itemName = "", string sortByPrice = "");
+    Task<IEnumerable<ItemResponseDTO>> GetAllItemsAsync(string itemName = "", string sortByPrice = "");
 }

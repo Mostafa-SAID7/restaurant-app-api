@@ -9,7 +9,7 @@ namespace RestaurantAPI.DTOs;
 /// </summary>
 public class CartDTO
 {
-    public List<CartItemDTO> cartitems { get; set; }
+    public List<CartItemDTO> CartItems { get; set; }
     public decimal GrandTotal { get; set; }
 }
 
@@ -34,9 +34,10 @@ public class CartItemDTO
 
 /// <summary>
 /// DTO for adding item to cart (input)
+/// Phase A.8: Renamed from SetCart to AddCartItemRequestDTO for clarity
 /// Simplified to use ItemID instead of embedding Item entity
 /// </summary>
-public class SetCart
+public class AddCartItemRequestDTO
 {
     [Required(ErrorMessage = "ItemID is required")]
     public int ItemID { get; set; }
@@ -44,4 +45,13 @@ public class SetCart
     [Required]
     [Range(1, 100, ErrorMessage = "Quantity must be between 1 and 100")]
     public int Quantity { get; set; }
+}
+
+/// <summary>
+/// Backward compatibility alias for AddCartItemRequestDTO
+/// TODO: Remove after Phase B migration
+/// </summary>
+[Obsolete("Use AddCartItemRequestDTO instead")]
+public class SetCart : AddCartItemRequestDTO
+{
 }

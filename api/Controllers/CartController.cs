@@ -61,7 +61,7 @@ namespace RestaurantAPI.Controllers
         [SwaggerResponse(401, "Unauthorized - JWT token required")]
         [SwaggerResponse(404, "User or item not found")]
         [SwaggerResponse(400, "Invalid request")]
-        public async Task<ActionResult> AddItemToCart([FromBody] SetCart setCart)
+        public async Task<ActionResult> AddItemToCart([FromBody] AddCartItemRequestDTO addCartItem)
         {
             try
             {
@@ -71,7 +71,7 @@ namespace RestaurantAPI.Controllers
                     return ResponseHelper.Unauthorized("User not identified from JWT");
                 }
 
-                var cartDTO = await _cartService.AddItemToCartAsync(userId, setCart);
+                var cartDTO = await _cartService.AddItemToCartAsync(userId, addCartItem);
                 return ResponseHelper.Created(cartDTO);
             }
             catch (UnauthorizedAccessException ex)

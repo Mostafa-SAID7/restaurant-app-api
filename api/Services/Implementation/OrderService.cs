@@ -24,11 +24,12 @@ public class OrderService : IOrderService
     /// <summary>
     /// Creates an order with proper transaction handling
     /// Phase A.1: userId from JWT claims instead of apiKey
+    /// Phase A.8: Uses CreateOrderRequestDTO for request parameter
     /// </summary>
-    public async Task<OrderResponseDTO> CreateOrderAsync(int restaurantId, string userId, MenuDTO menuDTO)
+    public async Task<OrderResponseDTO> CreateOrderAsync(int restaurantId, string userId, CreateOrderRequestDTO createOrderRequest)
     {
         // Validate input
-        if (menuDTO?.menuDTO == null || menuDTO.menuDTO.Count == 0)
+        if (createOrderRequest?.Items == null || createOrderRequest.Items.Count == 0)
             throw new ArgumentException("Order must contain at least one item");
 
         var customer = await _unitOfWork.Users.GetByIdAsync(userId);
@@ -50,7 +51,7 @@ public class OrderService : IOrderService
         await _unitOfWork.BeginTransactionAsync();
         try
         {
-            foreach (var item in menuDTO.menuDTO)
+            foreach (var item in createOrderRequest.Items)
             {
                 // Validate quantity
                 if (item.Quantity < 1 || item.Quantity > 100)

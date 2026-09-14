@@ -27,12 +27,12 @@ namespace RestaurantAPI.Controllers
         /// <summary>
         /// Create order for specific restaurant
         /// </summary>
-        [HttpPost("{restaurantid}/create")]
+        [HttpPost("{restaurantId}/create")]
         [SwaggerOperation(Summary = "Create order", Description = "Create a new order for a specific restaurant")]
         [SwaggerResponse(201, "Order created successfully", typeof(OrderResponseDTO))]
         [SwaggerResponse(400, "Invalid request")]
         [SwaggerResponse(401, "Unauthorized - JWT token required")]
-        public async Task<ActionResult> CreateOrder(int restaurantid, [FromBody] MenuDTO menuDTO)
+        public async Task<ActionResult> CreateOrder(int restaurantId, [FromBody] CreateOrderRequestDTO createOrderRequest)
         {
             try
             {
@@ -42,7 +42,7 @@ namespace RestaurantAPI.Controllers
                     return ResponseHelper.Unauthorized("User not identified from JWT");
                 }
 
-                var orderResult = await _orderService.CreateOrderAsync(restaurantid, userId, menuDTO);
+                var orderResult = await _orderService.CreateOrderAsync(restaurantId, userId, createOrderRequest);
                 return ResponseHelper.Created(orderResult);
             }
             catch (UnauthorizedAccessException ex)

@@ -23,9 +23,9 @@ public class MenuService : IMenuService
     /// <summary>
     /// Get menu items for a specific restaurant
     /// </summary>
-    public async Task<IEnumerable<GetItemsDTO>> GetMenuAsync(int restaurantId, string sortByPrice = "")
+    public async Task<IEnumerable<ItemResponseDTO>> GetMenuAsync(int restaurantId, string sortByPrice = "")
     {
         var items = await _unitOfWork.Items.GetMenuByRestaurantIdAsync(restaurantId, sortByPrice);
-        return _mapper.Map<IEnumerable<GetItemsDTO>>(items);
+        return _mapper.Map<IEnumerable<ItemResponseDTO>>(items);
     }
 }

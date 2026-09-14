@@ -17,7 +17,7 @@ public interface ICartService
     /// <summary>
     /// Add item to cart (userId from JWT)
     /// </summary>
-    Task<CartItemDTO> AddItemToCartAsync(string userId, SetCart setCart);
+    Task<CartItemDTO> AddItemToCartAsync(string userId, AddCartItemRequestDTO addCartItem);
     
     Task<bool> RemoveItemFromCartAsync(string userId, int itemId);
     

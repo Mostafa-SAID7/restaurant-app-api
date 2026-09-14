@@ -102,7 +102,7 @@ namespace RestaurantAPI.Controllers
         [HttpGet("{restaurantId}/menu")]
         [AllowAnonymous]
         [SwaggerOperation(Summary = "Get restaurant menu", Description = "Retrieve menu items for specific restaurant")]
-        [SwaggerResponse(200, "Success", typeof(IEnumerable<GetItemsDTO>))]
+        [SwaggerResponse(200, "Success", typeof(IEnumerable<ItemResponseDTO>))]
         [SwaggerResponse(404, "Restaurant not found")]
         public async Task<ActionResult> GetMenu(int restaurantId, [FromQuery] string sortbyprice = "")
         {
@@ -180,7 +180,7 @@ namespace RestaurantAPI.Controllers
         [SwaggerResponse(401, "Unauthorized - JWT token required")]
         [SwaggerResponse(413, "File too large")]
         [RateLimit(maxRequests: 20, timeWindowMinutes: 1)]
-        public async Task<ActionResult> UploadBase64Image([FromBody] ImageRequest request)
+        public async Task<ActionResult> UploadBase64Image([FromBody] ImageRequestDTO request)
         {
             if (string.IsNullOrEmpty(request?.Base64Image))
             {
@@ -220,7 +220,7 @@ namespace RestaurantAPI.Controllers
         [HttpGet("items/all")]
         [AllowAnonymous]
         [SwaggerOperation(Summary = "Get all menu items", Description = "Retrieve all menu items across all restaurants")]
-        [SwaggerResponse(200, "Success", typeof(IEnumerable<GetItemsDTO>))]
+        [SwaggerResponse(200, "Success", typeof(IEnumerable<ItemResponseDTO>))]
         [SwaggerResponse(404, "No items found")]
         public async Task<ActionResult> GetAllItems([FromQuery] string itemName = "", string sortbyprice = "")
         {

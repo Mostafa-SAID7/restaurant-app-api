@@ -38,10 +38,10 @@ public class ItemService : IItemService
     /// <summary>
     /// Get all menu items (across all restaurants) with optional filtering
     /// </summary>
-    public async Task<IEnumerable<GetItemsDTO>> GetAllItemsAsync(string itemName = "", string sortByPrice = "")
+    public async Task<IEnumerable<ItemResponseDTO>> GetAllItemsAsync(string itemName = "", string sortByPrice = "")
     {
         var items = await _unitOfWork.Items.GetByFiltersAsync(itemName, sortByPrice);
-        return _mapper.Map<IEnumerable<GetItemsDTO>>(items);
+        return _mapper.Map<IEnumerable<ItemResponseDTO>>(items);
     }
 }
 

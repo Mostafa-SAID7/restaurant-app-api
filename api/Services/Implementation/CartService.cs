@@ -41,16 +41,16 @@ public class CartService : ICartService
         }).ToList();
     }
 
-    public async Task<CartItemDTO> AddItemToCartAsync(string userId, SetCart setCart)
+    public async Task<CartItemDTO> AddItemToCartAsync(string userId, AddCartItemRequestDTO addCartItem)
     {
         var user = await _unitOfWork.Users.GetByIdAsync(userId);
         if (user == null)
             throw new UnauthorizedAccessException("User not found");
 
         // Fetch the Item by ID and validate it exists
-        var item = await _unitOfWork.Items.GetByIdAsync(setCart.ItemID);
+        var item = await _unitOfWork.Items.GetByIdAsync(addCartItem.ItemID);
         if (item == null)
-            throw new KeyNotFoundException($"Item with ID {setCart.ItemID} not found");
+            throw new KeyNotFoundException($"Item with ID {addCartItem.ItemID} not found");
 
         var cart = new Cart
         {
@@ -58,7 +58,7 @@ public class CartService : ICartService
             ItemID = item.ItemID,
             ItemName = item.ItemName,
             ItemPrice = item.ItemPrice,
-            Quantity = setCart.Quantity
+            Quantity = addCartItem.Quantity
         };
 
         await _unitOfWork.Carts.AddAsync(cart);
@@ -101,7 +101,7 @@ public class CartService : ICartService
         
         return new CartDTO
         {
-            cartitems = cartItems.Select(c => new CartItemDTO
+            CartItems = cartItems.Select(c => new CartItemDTO
             {
                 CartID = c.CartID,
                 ItemID = c.ItemID,
