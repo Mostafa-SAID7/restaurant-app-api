@@ -1,4 +1,5 @@
 using RestaurantAPI.Models;
+using RestaurantAPI.Auth.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace RestaurantAPI.Data;
@@ -12,6 +13,7 @@ public class AppDbContext : DbContext
     {
     }
 
+    // Business entities
     public DbSet<User> Users { get; set; }
     public DbSet<Item> Items { get; set; }
     public DbSet<Order> Orders { get; set; }
@@ -19,9 +21,86 @@ public class AppDbContext : DbContext
     public DbSet<MasterOrder> MasterOrders { get; set; }
     public DbSet<Cart> Carts { get; set; }
 
+    // Auth entities
+    public DbSet<ApplicationRole> Roles { get; set; }
+    public DbSet<ApplicationUserRole> UserRoles { get; set; }
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        // ========== AUTH ENTITIES ==========
+
+        // ApplicationRole configuration
+        modelBuilder.Entity<ApplicationRole>(entity =>
+        {
+            entity.HasKey(r => r.Id);
+            
+            entity.Property(r => r.Name).IsRequired().HasMaxLength(100);
+            entity.Property(r => r.Description).HasMaxLength(500);
+            entity.Property(r => r.CreatedAt).IsRequired();
+
+            // Unique constraint on role name
+            entity.HasIndex(r => r.Name).IsUnique();
+
+            // One role has many user-role mappings
+            entity.HasMany(r => r.UserRoles)
+                .WithOne(ur => ur.Role)
+                .HasForeignKey(ur => ur.RoleId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // ApplicationUserRole configuration (junction table)
+        modelBuilder.Entity<ApplicationUserRole>(entity =>
+        {
+            entity.HasKey(ur => ur.Id);
+
+            entity.Property(ur => ur.UserId).IsRequired();
+            entity.Property(ur => ur.RoleId).IsRequired();
+            entity.Property(ur => ur.AssignedAt).IsRequired();
+
+            // Many user-roles map to one user
+            entity.HasOne(ur => ur.User)
+                .WithMany()
+                .HasForeignKey(ur => ur.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Many user-roles map to one role
+            entity.HasOne(ur => ur.Role)
+                .WithMany(r => r.UserRoles)
+                .HasForeignKey(ur => ur.RoleId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Composite unique constraint: user cannot have same role twice
+            entity.HasIndex(ur => new { ur.UserId, ur.RoleId }).IsUnique();
+        });
+
+        // RefreshToken configuration
+        modelBuilder.Entity<RefreshToken>(entity =>
+        {
+            entity.HasKey(rt => rt.Id);
+
+            entity.Property(rt => rt.UserId).IsRequired();
+            entity.Property(rt => rt.TokenHash).IsRequired().HasMaxLength(500);
+            entity.Property(rt => rt.ExpiresAt).IsRequired();
+            entity.Property(rt => rt.CreatedAt).IsRequired();
+            entity.Property(rt => rt.CreatedByIp).HasMaxLength(45);
+            entity.Property(rt => rt.RevokedAt);
+            entity.Property(rt => rt.UsedAt);
+
+            // Foreign key to User
+            entity.HasOne<User>()
+                .WithMany()
+                .HasForeignKey(rt => rt.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Index for looking up by user ID and checking expiration
+            entity.HasIndex(rt => rt.UserId);
+            entity.HasIndex(rt => rt.ExpiresAt);
+        });
+
+        // ========== BUSINESS ENTITIES ==========
 
         // User configuration
         modelBuilder.Entity<User>(entity =>

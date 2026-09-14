@@ -3,15 +3,21 @@ using RestaurantAPI.Services.Interfaces;
 using RestaurantAPI.Services.Implementation;
 using RestaurantAPI.Repositories.Interfaces;
 using RestaurantAPI.Repositories.Implementation;
+using RestaurantAPI.Auth.Extensions;
 
 namespace RestaurantAPI.Configurations;
 
 public static class ServiceConfiguration
 {
-    public static IServiceCollection AddApplicationServices(this IServiceCollection services)
+    public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
     {
         // Add AutoMapper
         services.AddAutoMapper(typeof(MappingProfile));
+
+        // Register Auth Services (must be before authorization)
+        services.AddAuthServices(configuration);
+        services.AddJwtAuthentication(configuration);
+        services.AddAuthorizationPolicies();
 
         // Register Repositories
         services.AddScoped<IUserRepository, UserRepository>();
