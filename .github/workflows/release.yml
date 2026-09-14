@@ -2,8 +2,9 @@ name: 📦 Create Release
 
 # How to create a real release:
 # 1. Merge PRs to main (Release Drafter updates the draft)
-# 2. Create and push a tag: git tag v1.0.0 && git push origin v1.0.0
-# 3. This workflow will automatically create the GitHub Release and publish Docker image to GHCR
+# 2. BEST: Create and push a tag: git tag v1.0.0 && git push origin v1.0.0
+#    This automatically creates the GitHub Release and triggers publish-image.yml
+# 3. ALTERNATIVE: Manually trigger workflow dispatch (see below)
 
 on:
   push:
@@ -12,13 +13,12 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Release tag (e.g., v1.0.0)'
-        required: false
+        description: 'Release tag (e.g., v1.0.0) - MUST already exist as a git tag'
+        required: true
         type: string
 
 permissions:
   contents: write
-  packages: write
 
 jobs:
   release:
@@ -39,6 +39,13 @@ jobs:
           else
             TAG=${{ github.event.inputs.tag }}
           fi
+          
+          # Validate tag format
+          if ! [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+ ]]; then
+            echo "❌ Tag must match format vX.Y.Z (e.g., v1.0.0)"
+            exit 1
+          fi
+          
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
           echo "📍 Release tag: ${TAG}"
 
@@ -60,7 +67,7 @@ jobs:
           echo "$CHANGELOG" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
-      - name: 📦 Create Release (modern action)
+      - name: 📦 Create Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.tag.outputs.tag }}

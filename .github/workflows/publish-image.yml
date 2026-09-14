@@ -3,7 +3,7 @@ name: 📦 Publish Docker Image to GHCR
 # Publishes Docker image to GitHub Container Registry (ghcr.io)
 # Triggers on:
 # - Push of version tags (v1.0.0, v1.0.1, etc.)
-# - Manual workflow dispatch
+# - Manual workflow dispatch (tag must already exist as git tag)
 
 on:
   push:
@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Image tag (e.g., v1.0.0 or latest)'
+        description: 'Image tag (e.g., v1.0.0) - MUST already exist as a git tag'
         required: true
         type: string
 
@@ -58,7 +58,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 🐳 Build and Push Docker image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: ./api/Dockerfile
