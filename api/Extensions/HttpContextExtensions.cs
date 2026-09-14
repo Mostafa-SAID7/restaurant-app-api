@@ -5,7 +5,7 @@ namespace RestaurantAPI.Extensions;
 public static class HttpContextExtensions
 {
     /// <summary>
-    /// Gets the user ID from the current HTTP context
+    /// Gets the user ID from the current HTTP context (JWT claim)
     /// </summary>
     public static string? GetUserId(this HttpContext context)
     {
@@ -13,7 +13,7 @@ public static class HttpContextExtensions
     }
 
     /// <summary>
-    /// Gets the user email from the current HTTP context
+    /// Gets the user email from the current HTTP context (JWT claim)
     /// </summary>
     public static string? GetUserEmail(this HttpContext context)
     {
@@ -21,28 +21,21 @@ public static class HttpContextExtensions
     }
 
     /// <summary>
-    /// <summary>
-    /// Gets the API key from Authorization header (X-API-Key) or query string (legacy fallback)
-    /// Prefers header-based authentication for security
+    /// Gets a unique identifier for the current request (JWT userId, IP, or unknown)
+    /// Used for rate limiting and logging
     /// </summary>
-    public static string? GetApiKey(this HttpContext context)
+    public static string GetRequestIdentifier(this HttpContext context)
     {
-        // Priority 1: X-API-Key header (recommended)
-        var headerKey = context.Request.Headers["X-API-Key"].FirstOrDefault();
-        if (!string.IsNullOrEmpty(headerKey))
+        // Priority 1: JWT authenticated user ID
+        var userId = context.GetUserId();
+        if (!string.IsNullOrEmpty(userId))
         {
-            return headerKey;
+            return $"user_{userId}";
         }
 
-        // Priority 2: Authorization header (Bearer token format)
-        var authHeader = context.Request.Headers["Authorization"].FirstOrDefault();
-        if (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
-        {
-            return authHeader.Substring("Bearer ".Length).Trim();
-        }
-
-        // Priority 3: Query parameter (legacy fallback - not recommended for production)
-        return context.Request.Query["apikey"].FirstOrDefault();
+        // Priority 2: Client IP address
+        var clientIp = context.GetClientIpAddress();
+        return !string.IsNullOrEmpty(clientIp) ? $"ip_{clientIp}" : "unknown";
     }
 
     /// <summary>
@@ -84,5 +77,32 @@ public static class HttpContextExtensions
     {
         var request = context.Request;
         return $"{request.Scheme}://{request.Host}";
+    }
+
+    /// <summary>
+    /// DEPRECATED: Gets the API key from Authorization header or query string
+    /// Use GetRequestIdentifier() instead for JWT-based identification
+    /// This method is kept for backward compatibility only and should not be used
+    /// </summary>
+    [Obsolete("Use GetRequestIdentifier() instead for JWT-based identification", false)]
+    public static string? GetApiKey(this HttpContext context)
+    {
+        // Priority 1: X-API-Key header (legacy API key - not recommended)
+        var headerKey = context.Request.Headers["X-API-Key"].FirstOrDefault();
+        if (!string.IsNullOrEmpty(headerKey))
+        {
+            return headerKey;
+        }
+
+        // Priority 2: Authorization header Bearer token (now JWT instead of API key)
+        var authHeader = context.Request.Headers["Authorization"].FirstOrDefault();
+        if (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+        {
+            return authHeader.Substring("Bearer ".Length).Trim();
+        }
+
+        // Priority 3: Query parameter (legacy fallback - REMOVED for security)
+        // Query parameters appear in logs, browser history, referer headers
+        return null;
     }
 }

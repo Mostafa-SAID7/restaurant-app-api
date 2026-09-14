@@ -1,17 +1,19 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using RestaurantAPI.Auth.Policies;
 using RestaurantAPI.Filters;
 using RestaurantAPI.Helpers;
 using RestaurantAPI.DTOs;
 using RestaurantAPI.Models;
 using RestaurantAPI.Services.Interfaces;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace RestaurantAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [SwaggerTag("User management and authentication endpoints")]
+    [SwaggerTag("User Management (Legacy - use /api/auth for authentication)")]
+    [Obsolete("Use /api/auth endpoints for authentication. This controller is deprecated and will be removed in v2.0")]
     public class UserController : ControllerBase
     {
         private readonly ILogger<UserController> _logger;
@@ -24,15 +26,17 @@ namespace RestaurantAPI.Controllers
         }
 
         /// <summary>
-        /// Register a new user account
+        /// Register a new user account (DEPRECATED - use POST /api/auth/register)
         /// </summary>
         [HttpPost("register")]
-        [SwaggerOperation(Summary = "Register new user", Description = "Create a new user account with email and password")]
+        [SwaggerOperation(Summary = "[DEPRECATED] Register new user", Description = "DEPRECATED: Use POST /api/auth/register instead")]
         [SwaggerResponse(201, "User registered successfully", typeof(User))]
         [SwaggerResponse(400, "Invalid input or validation error")]
         [SwaggerResponse(409, "User already exists")]
         public async Task<ActionResult> RegisterAsync([FromBody] UserDTO userDTO)
         {
+            _logger.LogWarning("Deprecated endpoint /api/user/register called. Use /api/auth/register instead");
+
             // Validate input
             var (isValid, errors) = ValidationHelper.ValidateUserRegistration(userDTO.UserEmail, userDTO.Password);
             if (!isValid)
@@ -50,21 +54,24 @@ namespace RestaurantAPI.Controllers
             var user = await _userService.RegisterUserAsync(userDTO);
             return ResponseHelper.Created(new { 
                 usercode = user.Usercode,
-                email = user.UserEmail
+                email = user.UserEmail,
+                message = "DEPRECATED: Use /api/auth/register for new registrations"
             });
         }
 
         /// <summary>
-        /// Authenticate user and retrieve API key
+        /// Authenticate user and retrieve API key (DEPRECATED - use POST /api/auth/login)
         /// </summary>
         [HttpPost("login")]
-        [SwaggerOperation(Summary = "User login", Description = "Authenticate user with email and password, returns API key")]
+        [SwaggerOperation(Summary = "[DEPRECATED] User login", Description = "DEPRECATED: Use POST /api/auth/login instead")]
         [SwaggerResponse(200, "Authentication successful")]
         [SwaggerResponse(400, "Invalid email or password")]
         [SwaggerResponse(401, "Authentication failed")]
-        [RateLimit(maxRequests: 10, timeWindowMinutes: 1)] // Rate limit login attempts
+        [RateLimit(maxRequests: 10, timeWindowMinutes: 1)]
         public async Task<ActionResult> LoginAsync([FromBody] UserDTO userDTO)
         {
+            _logger.LogWarning("Deprecated endpoint /api/user/login called. Use /api/auth/login instead");
+
             if (string.IsNullOrWhiteSpace(userDTO.UserEmail) || string.IsNullOrWhiteSpace(userDTO.Password))
             {
                 return ResponseHelper.Error("Email and password are required");
@@ -76,7 +83,8 @@ namespace RestaurantAPI.Controllers
             {
                 return ResponseHelper.Success(new { 
                     apikey = userCode,
-                    email = userDTO.UserEmail
+                    email = userDTO.UserEmail,
+                    message = "DEPRECATED: Use /api/auth/login for JWT tokens"
                 }, "Login successful");
             }
             
@@ -85,23 +93,23 @@ namespace RestaurantAPI.Controllers
         }
 
         /// <summary>
-        /// Delete user account (requires authentication)
+        /// Delete user account (requires authentication with JWT)
         /// </summary>
         [HttpDelete("account")]
-        [SwaggerOperation(Summary = "Delete user account", Description = "Permanently delete user account")]
+        [Authorize(Policy = AuthorizationPolicies.Authenticated)]
+        [SwaggerOperation(Summary = "Delete user account", Description = "Permanently delete user account (requires JWT authentication)")]
         [SwaggerResponse(200, "User deleted successfully")]
-        [SwaggerResponse(401, "Unauthorized - invalid or missing API key")]
+        [SwaggerResponse(401, "Unauthorized - valid JWT token required")]
         [SwaggerResponse(404, "User not found")]
-        [RequireApiKey]
         public async Task<ActionResult> DeleteAccountAsync()
         {
-            var apiKey = HttpContext.Items["ApiKey"]?.ToString();
-            if (string.IsNullOrEmpty(apiKey))
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
             {
-                return ResponseHelper.Unauthorized("API key is required");
+                return ResponseHelper.Unauthorized("User not identified from JWT");
             }
 
-            var deleted = await _userService.DeleteUserAsync(apiKey);
+            var deleted = await _userService.DeleteUserAsync(userId);
             
             if (deleted)
             {
@@ -112,15 +120,15 @@ namespace RestaurantAPI.Controllers
         }
 
         /// <summary>
-        /// Update user password (requires authentication)
+        /// Update user password (requires authentication with JWT - use POST /api/auth/change-password)
         /// </summary>
         [HttpPut("password")]
-        [SwaggerOperation(Summary = "Update user password", Description = "Change user's password")]
+        [Authorize(Policy = AuthorizationPolicies.Authenticated)]
+        [SwaggerOperation(Summary = "Update user password", Description = "Change user's password (requires JWT authentication)")]
         [SwaggerResponse(200, "Password updated successfully")]
         [SwaggerResponse(400, "Invalid password")]
-        [SwaggerResponse(401, "Unauthorized - invalid or missing API key")]
+        [SwaggerResponse(401, "Unauthorized - valid JWT token required")]
         [SwaggerResponse(404, "User not found")]
-        [RequireApiKey]
         [LogRequests]
         public async Task<ActionResult> UpdatePasswordAsync([FromBody] PasswordUpdateDTO passwordUpdate)
         {
@@ -136,13 +144,13 @@ namespace RestaurantAPI.Controllers
                 return ResponseHelper.ValidationError(errors);
             }
 
-            var apiKey = HttpContext.Items["ApiKey"]?.ToString();
-            if (string.IsNullOrEmpty(apiKey))
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
             {
-                return ResponseHelper.Unauthorized("API key is required");
+                return ResponseHelper.Unauthorized("User not identified from JWT");
             }
 
-            var updatedUser = await _userService.UpdateUserPasswordAsync(apiKey, passwordUpdate.NewPassword);
+            var updatedUser = await _userService.UpdateUserPasswordAsync(userId, passwordUpdate.NewPassword);
             
             if (updatedUser != null)
             {

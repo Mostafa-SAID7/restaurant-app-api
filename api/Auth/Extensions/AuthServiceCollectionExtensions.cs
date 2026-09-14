@@ -1,5 +1,6 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using RestaurantAPI.Auth.Services.Implementation;
 using RestaurantAPI.Auth.Services.Interfaces;
@@ -111,32 +112,48 @@ public static class AuthServiceCollectionExtensions
         services.AddAuthorization(options =>
         {
             // Policy: User must be authenticated
-            options.AddPolicy("Authenticated", policy =>
+            options.AddPolicy(RestaurantAPI.Auth.Policies.AuthorizationPolicies.Authenticated, policy =>
             {
                 policy.RequireAuthenticatedUser();
             });
 
             // Policy: User must have Admin role
-            options.AddPolicy("AdminOnly", policy =>
+            options.AddPolicy(RestaurantAPI.Auth.Policies.AuthorizationPolicies.AdminOnly, policy =>
             {
                 policy.RequireAuthenticatedUser();
                 policy.RequireRole("Admin");
             });
 
-            // Policy: User must be Customer or RestaurantOwner (not Admin)
-            options.AddPolicy("CustomerOrOwner", policy =>
+            // Policy: User must be Customer or RestaurantOwner
+            options.AddPolicy(RestaurantAPI.Auth.Policies.AuthorizationPolicies.CustomerOrOwner, policy =>
             {
                 policy.RequireAuthenticatedUser();
                 policy.RequireRole("Customer", "RestaurantOwner");
             });
 
             // Policy: User must have RestaurantOwner role
-            options.AddPolicy("OwnerOnly", policy =>
+            options.AddPolicy(RestaurantAPI.Auth.Policies.AuthorizationPolicies.OwnerOnly, policy =>
             {
                 policy.RequireAuthenticatedUser();
                 policy.RequireRole("RestaurantOwner");
             });
+
+            // Policy: User can modify own resource (requires handler)
+            options.AddPolicy(RestaurantAPI.Auth.Policies.AuthorizationPolicies.CanModifyOwnResource, policy =>
+            {
+                policy.AddRequirements(new RestaurantAPI.Auth.Policies.CanModifyOwnResourceRequirement());
+            });
+
+            // Policy: User can manage restaurant (RestaurantOwner or Admin)
+            options.AddPolicy(RestaurantAPI.Auth.Policies.AuthorizationPolicies.CanManageRestaurant, policy =>
+            {
+                policy.AddRequirements(new RestaurantAPI.Auth.Policies.CanManageRestaurantRequirement());
+            });
         });
+
+        // Register authorization handlers
+        services.AddScoped<IAuthorizationHandler, RestaurantAPI.Auth.Policies.CanModifyOwnResourceHandler>();
+        services.AddScoped<IAuthorizationHandler, RestaurantAPI.Auth.Policies.CanManageRestaurantHandler>();
 
         return services;
     }

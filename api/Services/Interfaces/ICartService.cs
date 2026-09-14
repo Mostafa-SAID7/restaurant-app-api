@@ -20,7 +20,7 @@ public interface ICartService
     /// <summary>
     /// Get cart summary with items (returns CartItemDTO, not Cart entities)
     /// </summary>
-    Task<GetCartDTO> GetCartSummaryAsync(string apiKey);
+    Task<CartDTO> GetCartSummaryAsync(string apiKey);
     
     Task ClearCartAsync(string apiKey);
 }

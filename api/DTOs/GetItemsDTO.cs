@@ -1,6 +1,6 @@
 namespace RestaurantAPI.DTOs;
 
-public class GetItems
+public class GetItemsDTO
 {
     public int ItemID { get; set; }
     public string ItemName { get; set; }

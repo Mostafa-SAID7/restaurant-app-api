@@ -1,15 +1,18 @@
-using RestaurantAPI.DTOs;
-using RestaurantAPI.Models;
-using RestaurantAPI.Helpers;
-using RestaurantAPI.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RestaurantAPI.Auth.Policies;
+using RestaurantAPI.DTOs;
+using RestaurantAPI.Helpers;
+using RestaurantAPI.Models;
+using RestaurantAPI.Services.Interfaces;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace RestaurantAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [SwaggerTag("Order management endpoints")]
+    [Authorize(Policy = AuthorizationPolicies.Authenticated)]
+    [SwaggerTag("Order Management")]
     public class OrderController : ControllerBase
     {
         private readonly ILogger<OrderController> _logger;
@@ -21,16 +24,25 @@ namespace RestaurantAPI.Controllers
             _orderService = orderService;
         }
 
-        [HttpPost("{restaurantid}/makeorder")]
+        /// <summary>
+        /// Create order for specific restaurant
+        /// </summary>
+        [HttpPost("{restaurantid}/create")]
         [SwaggerOperation(Summary = "Create order", Description = "Create a new order for a specific restaurant")]
         [SwaggerResponse(201, "Order created successfully", typeof(OrderResponseDTO))]
         [SwaggerResponse(400, "Invalid request")]
-        [SwaggerResponse(401, "Invalid API key")]
-        public async Task<ActionResult> CreateOrder(int restaurantid, [FromQuery] string apikey, [FromBody] MenuDTO menuDTO)
+        [SwaggerResponse(401, "Unauthorized - JWT token required")]
+        public async Task<ActionResult> CreateOrder(int restaurantid, [FromBody] MenuDTO menuDTO)
         {
             try
             {
-                var orderResult = await _orderService.CreateOrderAsync(restaurantid, apikey, menuDTO);
+                var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return ResponseHelper.Unauthorized("User not identified from JWT");
+                }
+
+                var orderResult = await _orderService.CreateOrderAsync(restaurantid, userId, menuDTO);
                 return ResponseHelper.Created(orderResult);
             }
             catch (UnauthorizedAccessException ex)
@@ -43,15 +55,24 @@ namespace RestaurantAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Get all orders for authenticated user
+        /// </summary>
         [HttpGet]
-        [SwaggerOperation(Summary = "Get user orders", Description = "Retrieve all orders for a user")]
-        [SwaggerResponse(200, "Success")]
-        [SwaggerResponse(401, "Invalid API key")]
-        public async Task<ActionResult> GetOrders([FromQuery] string apikey)
+        [SwaggerOperation(Summary = "Get user orders", Description = "Retrieve all orders for authenticated user")]
+        [SwaggerResponse(200, "Success", typeof(IEnumerable<OrderResponseDTO>))]
+        [SwaggerResponse(401, "Unauthorized - JWT token required")]
+        public async Task<ActionResult> GetOrders()
         {
             try
             {
-                var orders = await _orderService.GetUserOrdersAsync(apikey);
+                var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return ResponseHelper.Unauthorized("User not identified from JWT");
+                }
+
+                var orders = await _orderService.GetUserOrdersAsync(userId);
                 return ResponseHelper.Success(orders);
             }
             catch (UnauthorizedAccessException ex)
@@ -60,15 +81,24 @@ namespace RestaurantAPI.Controllers
             }
         }
 
-        [HttpGet("{id}")]
+        /// <summary>
+        /// Get orders by master order ID
+        /// </summary>
+        [HttpGet("master/{masterId}")]
         [SwaggerOperation(Summary = "Get orders by master ID", Description = "Retrieve orders by master order ID")]
-        [SwaggerResponse(200, "Success")]
-        [SwaggerResponse(401, "Invalid API key")]
-        public async Task<ActionResult> GetOrdersByMasterId([FromQuery] string apikey, int id)
+        [SwaggerResponse(200, "Success", typeof(IEnumerable<OrderResponseDTO>))]
+        [SwaggerResponse(401, "Unauthorized - JWT token required")]
+        public async Task<ActionResult> GetOrdersByMasterId(int masterId)
         {
             try
             {
-                var orders = await _orderService.GetOrdersByMasterIdAsync(apikey, id);
+                var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return ResponseHelper.Unauthorized("User not identified from JWT");
+                }
+
+                var orders = await _orderService.GetOrdersByMasterIdAsync(userId, masterId);
                 return ResponseHelper.Success(orders);
             }
             catch (UnauthorizedAccessException ex)
@@ -77,16 +107,25 @@ namespace RestaurantAPI.Controllers
             }
         }
 
-        [HttpDelete("{Order_id}")]
-        [SwaggerOperation(Summary = "Delete order", Description = "Delete a specific order")]
+        /// <summary>
+        /// Delete specific order
+        /// </summary>
+        [HttpDelete("{orderId}")]
+        [SwaggerOperation(Summary = "Delete order", Description = "Delete a specific order (user must own the order)")]
         [SwaggerResponse(200, "Order deleted successfully")]
         [SwaggerResponse(400, "Order not found")]
-        [SwaggerResponse(401, "Invalid API key")]
-        public async Task<ActionResult> DeleteOrder([FromRoute] int Order_id, [FromQuery] string apikey)
+        [SwaggerResponse(401, "Unauthorized - JWT token required or order not owned by user")]
+        public async Task<ActionResult> DeleteOrder(int orderId)
         {
             try
             {
-                var deleted = await _orderService.DeleteOrderAsync(Order_id, apikey);
+                var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return ResponseHelper.Unauthorized("User not identified from JWT");
+                }
+
+                var deleted = await _orderService.DeleteOrderAsync(orderId, userId);
                 
                 if (deleted)
                 {
@@ -101,16 +140,25 @@ namespace RestaurantAPI.Controllers
             }
         }
 
-        [HttpDelete("master/{master_id}")]
+        /// <summary>
+        /// Delete master order and all associated orders
+        /// </summary>
+        [HttpDelete("master/{masterId}")]
         [SwaggerOperation(Summary = "Delete master order", Description = "Delete a master order and all associated orders")]
         [SwaggerResponse(200, "Master order deleted successfully")]
         [SwaggerResponse(400, "Master order not found")]
-        [SwaggerResponse(401, "Invalid API key")]
-        public async Task<ActionResult> DeleteMasterOrder([FromRoute] int master_id, [FromQuery] string apikey)
+        [SwaggerResponse(401, "Unauthorized - JWT token required")]
+        public async Task<ActionResult> DeleteMasterOrder(int masterId)
         {
             try
             {
-                var result = await _orderService.DeleteMasterOrderAsync(master_id, apikey);
+                var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return ResponseHelper.Unauthorized("User not identified from JWT");
+                }
+
+                var result = await _orderService.DeleteMasterOrderAsync(masterId, userId);
                 return ResponseHelper.Success(result, "Master order deleted successfully");
             }
             catch (UnauthorizedAccessException ex)

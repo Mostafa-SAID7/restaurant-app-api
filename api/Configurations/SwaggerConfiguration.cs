@@ -15,7 +15,7 @@ public static class SwaggerConfiguration
             {
                 Title = "M.Said's Restaurant API",
                 Version = "v1",
-                Description = "A comprehensive Restaurant Management API by M.Said. Featuring user authentication, menu management, ordering system, and cinematic design. | [GitHub Repository](https://github.com/Mostafa-SAID7/restaurant-app-api) | [Docs](/Docs.html)",
+                Description = "A comprehensive Restaurant Management API by M.Said. Featuring JWT authentication, user roles, menu management, ordering system, and shopping cart. | [GitHub Repository](https://github.com/Mostafa-SAID7/restaurant-app-api) | [Docs](/Docs.html)",
                 Contact = new OpenApiModels.OpenApiContact
                 {
                     Name = "M.Said",
@@ -29,14 +29,15 @@ public static class SwaggerConfiguration
                 }
             });
 
-            // Add API Key authentication (header-based)
-            c.AddSecurityDefinition("ApiKey", new OpenApiModels.OpenApiSecurityScheme
+            // Add JWT Bearer authentication
+            c.AddSecurityDefinition("Bearer", new OpenApiModels.OpenApiSecurityScheme
             {
-                Description = "API Key header required to access protected endpoints. Use X-API-Key header or Authorization: Bearer header",
+                Description = "JWT Bearer authentication. Enter 'Bearer' [space] and then your token in the text input below.",
+                Name = "Authorization",
                 In = OpenApiModels.ParameterLocation.Header,
-                Name = "X-API-Key",
-                Type = OpenApiModels.SecuritySchemeType.ApiKey,
-                Scheme = "ApiKeyScheme"
+                Type = OpenApiModels.SecuritySchemeType.Http,
+                Scheme = "Bearer",
+                BearerFormat = "JWT"
             });
 
             c.AddSecurityRequirement(new OpenApiModels.OpenApiSecurityRequirement
@@ -47,7 +48,7 @@ public static class SwaggerConfiguration
                         Reference = new OpenApiModels.OpenApiReference
                         {
                             Type = OpenApiModels.ReferenceType.SecurityScheme,
-                            Id = "ApiKey"
+                            Id = "Bearer"
                         }
                     },
                     new string[] {}

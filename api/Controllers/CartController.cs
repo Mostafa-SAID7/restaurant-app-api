@@ -1,16 +1,19 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using RestaurantAPI.Auth.Policies;
 using RestaurantAPI.DTOs;
 using RestaurantAPI.Filters;
-using RestaurantAPI.Models;
 using RestaurantAPI.Helpers;
+using RestaurantAPI.Models;
 using RestaurantAPI.Services.Interfaces;
-using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace RestaurantAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [SwaggerTag("Shopping cart management endpoints")]
+    [Authorize(Policy = AuthorizationPolicies.Authenticated)]
+    [SwaggerTag("Shopping Cart Management")]
     public class CartController : ControllerBase
     {
         private readonly ILogger<CartController> _logger;
@@ -22,15 +25,25 @@ namespace RestaurantAPI.Controllers
             _cartService = cartService;
         }
 
-        [HttpGet("{apikey}")]
-        [SwaggerOperation(Summary = "Get cart items", Description = "Retrieve all items in user's cart")]
-        [SwaggerResponse(200, "Success")]
+        /// <summary>
+        /// Get cart items for authenticated user
+        /// </summary>
+        [HttpGet]
+        [SwaggerOperation(Summary = "Get cart items", Description = "Retrieve all items in authenticated user's cart")]
+        [SwaggerResponse(200, "Success", typeof(IEnumerable<CartDTO>))]
+        [SwaggerResponse(401, "Unauthorized - JWT token required")]
         [SwaggerResponse(404, "User not found")]
-        public async Task<ActionResult> GetCart(string apikey)
+        public async Task<ActionResult> GetCart()
         {
             try
             {
-                var cartItems = await _cartService.GetCartItemsAsync(apikey);
+                var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return ResponseHelper.Unauthorized("User not identified from JWT");
+                }
+
+                var cartItems = await _cartService.GetCartItemsAsync(userId);
                 return ResponseHelper.Success(cartItems);
             }
             catch (UnauthorizedAccessException ex)
@@ -39,16 +52,26 @@ namespace RestaurantAPI.Controllers
             }
         }
 
-        [HttpPost("{apikey}")]
-        [SwaggerOperation(Summary = "Add item to cart", Description = "Add an item to user's cart")]
-        [SwaggerResponse(201, "Item added to cart successfully")]
+        /// <summary>
+        /// Add item to authenticated user's cart
+        /// </summary>
+        [HttpPost]
+        [SwaggerOperation(Summary = "Add item to cart", Description = "Add an item to authenticated user's cart")]
+        [SwaggerResponse(201, "Item added to cart successfully", typeof(CartDTO))]
+        [SwaggerResponse(401, "Unauthorized - JWT token required")]
         [SwaggerResponse(404, "User or item not found")]
         [SwaggerResponse(400, "Invalid request")]
-        public async Task<ActionResult> AddItemToCart(string apikey, [FromBody] SetCart setCart)
+        public async Task<ActionResult> AddItemToCart([FromBody] SetCart setCart)
         {
             try
             {
-                var cartDTO = await _cartService.AddItemToCartAsync(apikey, setCart);
+                var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return ResponseHelper.Unauthorized("User not identified from JWT");
+                }
+
+                var cartDTO = await _cartService.AddItemToCartAsync(userId, setCart);
                 return ResponseHelper.Created(cartDTO);
             }
             catch (UnauthorizedAccessException ex)
@@ -61,15 +84,25 @@ namespace RestaurantAPI.Controllers
             }
         }
 
-        [HttpDelete("{apikey}/items/{itemId}")]
-        [SwaggerOperation(Summary = "Remove item from cart", Description = "Remove a specific item from user's cart")]
+        /// <summary>
+        /// Remove specific item from authenticated user's cart
+        /// </summary>
+        [HttpDelete("items/{itemId}")]
+        [SwaggerOperation(Summary = "Remove item from cart", Description = "Remove a specific item from authenticated user's cart")]
         [SwaggerResponse(200, "Item removed successfully")]
+        [SwaggerResponse(401, "Unauthorized - JWT token required")]
         [SwaggerResponse(404, "Item or user not found")]
-        public async Task<ActionResult> RemoveItemFromCart(string apikey, int itemId)
+        public async Task<ActionResult> RemoveItemFromCart(int itemId)
         {
             try
             {
-                var removed = await _cartService.RemoveItemFromCartAsync(apikey, itemId);
+                var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return ResponseHelper.Unauthorized("User not identified from JWT");
+                }
+
+                var removed = await _cartService.RemoveItemFromCartAsync(userId, itemId);
                 
                 if (removed)
                 {
@@ -84,15 +117,25 @@ namespace RestaurantAPI.Controllers
             }
         }
 
-        [HttpGet("{apikey}/summary")]
-        [SwaggerOperation(Summary = "Get cart summary", Description = "Get cart items with total amount")]
-        [SwaggerResponse(200, "Success")]
+        /// <summary>
+        /// Get cart summary for authenticated user
+        /// </summary>
+        [HttpGet("summary")]
+        [SwaggerOperation(Summary = "Get cart summary", Description = "Get cart items with total amount for authenticated user")]
+        [SwaggerResponse(200, "Success", typeof(object))]
+        [SwaggerResponse(401, "Unauthorized - JWT token required")]
         [SwaggerResponse(404, "User not found")]
-        public async Task<ActionResult> GetCartSummary(string apikey)
+        public async Task<ActionResult> GetCartSummary()
         {
             try
             {
-                var cartSummary = await _cartService.GetCartSummaryAsync(apikey);
+                var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return ResponseHelper.Unauthorized("User not identified from JWT");
+                }
+
+                var cartSummary = await _cartService.GetCartSummaryAsync(userId);
                 return ResponseHelper.Success(cartSummary);
             }
             catch (UnauthorizedAccessException ex)
@@ -101,15 +144,25 @@ namespace RestaurantAPI.Controllers
             }
         }
 
-        [HttpDelete("{apikey}")]
-        [SwaggerOperation(Summary = "Clear cart", Description = "Remove all items from user's cart")]
+        /// <summary>
+        /// Clear all items from authenticated user's cart
+        /// </summary>
+        [HttpDelete]
+        [SwaggerOperation(Summary = "Clear cart", Description = "Remove all items from authenticated user's cart")]
         [SwaggerResponse(200, "Cart cleared successfully")]
+        [SwaggerResponse(401, "Unauthorized - JWT token required")]
         [SwaggerResponse(404, "User not found")]
-        public async Task<ActionResult> ClearCart(string apikey)
+        public async Task<ActionResult> ClearCart()
         {
             try
             {
-                await _cartService.ClearCartAsync(apikey);
+                var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return ResponseHelper.Unauthorized("User not identified from JWT");
+                }
+
+                await _cartService.ClearCartAsync(userId);
                 return ResponseHelper.Success<object>(null, "Cart cleared successfully");
             }
             catch (UnauthorizedAccessException ex)

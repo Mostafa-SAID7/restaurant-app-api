@@ -42,10 +42,10 @@ public class RestaurantService : IRestaurantService
         return await _unitOfWork.Restaurants.RestaurantExistsByNameAsync(restaurantName);
     }
 
-    public async Task<IEnumerable<GetItems>> GetMenuAsync(int restaurantId, string sortByPrice = "")
+    public async Task<IEnumerable<GetItemsDTO>> GetMenuAsync(int restaurantId, string sortByPrice = "")
     {
         var items = await _unitOfWork.Items.GetMenuByRestaurantIdAsync(restaurantId, sortByPrice);
-        return _mapper.Map<IEnumerable<GetItems>>(items);
+        return _mapper.Map<IEnumerable<GetItemsDTO>>(items);
     }
 
     public async Task<Item> AddItemToMenuAsync(int restaurantId, ItemDTO itemDTO)
@@ -59,10 +59,10 @@ public class RestaurantService : IRestaurantService
         return item;
     }
 
-    public async Task<IEnumerable<GetItems>> GetAllItemsAsync(string itemName = "", string sortByPrice = "")
+    public async Task<IEnumerable<GetItemsDTO>> GetAllItemsAsync(string itemName = "", string sortByPrice = "")
     {
         var items = await _unitOfWork.Items.GetByFiltersAsync(itemName, sortByPrice);
-        return _mapper.Map<IEnumerable<GetItems>>(items);
+        return _mapper.Map<IEnumerable<GetItemsDTO>>(items);
     }
 
     public async Task UpdateImageUrlsAsync(int restaurantId, string[] urls)

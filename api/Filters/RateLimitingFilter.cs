@@ -25,11 +25,7 @@ public class RateLimitingFilter : IActionFilter
 
     public void OnActionExecuting(ActionExecutingContext context)
     {
-        var clientIp = context.HttpContext.GetClientIpAddress() ?? "unknown";
-        var apiKey = context.HttpContext.GetApiKey();
-        
-        // Use API key if available, otherwise use IP address
-        var identifier = !apiKey.IsNullOrWhiteSpace() ? $"apikey_{apiKey}" : $"ip_{clientIp}";
+        var identifier = context.HttpContext.GetRequestIdentifier();
         var cacheKey = $"rate_limit_{identifier}";
 
         var requestCount = _cache.Get<int?>(cacheKey) ?? 0;

@@ -7,7 +7,7 @@ namespace RestaurantAPI.DTOs;
 /// <summary>
 /// DTO for cart response (no entity exposure)
 /// </summary>
-public class GetCartDTO
+public class CartDTO
 {
     public List<CartItemDTO> cartitems { get; set; }
     public decimal GrandTotal { get; set; }

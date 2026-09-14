@@ -26,15 +26,15 @@ public class LoggingFilter : IActionFilter
         var request = context.HttpContext.Request;
         var clientIp = context.HttpContext.GetClientIpAddress();
         var userAgent = request.Headers["User-Agent"].ToString();
-        var apiKey = context.HttpContext.GetApiKey();
+        var userId = context.HttpContext.GetUserId();
 
         _logger.LogInformation(
-            "Request started: {Method} {Path} from {ClientIp} | User-Agent: {UserAgent} | ApiKey: {ApiKey}",
+            "Request started: {Method} {Path} from {ClientIp} by {UserId} | User-Agent: {UserAgent}",
             request.Method,
             request.Path,
             clientIp,
-            userAgent,
-            apiKey?.Truncate(8) + "..." ?? "None"
+            userId ?? "Anonymous",
+            userAgent
         );
 
         // Log request parameters if any
