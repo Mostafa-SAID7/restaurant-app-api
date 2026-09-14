@@ -1,4 +1,5 @@
 using AutoMapper;
+using RestaurantAPI.DTOs;
 using RestaurantAPI.Models;
 using RestaurantAPI.Repositories.Interfaces;
 using RestaurantAPI.Services.Interfaces;

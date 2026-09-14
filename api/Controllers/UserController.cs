@@ -1,5 +1,6 @@
 using RestaurantAPI.Filters;
 using RestaurantAPI.Helpers;
+using RestaurantAPI.DTOs;
 using RestaurantAPI.Models;
 using RestaurantAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -104,7 +105,7 @@ namespace RestaurantAPI.Controllers
             
             if (deleted)
             {
-                return ResponseHelper.Success(null, "User account deleted successfully");
+                return ResponseHelper.Success<object>(null, "User account deleted successfully");
             }
             
             return ResponseHelper.NotFound("User");
@@ -145,7 +146,7 @@ namespace RestaurantAPI.Controllers
             
             if (updatedUser != null)
             {
-                return ResponseHelper.Success(null, "Password updated successfully");
+                return ResponseHelper.Success<object>(null, "Password updated successfully");
             }
             
             return ResponseHelper.NotFound("User");

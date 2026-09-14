@@ -1,3 +1,4 @@
+using RestaurantAPI.DTOs;
 using RestaurantAPI.Models;
 
 namespace RestaurantAPI.Services.Interfaces;
