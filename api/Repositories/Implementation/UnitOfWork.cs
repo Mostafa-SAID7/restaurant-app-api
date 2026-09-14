@@ -7,6 +7,7 @@ namespace RestaurantAPI.Repositories.Implementation;
 
 /// <summary>
 /// Unit of Work implementation for managing transactions and repository access
+/// Phase A.6: Added Roles, UserRoles, RefreshTokens repositories for AuthService DIP
 /// </summary>
 public class UnitOfWork : IUnitOfWork
 {
@@ -20,6 +21,9 @@ public class UnitOfWork : IUnitOfWork
     private IOrderRepository? _orders;
     private IMasterOrderRepository? _masterOrders;
     private ICartRepository? _carts;
+    private IRoleRepository? _roles;
+    private IUserRoleRepository? _userRoles;
+    private IRefreshTokenRepository? _refreshTokens;
 
     public UnitOfWork(AppDbContext context)
     {
@@ -33,6 +37,9 @@ public class UnitOfWork : IUnitOfWork
     public IOrderRepository Orders => _orders ??= new OrderRepository(_context);
     public IMasterOrderRepository MasterOrders => _masterOrders ??= new MasterOrderRepository(_context);
     public ICartRepository Carts => _carts ??= new CartRepository(_context);
+    public IRoleRepository Roles => _roles ??= new RoleRepository(_context);
+    public IUserRoleRepository UserRoles => _userRoles ??= new UserRoleRepository(_context);
+    public IRefreshTokenRepository RefreshTokens => _refreshTokens ??= new RefreshTokenRepository(_context);
 
     // Transaction methods
     public async Task<int> SaveChangesAsync()

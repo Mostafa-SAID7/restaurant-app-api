@@ -1,21 +1,20 @@
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using RestaurantAPI.Auth.Models;
 using RestaurantAPI.Auth.Services.Interfaces;
-using RestaurantAPI.Data;
 using RestaurantAPI.Models;
+using RestaurantAPI.Repositories.Interfaces;
 
 namespace RestaurantAPI.Auth.Services.Implementation;
 
 /// <summary>
 /// Implementation of IAuthService.
 /// Orchestrates authentication workflows: register, login, refresh, logout, password change.
+/// Phase A.6: Depends on IUnitOfWork (repositories) instead of AppDbContext (concrete)
 /// Single Responsibility: coordinate PasswordService and TokenService only.
-/// Does not handle database queries directly; uses repositories.
 /// </summary>
 public class AuthService : IAuthService
 {
-    private readonly AppDbContext _context;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IPasswordService _passwordService;
     private readonly ITokenService _tokenService;
     private readonly ILogger<AuthService> _logger;
@@ -31,12 +30,12 @@ public class AuthService : IAuthService
     private const int LockoutDurationMinutes = 15;
 
     public AuthService(
-        AppDbContext context,
+        IUnitOfWork unitOfWork,
         IPasswordService passwordService,
         ITokenService tokenService,
         ILogger<AuthService> logger)
     {
-        _context = context;
+        _unitOfWork = unitOfWork;
         _passwordService = passwordService;
         _tokenService = tokenService;
         _logger = logger;
@@ -70,7 +69,7 @@ public class AuthService : IAuthService
             }
 
             // Check if email already exists
-            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.UserEmail == email);
+            var existingUser = await _unitOfWork.Users.GetByEmailAsync(email);
             if (existingUser != null)
             {
                 _logger.LogWarning("Registration attempt with existing email: {Email}", email);
@@ -92,10 +91,10 @@ public class AuthService : IAuthService
                 CreatedAt = DateTime.UtcNow
             };
 
-            _context.Users.Add(user);
+            await _unitOfWork.Users.AddAsync(user);
 
             // Assign default "Customer" role
-            var customerRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "Customer");
+            var customerRole = await _unitOfWork.Roles.GetByNameAsync("Customer");
             if (customerRole == null)
             {
                 // Create Customer role if it doesn't exist
@@ -104,7 +103,7 @@ public class AuthService : IAuthService
                     Name = "Customer",
                     Description = "Standard user role"
                 };
-                _context.Roles.Add(customerRole);
+                await _unitOfWork.Roles.AddAsync(customerRole);
             }
 
             var userRole = new ApplicationUserRole
@@ -113,9 +112,9 @@ public class AuthService : IAuthService
                 RoleId = customerRole.Id,
                 AssignedAt = DateTime.UtcNow
             };
-            _context.UserRoles.Add(userRole);
+            await _unitOfWork.UserRoles.AddAsync(userRole);
 
-            await _context.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
 
             // Generate tokens
             var tokens = await _tokenService.GenerateTokensAsync(
@@ -168,7 +167,7 @@ public class AuthService : IAuthService
             }
 
             // Find user by email
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserEmail == email);
+            var user = await _unitOfWork.Users.GetByEmailAsync(email);
             if (user == null)
             {
                 _logger.LogWarning("Login attempt with non-existent email: {Email}", email);
@@ -194,11 +193,8 @@ public class AuthService : IAuthService
             }
 
             // Get user roles
-            var roles = await _context.UserRoles
-                .Where(ur => ur.UserId == user.Usercode)
-                .Include(ur => ur.Role)
-                .Select(ur => ur.Role.Name)
-                .ToListAsync();
+            var userRoles = await _unitOfWork.UserRoles.GetUserRolesWithDetailsAsync(user.Usercode);
+            var roles = userRoles.Select(ur => ur.Role?.Name).Where(name => name != null).Cast<string>().ToList();
 
             // Generate tokens
             var tokens = await _tokenService.GenerateTokensAsync(
@@ -260,19 +256,8 @@ public class AuthService : IAuthService
             };
         }
 
-        // Get user and roles for response
-        var storedTokens = await _context.RefreshTokens.ToListAsync();
-        RefreshToken? token = null;
-
-        foreach (var storedToken in storedTokens)
-        {
-            if (_passwordService.VerifyPassword(refreshToken, storedToken.TokenHash) == PasswordVerificationResult.Success)
-            {
-                token = storedToken;
-                break;
-            }
-        }
-
+        // Get the stored token by value
+        var token = await _unitOfWork.RefreshTokens.GetByTokenAsync(refreshToken);
         if (token == null)
         {
             return new AuthResult
@@ -283,12 +268,9 @@ public class AuthService : IAuthService
             };
         }
 
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Usercode == token.UserId);
-        var roles = await _context.UserRoles
-            .Where(ur => ur.UserId == token.UserId)
-            .Include(ur => ur.Role)
-            .Select(ur => ur.Role.Name)
-            .ToListAsync();
+        var user = await _unitOfWork.Users.GetByIdAsync(token.UserId);
+        var userRoles = await _unitOfWork.UserRoles.GetUserRolesWithDetailsAsync(token.UserId);
+        var roles = userRoles.Select(ur => ur.Role?.Name).Where(name => name != null).Cast<string>().ToList();
 
         return new AuthResult
         {
@@ -342,7 +324,7 @@ public class AuthService : IAuthService
                 };
             }
 
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Usercode == userId);
+            var user = await _unitOfWork.Users.GetByIdAsync(userId);
             if (user == null)
             {
                 return new AuthResult
@@ -382,8 +364,8 @@ public class AuthService : IAuthService
             user.PasswordHash = _passwordService.HashPassword(newPassword);
             user.UpdatedAt = DateTime.UtcNow;
 
-            _context.Users.Update(user);
-            await _context.SaveChangesAsync();
+            await _unitOfWork.Users.UpdateAsync(user);
+            await _unitOfWork.SaveChangesAsync();
 
             _logger.LogInformation("Password changed successfully for user: {UserId}", userId);
 
@@ -407,15 +389,12 @@ public class AuthService : IAuthService
 
     public async Task<AuthUserDto?> GetUserAsync(string userCode)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Usercode == userCode);
+        var user = await _unitOfWork.Users.GetByIdAsync(userCode);
         if (user == null)
             return null;
 
-        var roles = await _context.UserRoles
-            .Where(ur => ur.UserId == user.Usercode)
-            .Include(ur => ur.Role)
-            .Select(ur => ur.Role.Name)
-            .ToListAsync();
+        var userRoles = await _unitOfWork.UserRoles.GetUserRolesWithDetailsAsync(user.Usercode);
+        var roles = userRoles.Select(ur => ur.Role?.Name).Where(name => name != null).Cast<string>().ToList();
 
         return new AuthUserDto
         {

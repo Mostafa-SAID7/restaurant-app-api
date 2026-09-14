@@ -2,6 +2,7 @@ namespace RestaurantAPI.Repositories.Interfaces;
 
 /// <summary>
 /// Unit of Work interface for managing transactions and repository access
+/// Phase A.6: Added IRoleRepository, IUserRoleRepository, IRefreshTokenRepository for AuthService DIP
 /// </summary>
 public interface IUnitOfWork : IDisposable
 {
@@ -12,6 +13,9 @@ public interface IUnitOfWork : IDisposable
     IOrderRepository Orders { get; }
     IMasterOrderRepository MasterOrders { get; }
     ICartRepository Carts { get; }
+    IRoleRepository Roles { get; }
+    IUserRoleRepository UserRoles { get; }
+    IRefreshTokenRepository RefreshTokens { get; }
 
     // Transaction methods
     Task<int> SaveChangesAsync();
