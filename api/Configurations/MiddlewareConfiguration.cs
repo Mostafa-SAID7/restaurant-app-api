@@ -11,40 +11,43 @@ public static class MiddlewareConfiguration
         // Exception handling is managed by GlobalExceptionFilter (registered in ApiConfiguration)
         // This ensures all exceptions return JSON responses, not HTML error pages
 
-        // 1. HSTS (HTTP Strict Transport Security) - Production only
+        // 1. Error Handling Middleware (Phase B.5) - Must be first to catch all errors
+        app.UseErrorHandling();
+
+        // 2. HSTS (HTTP Strict Transport Security) - Production only
         if (!app.Environment.IsDevelopment())
         {
             app.UseHsts();
         }
 
-        // 2. Security Headers Middleware
+        // 3. Security Headers Middleware
         app.UseSecurityHeaders();
 
-        // 3. CORS - Must come before UseRouting for proper CORS handling
+        // 4. CORS - Must come before UseRouting for proper CORS handling
         app.UseCorsConfiguration();
 
-        // 4. HTTPS Redirection - Redirect HTTP to HTTPS in production
+        // 5. HTTPS Redirection - Redirect HTTP to HTTPS in production
         app.UseHttpsRedirection();
 
-        // 5. Static Files (Home.html, Docs.html, 404.html, css, images)
+        // 6. Static Files (Home.html, Docs.html, 404.html, css, images)
         app.UseStaticFiles();
 
-        // 6. Swagger UI - Development only (security best practice)
+        // 7. Swagger UI - Development only (security best practice)
         if (app.Environment.IsDevelopment())
         {
             app.UseSwaggerConfiguration();
         }
 
-        // 7. Request Logging Middleware (Phase B.3) - Centralized logging for all requests/responses
+        // 8. Request Logging Middleware (Phase B.3) - Centralized logging for all requests/responses
         app.UseRequestLogging();
 
-        // 8. Response Wrapper Middleware (Phase B.2) - Track execution time and add request IDs
+        // 9. Response Wrapper Middleware (Phase B.2) - Track execution time and add request IDs
         app.UseResponseWrapper();
 
-        // 9. Routing
+        // 10. Routing
         app.UseRouting();
 
-        // 10. Authentication & Authorization (JWT Bearer tokens)
+        // 11. Authentication & Authorization (JWT Bearer tokens)
         app.UseAuthMiddleware();
         app.MapHealthChecks("/health", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
         {
@@ -68,13 +71,13 @@ public static class MiddlewareConfiguration
             }
         });
 
-        // 11. Root Route - Explicit redirect to home page
+        // 12. Root Route - Explicit redirect to home page
         app.MapGet("/", () => Results.Redirect("/Home.html"));
 
-        // 12. API Controllers
+        // 13. API Controllers
         app.MapControllers();
 
-        // 13. Fallback 404 Handler - Catch all unmatched routes last
+        // 14. Fallback 404 Handler - Catch all unmatched routes last
         app.MapFallback(async context =>
         {
             context.Response.Redirect("/404.html");
