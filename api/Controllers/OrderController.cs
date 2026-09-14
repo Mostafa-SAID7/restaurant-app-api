@@ -1,4 +1,5 @@
 using RestaurantAPI.Models;
+using RestaurantAPI.Helpers;
 using RestaurantAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -29,20 +30,15 @@ namespace RestaurantAPI.Controllers
             try
             {
                 var orderResult = await _orderService.CreateOrderAsync(restaurantid, apikey, menuDTO);
-                return StatusCode(201, orderResult);
+                return ResponseHelper.Created(orderResult);
             }
             catch (UnauthorizedAccessException ex)
             {
-                return StatusCode(401, new { message = ex.Message });
+                return ResponseHelper.Unauthorized(ex.Message);
             }
             catch (ArgumentException ex)
             {
-                return StatusCode(400, new { message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error creating order");
-                return StatusCode(500, "Internal server error");
+                return ResponseHelper.Error(ex.Message);
             }
         }
 
@@ -55,16 +51,11 @@ namespace RestaurantAPI.Controllers
             try
             {
                 var orders = await _orderService.GetUserOrdersAsync(apikey);
-                return Ok(orders);
+                return ResponseHelper.Success(orders);
             }
             catch (UnauthorizedAccessException ex)
             {
-                return StatusCode(401, new { message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error getting orders");
-                return StatusCode(500, "Internal server error");
+                return ResponseHelper.Unauthorized(ex.Message);
             }
         }
 
@@ -77,16 +68,11 @@ namespace RestaurantAPI.Controllers
             try
             {
                 var orders = await _orderService.GetOrdersByMasterIdAsync(apikey, id);
-                return Ok(orders);
+                return ResponseHelper.Success(orders);
             }
             catch (UnauthorizedAccessException ex)
             {
-                return StatusCode(401, new { message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error getting orders by master ID");
-                return StatusCode(500, "Internal server error");
+                return ResponseHelper.Unauthorized(ex.Message);
             }
         }
 
@@ -103,15 +89,14 @@ namespace RestaurantAPI.Controllers
                 
                 if (deleted)
                 {
-                    return Ok(new { message = "Order deleted successfully" });
+                    return ResponseHelper.Success(null, "Order deleted successfully");
                 }
                 
-                return StatusCode(400, new { message = "Order not found" });
+                return ResponseHelper.Error("Order not found", 400);
             }
-            catch (Exception ex)
+            catch (UnauthorizedAccessException ex)
             {
-                _logger.LogError(ex, "Error deleting order");
-                return StatusCode(500, "Internal server error");
+                return ResponseHelper.Unauthorized(ex.Message);
             }
         }
 
@@ -125,20 +110,15 @@ namespace RestaurantAPI.Controllers
             try
             {
                 var result = await _orderService.DeleteMasterOrderAsync(master_id, apikey);
-                return Ok(result);
+                return ResponseHelper.Success(result, "Master order deleted successfully");
             }
             catch (UnauthorizedAccessException ex)
             {
-                return StatusCode(401, new { message = ex.Message });
+                return ResponseHelper.Unauthorized(ex.Message);
             }
             catch (ArgumentException ex)
             {
-                return StatusCode(400, new { message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error deleting master order");
-                return StatusCode(500, "Internal server error");
+                return ResponseHelper.Error(ex.Message, 400);
             }
         }
     }
