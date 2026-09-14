@@ -1,5 +1,10 @@
 name: 📦 Create Release
 
+# How to create a real release:
+# 1. Merge PRs to main (Release Drafter updates the draft)
+# 2. Create and push a tag: git tag v1.0.0 && git push origin v1.0.0
+# 3. This workflow will automatically create the GitHub Release and publish Docker image to GHCR
+
 on:
   push:
     tags:
@@ -13,6 +18,7 @@ on:
 
 permissions:
   contents: write
+  packages: write
 
 jobs:
   release:
@@ -54,13 +60,11 @@ jobs:
           echo "$CHANGELOG" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
-      - name: 📦 Create Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: 📦 Create Release (modern action)
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.tag.outputs.tag }}
-          release_name: Release ${{ steps.tag.outputs.tag }}
+          name: Release ${{ steps.tag.outputs.tag }}
           body: |
             ## Release ${{ steps.tag.outputs.tag }}
 
@@ -68,9 +72,13 @@ jobs:
             ${{ steps.notes.outputs.changelog }}
 
             ---
+            📦 **Docker Image:** `ghcr.io/${{ github.repository }}:${{ steps.tag.outputs.tag }}`
+
             See the full **[Changelog](https://github.com/${{ github.repository }}/blob/main/docs/CHANGELOG.md)** for details.
           draft: false
           prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: ✅ Release created successfully
-        run: echo "📦 Release ${{ steps.tag.outputs.tag }} created"
+        run: echo "📦 Release ${{ steps.tag.outputs.tag }} published"
