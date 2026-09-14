@@ -1,5 +1,6 @@
 using RestaurantAPI.Filters;
 using RestaurantAPI.Models;
+using RestaurantAPI.Helpers;
 using RestaurantAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -29,16 +30,11 @@ namespace RestaurantAPI.Controllers
             try
             {
                 var cartItems = await _cartService.GetCartItemsAsync(apikey);
-                return Ok(cartItems);
+                return ResponseHelper.Success(cartItems);
             }
             catch (UnauthorizedAccessException ex)
             {
-                return StatusCode(404, new { message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error getting cart items");
-                return StatusCode(500, "Internal server error");
+                return ResponseHelper.NotFound(ex.Message);
             }
         }
 
@@ -51,16 +47,11 @@ namespace RestaurantAPI.Controllers
             try
             {
                 var cartDTO = await _cartService.AddItemToCartAsync(apikey, setCart);
-                return StatusCode(201, cartDTO);
+                return ResponseHelper.Created(cartDTO);
             }
             catch (UnauthorizedAccessException ex)
             {
-                return StatusCode(404, new { message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error adding item to cart");
-                return StatusCode(500, "Internal server error");
+                return ResponseHelper.NotFound(ex.Message);
             }
         }
 
@@ -76,15 +67,14 @@ namespace RestaurantAPI.Controllers
                 
                 if (removed)
                 {
-                    return Ok(new { message = "Item removed from cart" });
+                    return ResponseHelper.Success(null, "Item removed from cart");
                 }
                 
-                return StatusCode(404, new { message = "Item not found in cart" });
+                return ResponseHelper.NotFound("Item in cart");
             }
-            catch (Exception ex)
+            catch (UnauthorizedAccessException ex)
             {
-                _logger.LogError(ex, "Error removing item from cart");
-                return StatusCode(500, "Internal server error");
+                return ResponseHelper.NotFound(ex.Message);
             }
         }
 
@@ -97,16 +87,11 @@ namespace RestaurantAPI.Controllers
             try
             {
                 var cartSummary = await _cartService.GetCartSummaryAsync(apikey);
-                return Ok(cartSummary);
+                return ResponseHelper.Success(cartSummary);
             }
             catch (UnauthorizedAccessException ex)
             {
-                return StatusCode(404, new { message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error getting cart summary");
-                return StatusCode(500, "Internal server error");
+                return ResponseHelper.NotFound(ex.Message);
             }
         }
 
@@ -119,16 +104,11 @@ namespace RestaurantAPI.Controllers
             try
             {
                 await _cartService.ClearCartAsync(apikey);
-                return Ok(new { message = "Cart cleared successfully" });
+                return ResponseHelper.Success(null, "Cart cleared successfully");
             }
             catch (UnauthorizedAccessException ex)
             {
-                return StatusCode(404, new { message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error clearing cart");
-                return StatusCode(500, "Internal server error");
+                return ResponseHelper.NotFound(ex.Message);
             }
         }
     }
