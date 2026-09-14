@@ -1,0 +1,70 @@
+name: 🚀 Manual Deploy
+
+# ⚠️ MANUAL TRIGGER ONLY - No automatic deploys for safety
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: staging
+        type: choice
+        options:
+          - staging
+          - production
+      image_tag:
+        description: 'Docker image tag (leave blank for latest)'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy to ${{ github.event.inputs.environment }}
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.event.inputs.environment }}
+
+    steps:
+      - name: ⬇️ Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔍 Verify environment
+        run: |
+          ENV="${{ github.event.inputs.environment }}"
+          echo "🚀 Deploying to: $ENV"
+          
+          if [ "$ENV" = "production" ]; then
+            echo "⚠️  PRODUCTION DEPLOYMENT"
+            echo "This is a manual deployment to production."
+            echo "Ensure all tests pass and the release is ready."
+          fi
+
+      - name: 📋 Deployment Information
+        run: |
+          echo "📦 Image tag: ${{ github.event.inputs.image_tag || 'latest' }}"
+          echo "🔗 Repository: ${{ github.repository }}"
+          echo "📍 Commit: ${{ github.sha }}"
+          echo "👤 Triggered by: ${{ github.actor }}"
+
+      - name: 🔐 Security Check
+        run: |
+          echo "✅ Placeholder deployment step"
+          echo "🔒 In production, this would authenticate with deployment credentials"
+          echo "📍 Current environment: ${{ github.event.inputs.environment }}"
+
+      # TODO: Add real deployment steps here
+      # - Build/push Docker image to registry
+      # - Update Kubernetes/ECS/App Service configuration
+      # - Run smoke tests
+      # - Notify team on Slack
+
+      - name: ✅ Deployment placeholder complete
+        run: |
+          echo "📦 Ready for deployment to ${{ github.event.inputs.environment }}"
+          echo "⚠️  NOTE: Actual deployment implementation required"
+          echo "   - Add Docker registry push credentials"
+          echo "   - Configure infrastructure deployment steps"
+          echo "   - Set up environment-specific secrets"
