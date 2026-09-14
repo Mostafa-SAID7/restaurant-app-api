@@ -1,4 +1,5 @@
 using AutoMapper;
+using RestaurantAPI.DTOs;
 using RestaurantAPI.Models;
 using RestaurantAPI.Repositories.Interfaces;
 using RestaurantAPI.Services.Interfaces;
@@ -16,29 +17,53 @@ public class CartService : ICartService
         _mapper = mapper;
     }
 
-    public async Task<IEnumerable<Cart>> GetCartItemsAsync(string apiKey)
+    public async Task<IEnumerable<CartItemDTO>> GetCartItemsAsync(string apiKey)
     {
         var user = await _unitOfWork.Users.GetByUserCodeAsync(apiKey);
         if (user == null)
             throw new UnauthorizedAccessException("No user found with given key");
 
-        return await _unitOfWork.Carts.GetByUserIdAsync(user.Usercode);
+        var cartItems = await _unitOfWork.Carts.GetByUserIdAsync(user.Usercode);
+        
+        // Map to CartItemDTO to avoid exposing Cart entity
+        return cartItems.Select(c => new CartItemDTO
+        {
+            CartID = c.CartID,
+            ItemID = c.ItemID,
+            ItemName = c.ItemName,
+            ItemPrice = c.ItemPrice,
+            Quantity = c.Quantity,
+            TotalPrice = c.ItemPrice * c.Quantity
+        }).ToList();
     }
 
-    public async Task<CartDTO> AddItemToCartAsync(string apiKey, SetCart setCart)
+    public async Task<CartItemDTO> AddItemToCartAsync(string apiKey, SetCart setCart)
     {
         var user = await _unitOfWork.Users.GetByUserCodeAsync(apiKey);
         if (user == null)
             throw new UnauthorizedAccessException("No user found with given key");
 
-        var cartDTO = _mapper.Map<CartDTO>(setCart);
-        cartDTO.UserID = user.Usercode;
+        var cart = new Cart
+        {
+            UserID = user.Usercode,
+            ItemID = setCart.item.ItemID,
+            ItemName = setCart.item.ItemName,
+            ItemPrice = setCart.item.ItemPrice,
+            Quantity = setCart.Quantity
+        };
 
-        var cart = _mapper.Map<Cart>(cartDTO);
         await _unitOfWork.Carts.AddAsync(cart);
         await _unitOfWork.SaveChangesAsync();
 
-        return cartDTO;
+        return new CartItemDTO
+        {
+            CartID = cart.CartID,
+            ItemID = cart.ItemID,
+            ItemName = cart.ItemName,
+            ItemPrice = cart.ItemPrice,
+            Quantity = cart.Quantity,
+            TotalPrice = cart.ItemPrice * cart.Quantity
+        };
     }
 
     public async Task<bool> RemoveItemFromCartAsync(string apiKey, int itemId)
@@ -63,11 +88,19 @@ public class CartService : ICartService
 
         var cartItems = await _unitOfWork.Carts.GetByUserIdAsync(user.Usercode);
         
-        var totalAmount = cartItems.Sum(c => c.Item.ItemPrice * c.Quantity);
+        var totalAmount = cartItems.Sum(c => c.ItemPrice * c.Quantity);
         
         return new GetCartDTO
         {
-            cartitems = cartItems.ToList(),
+            cartitems = cartItems.Select(c => new CartItemDTO
+            {
+                CartID = c.CartID,
+                ItemID = c.ItemID,
+                ItemName = c.ItemName,
+                ItemPrice = c.ItemPrice,
+                Quantity = c.Quantity,
+                TotalPrice = c.ItemPrice * c.Quantity
+            }).ToList(),
             GrandTotal = totalAmount
         };
     }

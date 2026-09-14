@@ -1,3 +1,4 @@
+using RestaurantAPI.DTOs;
 using RestaurantAPI.Models;
 using RestaurantAPI.Helpers;
 using RestaurantAPI.Services.Interfaces;
@@ -22,7 +23,7 @@ namespace RestaurantAPI.Controllers
 
         [HttpPost("{restaurantid}/makeorder")]
         [SwaggerOperation(Summary = "Create order", Description = "Create a new order for a specific restaurant")]
-        [SwaggerResponse(201, "Order created successfully", typeof(FullOrderDTO))]
+        [SwaggerResponse(201, "Order created successfully", typeof(OrderResponseDTO))]
         [SwaggerResponse(400, "Invalid request")]
         [SwaggerResponse(401, "Invalid API key")]
         public async Task<ActionResult> CreateOrder(int restaurantid, [FromQuery] string apikey, [FromBody] MenuDTO menuDTO)
@@ -89,7 +90,7 @@ namespace RestaurantAPI.Controllers
                 
                 if (deleted)
                 {
-                    return ResponseHelper.Success(null, "Order deleted successfully");
+                    return ResponseHelper.Success<object>(null, "Order deleted successfully");
                 }
                 
                 return ResponseHelper.Error("Order not found", 400);

@@ -1,3 +1,4 @@
+using RestaurantAPI.DTOs;
 using RestaurantAPI.Filters;
 using RestaurantAPI.Models;
 using RestaurantAPI.Helpers;
@@ -67,7 +68,7 @@ namespace RestaurantAPI.Controllers
                 
                 if (removed)
                 {
-                    return ResponseHelper.Success(null, "Item removed from cart");
+                    return ResponseHelper.Success<object>(null, "Item removed from cart");
                 }
                 
                 return ResponseHelper.NotFound("Item in cart");
@@ -104,7 +105,7 @@ namespace RestaurantAPI.Controllers
             try
             {
                 await _cartService.ClearCartAsync(apikey);
-                return ResponseHelper.Success(null, "Cart cleared successfully");
+                return ResponseHelper.Success<object>(null, "Cart cleared successfully");
             }
             catch (UnauthorizedAccessException ex)
             {
