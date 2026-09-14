@@ -1,4 +1,5 @@
 using AutoMapper;
+using RestaurantAPI.DTOs;
 using RestaurantAPI.Models;
 using RestaurantAPI.Services.Interfaces;
 
@@ -58,6 +59,13 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.TotalPrice, opt => opt.Ignore())
             .ForMember(dest => dest.MasterID, opt => opt.Ignore());
 
+        // Order response mappings (no entity exposure)
+        CreateMap<Order, OrderLineDTO>()
+            .ForMember(dest => dest.ItemName, opt => opt.MapFrom(src => src.ItemName))
+            .ForMember(dest => dest.ItemPrice, opt => opt.MapFrom(src => src.ItemPrice))
+            .ForMember(dest => dest.Quantity, opt => opt.MapFrom(src => src.Quantity))
+            .ForMember(dest => dest.TotalPrice, opt => opt.MapFrom(src => src.TotalPrice));
+
         // Cart mappings
         CreateMap<SetCart, CartDTO>()
             .ForMember(dest => dest.ItemID, opt => opt.MapFrom(src => src.item.ItemID))
@@ -69,8 +77,16 @@ public class MappingProfile : Profile
         CreateMap<Cart, CartDTO>()
             .ForMember(dest => dest.TotalPrice, opt => opt.MapFrom(src => src.ItemPrice * src.Quantity));
 
+        CreateMap<Cart, CartItemDTO>()
+            .ForMember(dest => dest.TotalPrice, opt => opt.MapFrom(src => src.ItemPrice * src.Quantity));
+
         // MasterOrder mappings
         CreateMap<MasterOrder, MasterOrderDTO>();
+        CreateMap<MasterOrder, MasterOrderWithItemsDTO>()
+            .ForMember(dest => dest.UserCode, opt => opt.MapFrom(src => src.User.Usercode))
+            .ForMember(dest => dest.RestaurantName, opt => opt.MapFrom(src => src.Restaurant.RestaurantName))
+            .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.Orders));
+
         CreateMap<MasterOrderDTO, MasterOrder>()
             .ForMember(dest => dest.User, opt => opt.Ignore())
             .ForMember(dest => dest.Restaurant, opt => opt.Ignore());
