@@ -8,7 +8,7 @@ namespace RestaurantAPI.Application.Features.Cart.Queries;
 /// Handler for GetCartItemsQuery.
 /// Retrieves all items in the user's cart with calculated item totals.
 /// </summary>
-public class GetCartItemsQueryHandler : IRequestHandler<GetCartItemsQuery, IEnumerable<CartItemDTO>>
+public class GetCartItemsQueryHandler : IRequestHandler<GetCartItemsQuery, IEnumerable<CartItemDto>>
 {
     private readonly IUnitOfWork _unitOfWork;
 
@@ -17,7 +17,7 @@ public class GetCartItemsQueryHandler : IRequestHandler<GetCartItemsQuery, IEnum
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<IEnumerable<CartItemDTO>> Handle(GetCartItemsQuery request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<CartItemDto>> Handle(GetCartItemsQuery request, CancellationToken cancellationToken)
     {
         // Validate input
         if (string.IsNullOrWhiteSpace(request.UserId))
@@ -32,7 +32,7 @@ public class GetCartItemsQueryHandler : IRequestHandler<GetCartItemsQuery, IEnum
         var cartItems = await _unitOfWork.Carts.GetByUserIdAsync(user.Usercode);
 
         // Map to DTOs with calculated totals
-        return cartItems.Select(c => new CartItemDTO
+        return cartItems.Select(c => new CartItemDto
         {
             CartID = c.CartID,
             ItemID = c.ItemID,

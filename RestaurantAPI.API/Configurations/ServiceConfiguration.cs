@@ -1,9 +1,7 @@
 using RestaurantAPI.Mapping;
 using RestaurantAPI.DTOs.External;
 using RestaurantAPI.Services.Interfaces;
-using RestaurantAPI.Services.Implementation;
 using RestaurantAPI.Repositories.Interfaces;
-using RestaurantAPI.Repositories.Implementation;
 using RestaurantAPI.Auth.Extensions;
 using RestaurantAPI.Application.Features.Orders.Authorization;
 
@@ -35,13 +33,7 @@ public static class ServiceConfiguration
         // Register Order Authorization Service (DIP: orders module uses this for authorization)
         services.AddScoped<IOrderAuthorizationService, OrderAuthorizationService>();
 
-        // Register Application Services
-        services.AddScoped<IRestaurantService, RestaurantService>();
-        services.AddScoped<IMenuService, MenuService>();
-        services.AddScoped<IItemService, ItemService>();
-        services.AddScoped<IUserService, UserService>();
-        services.AddScoped<IOrderService, OrderService>();
-        services.AddScoped<ICartService, CartService>();
+        // Image Service (infrastructure utility, not business logic)
         services.AddScoped<IImageService, ImageService>();
 
         return services;

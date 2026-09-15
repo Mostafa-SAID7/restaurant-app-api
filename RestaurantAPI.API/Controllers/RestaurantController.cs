@@ -1,11 +1,12 @@
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RestaurantAPI.Application.Common.DTOs;
+using RestaurantAPI.Application.Features.Restaurants.Commands;
+using RestaurantAPI.Application.Features.Restaurants.Queries;
 using RestaurantAPI.Auth.Policies;
-using RestaurantAPI.DTOs;
 using RestaurantAPI.Filters;
 using RestaurantAPI.Helpers;
-using RestaurantAPI.Models;
-using RestaurantAPI.Services.Interfaces;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace RestaurantAPI.Controllers
@@ -15,67 +16,58 @@ namespace RestaurantAPI.Controllers
     [SwaggerTag("Restaurant Management")]
     public class RestaurantController : ControllerBase
     {
+        private readonly IMediator _mediator;
         private readonly ILogger<RestaurantController> _logger;
-        private readonly IRestaurantService _restaurantService;
-        private readonly IMenuService _menuService;
-        private readonly IItemService _itemService;
         private readonly IImageService _imageService;
 
         public RestaurantController(
-            ILogger<RestaurantController> logger, 
-            IRestaurantService restaurantService,
-            IMenuService menuService,
-            IItemService itemService,
+            IMediator mediator,
+            ILogger<RestaurantController> logger,
             IImageService imageService)
         {
+            _mediator = mediator;
             _logger = logger;
-            _restaurantService = restaurantService;
-            _menuService = menuService;
-            _itemService = itemService;
             _imageService = imageService;
         }
 
         /// <summary>
         /// Get all restaurants (public endpoint)
-        /// Phase B.4: Supports pagination via pageNumber and pageSize query parameters
+        /// Supports filtering by category, address, and name
         /// </summary>
         [HttpGet]
         [AllowAnonymous]
-        [SwaggerOperation(Summary = "Get all restaurants", Description = "Retrieve all restaurants with optional filtering and pagination")]
-        [SwaggerResponse(200, "Success", typeof(IEnumerable<RestaurantDTO>))]
+        [SwaggerOperation(Summary = "Get all restaurants", Description = "Retrieve all restaurants with optional filtering")]
+        [SwaggerResponse(200, "Success", typeof(ApiResponse<IEnumerable<RestaurantDto>>))]
         [SwaggerResponse(404, "No restaurants found")]
-        public async Task<ActionResult> GetRestaurants(
-            [FromQuery] string category = "", 
-            [FromQuery] string? address = null, 
+        public async Task<ActionResult<ApiResponse<IEnumerable<RestaurantDto>>>> GetRestaurants(
+            [FromQuery] string? category = null,
+            [FromQuery] string? address = null,
             [FromQuery] string? name = null,
-            [FromQuery(Name = "pageNumber")] string? pageNumberStr = null,
-            [FromQuery(Name = "pageSize")] string? pageSizeStr = null)
+            CancellationToken cancellationToken = default)
         {
-            // Extract and validate pagination parameters
-            var paginationParams = PaginationHelper.ExtractFromQuery(pageNumberStr, pageSizeStr);
-            
-            var restaurants = await _restaurantService.GetRestaurantsAsync(category, address, name);
-            var restaurantList = restaurants.ToList();
-            
-            if (!restaurantList.Any())
+            try
             {
-                return ResponseHelper.NotFound("Restaurants");
+                var query = new GetRestaurantsQuery 
+                { 
+                    Category = category, 
+                    Address = address, 
+                    Name = name 
+                };
+                var restaurants = await _mediator.Send(query, cancellationToken);
+                var restaurantList = restaurants.ToList();
+
+                if (!restaurantList.Any())
+                {
+                    return NotFound(ApiResponse<IEnumerable<RestaurantDto>>.CreateError("No restaurants found"));
+                }
+
+                return Ok(ApiResponse<IEnumerable<RestaurantDto>>.CreateSuccess(restaurantList));
             }
-
-            // Apply pagination manually (until service layer is updated)
-            var totalCount = restaurantList.Count;
-            var paginatedRestaurants = restaurantList
-                .Skip(paginationParams.GetOffset())
-                .Take(paginationParams.PageSize)
-                .ToList();
-
-            var paginatedResponse = PaginatedResponse<RestaurantDTO>.Create(
-                paginatedRestaurants, 
-                paginationParams.PageNumber, 
-                paginationParams.PageSize, 
-                totalCount);
-
-            return ResponseHelper.PaginatedStandard(paginatedResponse);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving restaurants");
+                return StatusCode(500, ApiResponse<IEnumerable<RestaurantDto>>.CreateError("An error occurred"));
+            }
         }
 
         /// <summary>
@@ -84,19 +76,29 @@ namespace RestaurantAPI.Controllers
         [HttpPost]
         [Authorize(Policy = AuthorizationPolicies.AdminOnly)]
         [SwaggerOperation(Summary = "Create restaurant", Description = "Add new restaurant (admin only)")]
-        [SwaggerResponse(201, "Restaurant created successfully", typeof(RestaurantDTO))]
+        [SwaggerResponse(201, "Restaurant created successfully", typeof(ApiResponse<RestaurantDto>))]
         [SwaggerResponse(409, "Restaurant already exists")]
         [SwaggerResponse(403, "Forbidden - admin access required")]
-        public async Task<ActionResult> CreateRestaurant(RestaurantDTO restaurantDTO)
+        public async Task<ActionResult<ApiResponse<RestaurantDto>>> CreateRestaurant(
+            [FromBody] CreateRestaurantDto restaurantData,
+            CancellationToken cancellationToken = default)
         {
-            var restaurantExists = await _restaurantService.RestaurantExistsAsync(restaurantDTO.RestaurantName);
-            if (restaurantExists)
+            try
             {
-                return ResponseHelper.Error("Restaurant already exists", 409);
+                var command = new CreateRestaurantCommand { RestaurantData = restaurantData };
+                var result = await _mediator.Send(command, cancellationToken);
+                return CreatedAtAction(nameof(GetRestaurantById), new { restaurantId = result.RestaurantID }, 
+                    ApiResponse<RestaurantDto>.CreateSuccess(result, "Restaurant created successfully"));
             }
-
-            var newRestaurant = await _restaurantService.CreateRestaurantAsync(restaurantDTO);
-            return ResponseHelper.Created(newRestaurant);
+            catch (ArgumentException ex)
+            {
+                return Conflict(ApiResponse<RestaurantDto>.CreateError(ex.Message));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating restaurant");
+                return StatusCode(500, ApiResponse<RestaurantDto>.CreateError("An error occurred"));
+            }
         }
 
         /// <summary>
@@ -105,18 +107,29 @@ namespace RestaurantAPI.Controllers
         [HttpGet("{restaurantId}")]
         [AllowAnonymous]
         [SwaggerOperation(Summary = "Get restaurant by ID", Description = "Retrieve specific restaurant details")]
-        [SwaggerResponse(200, "Success", typeof(RestaurantDTO))]
+        [SwaggerResponse(200, "Success", typeof(ApiResponse<RestaurantDto>))]
         [SwaggerResponse(404, "Restaurant not found")]
-        public async Task<ActionResult> GetRestaurantById(int restaurantId)
+        public async Task<ActionResult<ApiResponse<RestaurantDto>>> GetRestaurantById(
+            int restaurantId,
+            CancellationToken cancellationToken = default)
         {
-            var restaurant = await _restaurantService.GetRestaurantByIdAsync(restaurantId);
-            
-            if (restaurant != null)
+            try
             {
-                return ResponseHelper.Success(restaurant);
+                var query = new GetRestaurantByIdQuery { RestaurantId = restaurantId };
+                var restaurant = await _mediator.Send(query, cancellationToken);
+                
+                if (restaurant == null)
+                {
+                    return NotFound(ApiResponse<RestaurantDto>.CreateError($"Restaurant with ID {restaurantId} not found"));
+                }
+
+                return Ok(ApiResponse<RestaurantDto>.CreateSuccess(restaurant));
             }
-            
-            return ResponseHelper.NotFound("Restaurant", restaurantId);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving restaurant");
+                return StatusCode(500, ApiResponse<RestaurantDto>.CreateError("An error occurred"));
+            }
         }
 
         /// <summary>
@@ -125,40 +138,46 @@ namespace RestaurantAPI.Controllers
         [HttpGet("{restaurantId}/menu")]
         [AllowAnonymous]
         [SwaggerOperation(Summary = "Get restaurant menu", Description = "Retrieve menu items for specific restaurant")]
-        [SwaggerResponse(200, "Success", typeof(IEnumerable<ItemResponseDTO>))]
+        [SwaggerResponse(200, "Success", typeof(ApiResponse<IEnumerable<ItemResponseDto>>))]
         [SwaggerResponse(404, "Restaurant not found")]
-        public async Task<ActionResult> GetMenu(int restaurantId, [FromQuery] string sortbyprice = "")
+        public async Task<ActionResult<ApiResponse<IEnumerable<ItemResponseDto>>>> GetMenu(
+            int restaurantId,
+            [FromQuery] string sortByPrice = "",
+            CancellationToken cancellationToken = default)
         {
-            var restaurant = await _restaurantService.GetRestaurantByIdAsync(restaurantId);
-            if (restaurant == null)
+            try
             {
-                return ResponseHelper.NotFound("Restaurant", restaurantId);
-            }
+                var query = new GetRestaurantMenuQuery 
+                { 
+                    RestaurantId = restaurantId,
+                    SortByPrice = sortByPrice
+                };
+                var menu = await _mediator.Send(query, cancellationToken);
+                var menuList = menu.ToList();
 
-            var menu = await _menuService.GetMenuAsync(restaurantId, sortbyprice);
-            return ResponseHelper.Success(menu);
+                if (!menuList.Any())
+                {
+                    return NotFound(ApiResponse<IEnumerable<ItemResponseDto>>.CreateError($"No menu items found for restaurant {restaurantId}"));
+                }
+
+                return Ok(ApiResponse<IEnumerable<ItemResponseDto>>.CreateSuccess(menuList));
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(ApiResponse<IEnumerable<ItemResponseDto>>.CreateError(ex.Message));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving restaurant menu");
+                return StatusCode(500, ApiResponse<IEnumerable<ItemResponseDto>>.CreateError("An error occurred"));
+            }
         }
 
-        /// <summary>
-        /// Add item to restaurant menu (admin or owner only)
-        /// </summary>
-        [HttpPost("{restaurantId}/items")]
-        [Authorize(Policy = AuthorizationPolicies.CanManageRestaurant)]
-        [SwaggerOperation(Summary = "Add menu item", Description = "Add new menu item to restaurant")]
-        [SwaggerResponse(201, "Item added successfully", typeof(ItemDTO))]
-        [SwaggerResponse(404, "Restaurant not found")]
-        [SwaggerResponse(403, "Forbidden - admin or owner access required")]
-        public async Task<ActionResult> AddItemToMenu(int restaurantId, [FromBody] ItemDTO itemDTO)
-        {
-            var restaurant = await _restaurantService.GetRestaurantByIdAsync(restaurantId);
-            if (restaurant == null)
-            {
-                return ResponseHelper.NotFound("Restaurant", restaurantId);
-            }
 
-            var newItem = await _itemService.AddItemToMenuAsync(restaurantId, itemDTO);
-            return ResponseHelper.Created(newItem);
-        }
+        // TODO: Implement AddMenuItemCommand in Features/Restaurants/Commands
+        // [HttpPost("{restaurantId}/items")]
+        // [Authorize(Policy = AuthorizationPolicies.CanManageRestaurant)]
+        // public async Task<ActionResult<ApiResponse<ItemDto>>> AddItemToMenu(...)
 
         /// <summary>
         /// Upload image file (authenticated, rate limited)
@@ -166,30 +185,35 @@ namespace RestaurantAPI.Controllers
         [HttpPost("upload-image")]
         [Authorize(Policy = AuthorizationPolicies.Authenticated)]
         [SwaggerOperation(Summary = "Upload image file", Description = "Upload image for menu items")]
-        [SwaggerResponse(200, "Image uploaded successfully")]
+        [SwaggerResponse(200, "Image uploaded successfully", typeof(ApiResponse<object>))]
         [SwaggerResponse(400, "Invalid image file")]
         [SwaggerResponse(401, "Unauthorized - JWT token required")]
         [SwaggerResponse(413, "File too large")]
         [RateLimit(maxRequests: 20, timeWindowMinutes: 1)]
-        public async Task<ActionResult> UploadImage(IFormFile image)
+        public async Task<ActionResult<ApiResponse<object>>> UploadImage(IFormFile image)
         {
-            if (image == null || image.Length == 0)
+            try
             {
-                return ResponseHelper.Error("No image file provided");
-            }
+                if (image == null || image.Length == 0)
+                {
+                    return BadRequest(ApiResponse<object>.CreateError("No image file provided"));
+                }
 
-            if (!FileHelper.IsValidImage(image))
+                if (!FileHelper.IsValidImage(image))
+                {
+                    return BadRequest(ApiResponse<object>.CreateError("Invalid image file. Allowed formats: JPEG, PNG, GIF, WebP. Max size: 5MB"));
+                }
+
+                var imagePath = await _imageService.SaveImageAsync(image);
+                var imageUrl = _imageService.GetImageUrl(imagePath);
+
+                return Ok(ApiResponse<object>.CreateSuccess(new { imagePath, imageUrl }, "Image uploaded successfully"));
+            }
+            catch (Exception ex)
             {
-                return ResponseHelper.Error("Invalid image file. Allowed formats: JPEG, PNG, GIF, WebP. Max size: 5MB");
+                _logger.LogError(ex, "Error uploading image");
+                return StatusCode(500, ApiResponse<object>.CreateError("An error occurred while uploading"));
             }
-
-            var imagePath = await _imageService.SaveImageAsync(image);
-            var imageUrl = _imageService.GetImageUrl(imagePath);
-
-            return ResponseHelper.Success(new { 
-                imagePath, 
-                imageUrl 
-            }, "Image uploaded successfully");
         }
 
         /// <summary>
@@ -198,85 +222,85 @@ namespace RestaurantAPI.Controllers
         [HttpPost("upload-base64-image")]
         [Authorize(Policy = AuthorizationPolicies.Authenticated)]
         [SwaggerOperation(Summary = "Upload base64 image", Description = "Upload image from base64 string")]
-        [SwaggerResponse(200, "Image uploaded successfully")]
+        [SwaggerResponse(200, "Image uploaded successfully", typeof(ApiResponse<object>))]
         [SwaggerResponse(400, "Invalid image data")]
         [SwaggerResponse(401, "Unauthorized - JWT token required")]
         [SwaggerResponse(413, "File too large")]
         [RateLimit(maxRequests: 20, timeWindowMinutes: 1)]
-        public async Task<ActionResult> UploadBase64Image([FromBody] ImageRequestDTO request)
+        public async Task<ActionResult<ApiResponse<object>>> UploadBase64Image([FromBody] ImageRequestDTO request)
         {
-            if (string.IsNullOrEmpty(request?.Base64Image))
-            {
-                return ResponseHelper.Error("No image data provided");
-            }
-
-            // Validate base64 string
             try
             {
-                var base64Data = request.Base64Image.Contains(",") 
-                    ? request.Base64Image.Split(',')[1] 
-                    : request.Base64Image;
-                Convert.FromBase64String(base64Data);
+                if (string.IsNullOrEmpty(request?.Base64Image))
+                {
+                    return BadRequest(ApiResponse<object>.CreateError("No image data provided"));
+                }
+
+                // Validate base64 string
+                try
+                {
+                    var base64Data = request.Base64Image.Contains(",") 
+                        ? request.Base64Image.Split(',')[1] 
+                        : request.Base64Image;
+                    Convert.FromBase64String(base64Data);
+                }
+                catch
+                {
+                    return BadRequest(ApiResponse<object>.CreateError("Invalid base64 image data"));
+                }
+
+                // Sanitize filename
+                var fileName = string.IsNullOrWhiteSpace(request.FileName) 
+                    ? "item" 
+                    : request.FileName.Replace("\\", "").Replace("/", "").Replace("..", "");
+
+                var imagePath = await _imageService.SaveBase64ImageAsync(request.Base64Image, fileName);
+                var imageUrl = _imageService.GetImageUrl(imagePath);
+
+                return Ok(ApiResponse<object>.CreateSuccess(new { imagePath, imageUrl }, "Base64 image uploaded successfully"));
             }
-            catch
+            catch (Exception ex)
             {
-                return ResponseHelper.Error("Invalid base64 image data");
+                _logger.LogError(ex, "Error uploading base64 image");
+                return StatusCode(500, ApiResponse<object>.CreateError("An error occurred while uploading"));
             }
-
-            // Sanitize filename
-            var fileName = string.IsNullOrWhiteSpace(request.FileName) 
-                ? "item" 
-                : request.FileName.Replace("\\", "").Replace("/", "").Replace("..", "");
-
-            var imagePath = await _imageService.SaveBase64ImageAsync(request.Base64Image, fileName);
-            var imageUrl = _imageService.GetImageUrl(imagePath);
-
-            return ResponseHelper.Success(new { 
-                imagePath, 
-                imageUrl 
-            }, "Base64 image uploaded successfully");
         }
 
         /// <summary>
         /// Get all menu items (public endpoint)
-        /// Phase B.4: Supports pagination via pageNumber and pageSize query parameters
         /// </summary>
         [HttpGet("items/all")]
         [AllowAnonymous]
-        [SwaggerOperation(Summary = "Get all menu items", Description = "Retrieve all menu items across all restaurants with pagination")]
-        [SwaggerResponse(200, "Success", typeof(IEnumerable<ItemResponseDTO>))]
+        [SwaggerOperation(Summary = "Get all menu items", Description = "Retrieve all menu items across all restaurants")]
+        [SwaggerResponse(200, "Success", typeof(ApiResponse<IEnumerable<ItemResponseDto>>))]
         [SwaggerResponse(404, "No items found")]
-        public async Task<ActionResult> GetAllItems(
-            [FromQuery] string itemName = "", 
-            [FromQuery] string sortbyprice = "",
-            [FromQuery(Name = "pageNumber")] string? pageNumberStr = null,
-            [FromQuery(Name = "pageSize")] string? pageSizeStr = null)
+        public async Task<ActionResult<ApiResponse<IEnumerable<ItemResponseDto>>>> GetAllItems(
+            [FromQuery] string itemName = "",
+            [FromQuery] string sortByPrice = "",
+            CancellationToken cancellationToken = default)
         {
-            // Extract and validate pagination parameters
-            var paginationParams = PaginationHelper.ExtractFromQuery(pageNumberStr, pageSizeStr);
-            
-            var items = await _itemService.GetAllItemsAsync(itemName, sortbyprice);
-            var itemList = items.ToList();
-
-            if (!itemList.Any())
+            try
             {
-                return ResponseHelper.NotFound("Items");
+                var query = new GetAllItemsQuery
+                {
+                    ItemName = itemName,
+                    SortByPrice = sortByPrice
+                };
+                var items = await _mediator.Send(query, cancellationToken);
+                var itemList = items.ToList();
+
+                if (!itemList.Any())
+                {
+                    return NotFound(ApiResponse<IEnumerable<ItemResponseDto>>.CreateError("No items found"));
+                }
+
+                return Ok(ApiResponse<IEnumerable<ItemResponseDto>>.CreateSuccess(itemList));
             }
-
-            // Apply pagination manually (until service layer is updated)
-            var totalCount = itemList.Count;
-            var paginatedItems = itemList
-                .Skip(paginationParams.GetOffset())
-                .Take(paginationParams.PageSize)
-                .ToList();
-
-            var paginatedResponse = PaginatedResponse<ItemResponseDTO>.Create(
-                paginatedItems, 
-                paginationParams.PageNumber, 
-                paginationParams.PageSize, 
-                totalCount);
-
-            return ResponseHelper.PaginatedStandard(paginatedResponse);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving items");
+                return StatusCode(500, ApiResponse<IEnumerable<ItemResponseDto>>.CreateError("An error occurred"));
+            }
         }
     }
 }

@@ -8,7 +8,7 @@ namespace RestaurantAPI.Application.Features.Users.Queries;
 /// SECURITY WARNING: This should only be accessible to admins.
 /// Maps to: UserService.GetAllUsersAsync()
 /// </summary>
-public class GetAllUsersQuery : IRequest<IEnumerable<UserDTO>>
+public class GetAllUsersQuery : IRequest<IEnumerable<UserDto>>
 {
     // No parameters - returns all users (access should be restricted via authorization policy)
 }

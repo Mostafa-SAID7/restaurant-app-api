@@ -12,7 +12,7 @@ namespace RestaurantAPI.Application.Features.Users.Queries;
 /// SECURITY: This handler should be behind authorization policy restricting access to admins.
 /// Use [Authorize(Policy = "AdminOnly")] on the controller endpoint.
 /// </summary>
-public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, IEnumerable<UserDTO>>
+public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, IEnumerable<UserDto>>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
@@ -23,9 +23,9 @@ public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, IEnumer
         _mapper = mapper;
     }
 
-    public async Task<IEnumerable<UserDTO>> Handle(GetAllUsersQuery request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<UserDto>> Handle(GetAllUsersQuery request, CancellationToken cancellationToken)
     {
         var users = await _unitOfWork.Users.GetAllAsync();
-        return _mapper.Map<IEnumerable<UserDTO>>(users);
+        return _mapper.Map<IEnumerable<UserDto>>(users);
     }
 }

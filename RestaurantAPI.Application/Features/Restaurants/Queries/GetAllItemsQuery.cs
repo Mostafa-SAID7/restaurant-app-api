@@ -7,7 +7,7 @@ namespace RestaurantAPI.Application.Features.Restaurants.Queries;
 /// Query to get all menu items across all restaurants with optional filtering.
 /// Maps to: ItemService.GetAllItemsAsync(itemName, sortByPrice)
 /// </summary>
-public class GetAllItemsQuery : IRequest<IEnumerable<ItemResponseDTO>>
+public class GetAllItemsQuery : IRequest<IEnumerable<ItemResponseDto>>
 {
     /// <summary>
     /// Filter by item name (partial match).

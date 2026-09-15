@@ -15,7 +15,7 @@ namespace RestaurantAPI.Application.Features.Restaurants.Commands;
 /// 2. Persist to database
 /// 3. Return created restaurant as DTO
 /// </summary>
-public class CreateRestaurantCommandHandler : IRequestHandler<CreateRestaurantCommand, RestaurantDTO>
+public class CreateRestaurantCommandHandler : IRequestHandler<CreateRestaurantCommand, RestaurantDto>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
@@ -26,7 +26,7 @@ public class CreateRestaurantCommandHandler : IRequestHandler<CreateRestaurantCo
         _mapper = mapper;
     }
 
-    public async Task<RestaurantDTO> Handle(CreateRestaurantCommand request, CancellationToken cancellationToken)
+    public async Task<RestaurantDto> Handle(CreateRestaurantCommand request, CancellationToken cancellationToken)
     {
         // Validate input
         if (request.RestaurantData == null)
@@ -49,6 +49,6 @@ public class CreateRestaurantCommandHandler : IRequestHandler<CreateRestaurantCo
         await _unitOfWork.SaveChangesAsync();
 
         // Return as DTO
-        return _mapper.Map<RestaurantDTO>(restaurant);
+        return _mapper.Map<RestaurantDto>(restaurant);
     }
 }

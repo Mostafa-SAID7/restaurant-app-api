@@ -8,7 +8,7 @@ namespace RestaurantAPI.Application.Features.Cart.Queries;
 /// Handler for GetCartQuery.
 /// Retrieves the user's complete cart with all items and calculated totals.
 /// </summary>
-public class GetCartQueryHandler : IRequestHandler<GetCartQuery, CartDTO>
+public class GetCartQueryHandler : IRequestHandler<GetCartQuery, CartDto>
 {
     private readonly IUnitOfWork _unitOfWork;
 
@@ -17,7 +17,7 @@ public class GetCartQueryHandler : IRequestHandler<GetCartQuery, CartDTO>
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<CartDTO> Handle(GetCartQuery request, CancellationToken cancellationToken)
+    public async Task<CartDto> Handle(GetCartQuery request, CancellationToken cancellationToken)
     {
         // Validate input
         if (string.IsNullOrWhiteSpace(request.UserId))
@@ -32,7 +32,7 @@ public class GetCartQueryHandler : IRequestHandler<GetCartQuery, CartDTO>
         var cartItems = await _unitOfWork.Carts.GetByUserIdAsync(user.Usercode);
 
         // Calculate totals and map to DTOs
-        var cartItemDtos = cartItems.Select(c => new CartItemDTO
+        var cartItemDtos = cartItems.Select(c => new CartItemDto
         {
             CartID = c.CartID,
             ItemID = c.ItemID,
@@ -44,7 +44,7 @@ public class GetCartQueryHandler : IRequestHandler<GetCartQuery, CartDTO>
 
         var grandTotal = cartItemDtos.Sum(c => c.TotalPrice);
 
-        return new CartDTO
+        return new CartDto
         {
             CartItems = cartItemDtos,
             GrandTotal = grandTotal

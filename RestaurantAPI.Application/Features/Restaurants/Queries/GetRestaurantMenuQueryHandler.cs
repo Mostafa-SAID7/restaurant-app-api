@@ -9,7 +9,7 @@ namespace RestaurantAPI.Application.Features.Restaurants.Queries;
 /// Handler for GetRestaurantMenuQuery.
 /// Retrieves all menu items for a specific restaurant with optional sorting.
 /// </summary>
-public class GetRestaurantMenuQueryHandler : IRequestHandler<GetRestaurantMenuQuery, IEnumerable<ItemResponseDTO>>
+public class GetRestaurantMenuQueryHandler : IRequestHandler<GetRestaurantMenuQuery, IEnumerable<ItemResponseDto>>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
@@ -20,7 +20,7 @@ public class GetRestaurantMenuQueryHandler : IRequestHandler<GetRestaurantMenuQu
         _mapper = mapper;
     }
 
-    public async Task<IEnumerable<ItemResponseDTO>> Handle(GetRestaurantMenuQuery request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<ItemResponseDto>> Handle(GetRestaurantMenuQuery request, CancellationToken cancellationToken)
     {
         if (request.RestaurantId <= 0)
             throw new ArgumentException("Restaurant ID must be greater than 0");
@@ -36,6 +36,6 @@ public class GetRestaurantMenuQueryHandler : IRequestHandler<GetRestaurantMenuQu
             request.SortByPrice ?? ""
         );
 
-        return _mapper.Map<IEnumerable<ItemResponseDTO>>(items);
+        return _mapper.Map<IEnumerable<ItemResponseDto>>(items);
     }
 }

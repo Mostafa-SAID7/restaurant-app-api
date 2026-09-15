@@ -1,5 +1,5 @@
 using MediatR;
-using RestaurantAPI.Application.Common.DTOs;
+using RestaurantAPI.Auth.DTOs;
 
 namespace RestaurantAPI.Application.Features.Auth.Commands;
 
@@ -8,7 +8,7 @@ namespace RestaurantAPI.Application.Features.Auth.Commands;
 /// Maps to: AuthService.LoginAsync(email, password)
 /// Returns: TokenResponseDto with access and refresh tokens
 /// </summary>
-public class LoginCommand : IRequest<AuthResultDto>
+public class LoginCommand : IRequest<TokenResponseDto>
 {
     /// <summary>
     /// User's email address.

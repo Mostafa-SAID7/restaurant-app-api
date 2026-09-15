@@ -7,7 +7,7 @@ namespace RestaurantAPI.Application.Features.Users.Queries;
 /// Query to get the current user's profile information.
 /// Maps to: UserService.GetUserByIdAsync(userId)
 /// </summary>
-public class GetUserProfileQuery : IRequest<UserDTO?>
+public class GetUserProfileQuery : IRequest<UserDto?>
 {
     /// <summary>
     /// User ID (from JWT claims, provided by controller).

@@ -19,7 +19,11 @@ public class MappingProfile : Profile
 
         // Item mappings
         CreateMap<Item, ItemDto>().ReverseMap();
+        CreateMap<Item, ItemResponseDto>();
         CreateMap<CreateItemDto, Item>();
+
+        // User mappings
+        CreateMap<User, UserDto>();
 
         // Cart mappings
         CreateMap<Cart, CartItemDto>()

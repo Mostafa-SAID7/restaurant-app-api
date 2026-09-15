@@ -9,7 +9,7 @@ namespace RestaurantAPI.Application.Features.Restaurants.Queries;
 /// Handler for GetAllItemsQuery.
 /// Retrieves all menu items across all restaurants with optional filtering and sorting.
 /// </summary>
-public class GetAllItemsQueryHandler : IRequestHandler<GetAllItemsQuery, IEnumerable<ItemResponseDTO>>
+public class GetAllItemsQueryHandler : IRequestHandler<GetAllItemsQuery, IEnumerable<ItemResponseDto>>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
@@ -20,7 +20,7 @@ public class GetAllItemsQueryHandler : IRequestHandler<GetAllItemsQuery, IEnumer
         _mapper = mapper;
     }
 
-    public async Task<IEnumerable<ItemResponseDTO>> Handle(GetAllItemsQuery request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<ItemResponseDto>> Handle(GetAllItemsQuery request, CancellationToken cancellationToken)
     {
         // Get items with optional filters
         var items = await _unitOfWork.Items.GetByFiltersAsync(
@@ -28,6 +28,6 @@ public class GetAllItemsQueryHandler : IRequestHandler<GetAllItemsQuery, IEnumer
             request.SortByPrice ?? ""
         );
 
-        return _mapper.Map<IEnumerable<ItemResponseDTO>>(items);
+        return _mapper.Map<IEnumerable<ItemResponseDto>>(items);
     }
 }

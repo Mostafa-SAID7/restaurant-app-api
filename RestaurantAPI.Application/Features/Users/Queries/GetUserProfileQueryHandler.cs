@@ -9,7 +9,7 @@ namespace RestaurantAPI.Application.Features.Users.Queries;
 /// Handler for GetUserProfileQuery.
 /// Retrieves the current authenticated user's profile information.
 /// </summary>
-public class GetUserProfileQueryHandler : IRequestHandler<GetUserProfileQuery, UserDTO?>
+public class GetUserProfileQueryHandler : IRequestHandler<GetUserProfileQuery, UserDto?>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
@@ -20,7 +20,7 @@ public class GetUserProfileQueryHandler : IRequestHandler<GetUserProfileQuery, U
         _mapper = mapper;
     }
 
-    public async Task<UserDTO?> Handle(GetUserProfileQuery request, CancellationToken cancellationToken)
+    public async Task<UserDto?> Handle(GetUserProfileQuery request, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(request.UserId))
             throw new ArgumentException("User ID is required");
@@ -29,6 +29,6 @@ public class GetUserProfileQueryHandler : IRequestHandler<GetUserProfileQuery, U
         if (user == null)
             return null;
 
-        return _mapper.Map<UserDTO>(user);
+        return _mapper.Map<UserDto>(user);
     }
 }
