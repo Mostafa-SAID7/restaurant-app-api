@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RestaurantAPI.Application.Common.DTOs;
 using RestaurantAPI.Application.Features.Users.Commands;
-using RestaurantAPI.Auth.Policies;
+using RestaurantAPI.API.Policies;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Security.Claims;
 

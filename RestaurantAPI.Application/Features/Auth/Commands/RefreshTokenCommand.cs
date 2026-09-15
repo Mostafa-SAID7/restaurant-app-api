@@ -1,5 +1,5 @@
 using MediatR;
-using RestaurantAPI.Auth.DTOs;
+using RestaurantAPI.Application.Common.DTOs;
 
 namespace RestaurantAPI.Application.Features.Auth.Commands;
 

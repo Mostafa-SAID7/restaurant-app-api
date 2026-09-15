@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 
-namespace RestaurantAPI.Auth.Policies;
+namespace RestaurantAPI.API.Policies;
 
 /// <summary>
 /// Authorization policy definitions for role-based access control.

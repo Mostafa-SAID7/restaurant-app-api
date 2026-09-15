@@ -7,7 +7,7 @@ namespace RestaurantAPI.Application.Features.Restaurants.Queries;
 /// Query to get menu items for a specific restaurant.
 /// Maps to: MenuService.GetMenuAsync(restaurantId, sortByPrice)
 /// </summary>
-public class GetRestaurantMenuQuery : IRequest<IEnumerable<ItemResponseDto>>
+public class GetRestaurantMenuQuery : IRequest<IEnumerable<ItemDto>>
 {
     /// <summary>
     /// Restaurant ID whose menu to retrieve.

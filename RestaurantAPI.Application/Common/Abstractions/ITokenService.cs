@@ -1,6 +1,6 @@
 using System.Security.Claims;
 
-namespace RestaurantAPI.Auth.Services.Interfaces;
+namespace RestaurantAPI.Application.Common.Abstractions;
 
 /// <summary>
 /// Service for JWT token generation, validation, and refresh token management.
@@ -16,7 +16,7 @@ public interface ITokenService
     /// <param name="userEmail">User email address for token claims</param>
     /// <param name="roles">List of user roles for RBAC claims</param>
     /// <returns>Token response with access token, refresh token, and expiration info</returns>
-    Task<TokenResponse> GenerateTokensAsync(string userId, string userEmail, IEnumerable<string> roles);
+    Task<TokenResponseDto> GenerateTokensAsync(string userId, string userEmail, IEnumerable<string> roles);
 
     /// <summary>
     /// Generates a new access token from a valid refresh token.
@@ -24,7 +24,7 @@ public interface ITokenService
     /// </summary>
     /// <param name="refreshToken">The refresh token presented by client</param>
     /// <returns>New token pair, or null if refresh token is invalid/expired/revoked</returns>
-    Task<TokenResponse?> RefreshAccessTokenAsync(string refreshToken);
+    Task<TokenResponseDto?> RefreshAccessTokenAsync(string refreshToken);
 
     /// <summary>
     /// Revokes a refresh token (marks as used, invalidates for future use).
@@ -43,9 +43,12 @@ public interface ITokenService
 }
 
 /// <summary>
-/// Response DTO containing access token, refresh token, and metadata.
+/// Unified response DTO for all authentication operations (login, register, refresh).
+/// Returned directly by ITokenService and passed to the API layer via CQRS handlers.
+/// Contains tokens, expiration metadata, and non-sensitive user information.
+/// This is the single canonical auth response — no separate TokenResponseDto in DTOs layer.
 /// </summary>
-public class TokenResponse
+public class TokenResponseDto
 {
     /// <summary>
     /// Short-lived JWT access token (15-30 minutes).
@@ -73,4 +76,19 @@ public class TokenResponse
     /// Unix timestamp when access token expires (for client-side tracking).
     /// </summary>
     public long ExpiresAt { get; set; }
+
+    /// <summary>
+    /// User identifier (Usercode).
+    /// </summary>
+    public string UserId { get; set; } = null!;
+
+    /// <summary>
+    /// User email address (non-sensitive).
+    /// </summary>
+    public string Email { get; set; } = null!;
+
+    /// <summary>
+    /// User roles for client-side authorization checks (e.g., ["Customer", "Admin"]).
+    /// </summary>
+    public IEnumerable<string> Roles { get; set; } = [];
 }

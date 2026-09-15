@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using RestaurantAPI.Application.Common.DTOs;
 using RestaurantAPI.Application.Features.Orders.Commands;
 using RestaurantAPI.Application.Features.Orders.Queries;
-using RestaurantAPI.Auth.Policies;
-using RestaurantAPI.Auth.Services.Interfaces;
+using RestaurantAPI.API.Policies;
+using RestaurantAPI.Application.Common.Abstractions;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace RestaurantAPI.Controllers;

@@ -1,25 +1,31 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using RestaurantAPI.Auth.Models;
-using RestaurantAPI.Auth.Services.Interfaces;
-using RestaurantAPI.Data;
+using RestaurantAPI.Application.Common.Abstractions;
+using RestaurantAPI.Domain.Entities;
+using RestaurantAPI.Domain.Interfaces;
 
-namespace RestaurantAPI.Auth.Services.Implementation;
+namespace RestaurantAPI.Infrastructure.Services;
 
 /// <summary>
 /// Implementation of ITokenService.
 /// Generates JWT access tokens and refresh tokens.
 /// Implements refresh token rotation: old token marked used/revoked, new pair issued.
 /// Access tokens are short-lived (15 min); refresh tokens long-lived (7 days).
+///
+/// Uses IUnitOfWork (not AppDbContext directly) to stay consistent with the
+/// repository pattern used throughout the rest of the application.
+/// Returns TokenResponseDto (the canonical DTO) fully populated, including
+/// UserId, Email and Roles — so CQRS handlers need no additional mapping.
 /// </summary>
 public class TokenService : ITokenService
 {
     private readonly IConfiguration _configuration;
-    private readonly AppDbContext _context;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ILogger<TokenService> _logger;
     private readonly IPasswordService _passwordService;
 
@@ -35,30 +41,36 @@ public class TokenService : ITokenService
 
     public TokenService(
         IConfiguration configuration,
-        AppDbContext context,
+        IUnitOfWork unitOfWork,
+        IHttpContextAccessor httpContextAccessor,
         ILogger<TokenService> logger,
         IPasswordService passwordService)
     {
         _configuration = configuration;
-        _context = context;
+        _unitOfWork = unitOfWork;
+        _httpContextAccessor = httpContextAccessor;
         _logger = logger;
         _passwordService = passwordService;
     }
 
-    public async Task<TokenResponse> GenerateTokensAsync(string userId, string userEmail, IEnumerable<string> roles)
+    public async Task<TokenResponseDto> GenerateTokensAsync(string userId, string userEmail, IEnumerable<string> roles)
     {
         try
         {
-            var accessToken = GenerateAccessToken(userId, userEmail, roles);
+            var roleList = roles.ToList();
+            var accessToken = GenerateAccessToken(userId, userEmail, roleList);
             var refreshToken = await GenerateRefreshTokenAsync(userId);
 
-            return new TokenResponse
+            return new TokenResponseDto
             {
                 AccessToken = accessToken,
                 RefreshToken = refreshToken,
                 TokenType = "Bearer",
-                ExpiresIn = AccessTokenExpirationMinutes * 60, // In seconds
-                ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(AccessTokenExpirationMinutes).ToUnixTimeSeconds()
+                ExpiresIn = AccessTokenExpirationMinutes * 60,
+                ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(AccessTokenExpirationMinutes).ToUnixTimeSeconds(),
+                UserId = userId,
+                Email = userEmail,
+                Roles = roleList
             };
         }
         catch (Exception ex)
@@ -68,7 +80,7 @@ public class TokenService : ITokenService
         }
     }
 
-    public async Task<TokenResponse?> RefreshAccessTokenAsync(string refreshToken)
+    public async Task<TokenResponseDto?> RefreshAccessTokenAsync(string refreshToken)
     {
         try
         {
@@ -78,12 +90,12 @@ public class TokenService : ITokenService
                 return null;
             }
 
-            // Find refresh token in database
-            var storedTokens = await _context.RefreshTokens.ToListAsync();
+            // Find refresh token in database via repository
+            var allTokens = await _unitOfWork.RefreshTokens.GetAllAsync();
             RefreshToken? token = null;
 
             // Since we store hashed tokens, we need to verify against each hash
-            foreach (var storedToken in storedTokens)
+            foreach (var storedToken in allTokens)
             {
                 if (_passwordService.VerifyPassword(refreshToken, storedToken.TokenHash) == PasswordVerificationResult.Success)
                 {
@@ -121,26 +133,26 @@ public class TokenService : ITokenService
 
             // Mark old token as used (rotation)
             token.UsedAt = DateTime.UtcNow;
-            _context.RefreshTokens.Update(token);
-            await _context.SaveChangesAsync();
+            await _unitOfWork.RefreshTokens.UpdateAsync(token);
+            await _unitOfWork.SaveChangesAsync();
 
-            // Get user to retrieve roles
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Usercode == token.UserId);
+            // Get user and roles
+            var user = await _unitOfWork.Users.GetByIdAsync(token.UserId);
             if (user == null)
             {
                 _logger.LogError("User {UserId} not found", token.UserId);
                 return null;
             }
 
-            // Get user roles (from junction table)
-            var userRoles = await _context.UserRoles
-                .Where(ur => ur.UserId == token.UserId)
-                .Include(ur => ur.Role)
-                .Select(ur => ur.Role.Name)
-                .ToListAsync();
+            var userRoles = await _unitOfWork.UserRoles.GetUserRolesWithDetailsAsync(token.UserId);
+            var roles = userRoles
+                .Select(ur => ur.Role?.Name)
+                .Where(name => name != null)
+                .Cast<string>()
+                .ToList();
 
-            // Generate new token pair
-            var newTokens = await GenerateTokensAsync(token.UserId, user.UserEmail, userRoles);
+            // Generate new token pair (fully populated DTO)
+            var newTokens = await GenerateTokensAsync(token.UserId, user.UserEmail, roles);
 
             _logger.LogInformation("Refresh token used successfully for user {UserId}", token.UserId);
             return newTokens;
@@ -159,20 +171,19 @@ public class TokenService : ITokenService
             if (string.IsNullOrEmpty(refreshToken))
                 return;
 
-            // Find and revoke token
-            var storedTokens = await _context.RefreshTokens.ToListAsync();
+            var allTokens = await _unitOfWork.RefreshTokens.GetAllAsync();
 
-            foreach (var storedToken in storedTokens)
+            foreach (var storedToken in allTokens)
             {
                 if (_passwordService.VerifyPassword(refreshToken, storedToken.TokenHash) == PasswordVerificationResult.Success)
                 {
                     storedToken.RevokedAt = DateTime.UtcNow;
-                    _context.RefreshTokens.Update(storedToken);
+                    await _unitOfWork.RefreshTokens.UpdateAsync(storedToken);
                     break;
                 }
             }
 
-            await _context.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
         }
         catch (Exception ex)
         {
@@ -195,7 +206,7 @@ public class TokenService : ITokenService
                 ValidateAudience = false,
                 ValidateLifetime = true,
                 ClockSkew = TimeSpan.Zero
-            }, out SecurityToken validatedToken);
+            }, out SecurityToken _);
 
             return principal;
         }
@@ -219,11 +230,10 @@ public class TokenService : ITokenService
         {
             new(ClaimTypes.NameIdentifier, userId),
             new(ClaimTypes.Email, userEmail),
-            new("jti", Guid.NewGuid().ToString()), // JWT ID for revocation tracking
-            new("iat", DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString()) // Issued at
+            new("jti", Guid.NewGuid().ToString()),
+            new("iat", DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString())
         };
 
-        // Add role claims
         foreach (var role in roles)
         {
             claims.Add(new Claim(ClaimTypes.Role, role));
@@ -244,14 +254,11 @@ public class TokenService : ITokenService
     }
 
     /// <summary>
-    /// Generates hashed refresh token and stores in database.
+    /// Generates hashed refresh token and stores in database via IUnitOfWork.
     /// </summary>
     private async Task<string> GenerateRefreshTokenAsync(string userId)
     {
-        // Generate random refresh token (not hashed yet; will be hashed before storing)
         var randomToken = Convert.ToBase64String(System.Security.Cryptography.RandomNumberGenerator.GetBytes(64));
-
-        // Hash token before storing (treat like password)
         var tokenHash = _passwordService.HashPassword(randomToken);
 
         var refreshToken = new RefreshToken
@@ -263,10 +270,9 @@ public class TokenService : ITokenService
             CreatedByIp = GetClientIpAddress()
         };
 
-        _context.RefreshTokens.Add(refreshToken);
-        await _context.SaveChangesAsync();
+        await _unitOfWork.RefreshTokens.AddAsync(refreshToken);
+        await _unitOfWork.SaveChangesAsync();
 
-        // Return unhashed token to client (only once)
         return randomToken;
     }
 
@@ -275,27 +281,36 @@ public class TokenService : ITokenService
     /// </summary>
     private async Task RevokeAllUserTokensAsync(string userId)
     {
-        var tokens = await _context.RefreshTokens
-            .Where(t => t.UserId == userId && t.RevokedAt == null)
-            .ToListAsync();
+        var tokens = await _unitOfWork.RefreshTokens.FindAsync(t => t.UserId == userId && t.RevokedAt == null);
 
         foreach (var token in tokens)
         {
             token.RevokedAt = DateTime.UtcNow;
-            _context.RefreshTokens.Update(token);
+            await _unitOfWork.RefreshTokens.UpdateAsync(token);
         }
 
-        await _context.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync();
         _logger.LogWarning("All refresh tokens revoked for user {UserId} (security measure)", userId);
     }
 
     /// <summary>
-    /// Gets client IP address for audit trail.
+    /// Gets the client IP address for audit trail using IHttpContextAccessor.
+    /// Checks X-Forwarded-For, X-Real-IP, then falls back to RemoteIpAddress.
     /// </summary>
     private string? GetClientIpAddress()
     {
-        // This would require IHttpContextAccessor to be injected if needed.
-        // For now, return null; can be enhanced later.
-        return null;
+        var context = _httpContextAccessor.HttpContext;
+        if (context == null)
+            return null;
+
+        var forwarded = context.Request.Headers["X-Forwarded-For"].FirstOrDefault();
+        if (!string.IsNullOrEmpty(forwarded))
+            return forwarded.Split(',')[0].Trim();
+
+        var realIp = context.Request.Headers["X-Real-IP"].FirstOrDefault();
+        if (!string.IsNullOrEmpty(realIp))
+            return realIp;
+
+        return context.Connection.RemoteIpAddress?.ToString();
     }
 }

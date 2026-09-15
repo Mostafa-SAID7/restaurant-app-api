@@ -37,9 +37,4 @@ public class ItemDto
     public DateTime? UpdatedAt { get; set; }
 }
 
-/// <summary>
-/// DTO for item response (alias for ItemDto for backwards compatibility with handlers).
-/// </summary>
-public class ItemResponseDto : ItemDto
-{
-}
+

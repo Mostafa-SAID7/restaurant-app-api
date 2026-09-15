@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using RestaurantAPI.Application.Common.DTOs;
 using RestaurantAPI.Application.Features.Cart.Commands;
 using RestaurantAPI.Application.Features.Cart.Queries;
-using RestaurantAPI.Auth.Policies;
+using RestaurantAPI.API.Policies;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Security.Claims;
 
@@ -26,28 +26,28 @@ public class CartController : ControllerBase
     }
 
     [HttpGet]
-    [SwaggerOperation(Summary = "Get cart items")]
-    public async Task<ActionResult<ApiResponse<List<CartItemDto>>>> GetCart()
+    [SwaggerOperation(Summary = "Get cart")]
+    public async Task<ActionResult<ApiResponse<CartDto>>> GetCart()
     {
         try
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userId))
-                return Unauthorized(ApiResponse<List<CartItemDto>>.CreateError("User not identified"));
+                return Unauthorized(ApiResponse<CartDto>.CreateError("User not identified"));
 
-            var query = new GetCartItemsQuery { UserId = userId };
+            var query = new GetCartQuery { UserId = userId };
             var result = await _mediator.Send(query);
             
-            return Ok(ApiResponse<List<CartItemDto>>.CreateSuccess(result));
+            return Ok(ApiResponse<CartDto>.CreateSuccess(result));
         }
         catch (UnauthorizedAccessException ex)
         {
-            return NotFound(ApiResponse<List<CartItemDto>>.CreateError(ex.Message));
+            return NotFound(ApiResponse<CartDto>.CreateError(ex.Message));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving cart");
-            return StatusCode(500, ApiResponse<List<CartItemDto>>.CreateError("An error occurred"));
+            return StatusCode(500, ApiResponse<CartDto>.CreateError("An error occurred"));
         }
     }
 
@@ -139,7 +139,7 @@ public class CartController : ControllerBase
             if (string.IsNullOrEmpty(userId))
                 return Unauthorized(ApiResponse<CartDto>.CreateError("User not identified"));
 
-            var query = new GetCartSummaryQuery { UserId = userId };
+            var query = new GetCartQuery { UserId = userId };
             var result = await _mediator.Send(query);
             
             return Ok(ApiResponse<CartDto>.CreateSuccess(result));

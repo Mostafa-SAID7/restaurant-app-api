@@ -1,11 +1,14 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace RestaurantAPI.Auth.Services.Interfaces;
+namespace RestaurantAPI.Application.Common.Abstractions;
 
 /// <summary>
 /// Service for password hashing, verification, and policy validation.
 /// Enforces strong password requirements and handles secure password operations.
 /// Implements separation of concerns: password lifecycle management only.
+///
+/// Uses Microsoft.AspNetCore.Identity.PasswordVerificationResult directly —
+/// no custom enum wrapper needed, which eliminates the conversion switch in the implementation.
 /// </summary>
 public interface IPasswordService
 {
@@ -20,26 +23,18 @@ public interface IPasswordService
 
     /// <summary>
     /// Verifies a plaintext password against a bcrypt hash.
-    /// Returns three-state result: Success, InvalidHash (corrupted), Failed (wrong password).
+    /// Returns the Identity PasswordVerificationResult: Success, SuccessRehashNeeded, or Failed.
     /// </summary>
     /// <param name="password">Plaintext password to verify</param>
     /// <param name="hash">Bcrypt hash to verify against</param>
-    /// <returns>Verification result (Success, InvalidHash, Failed)</returns>
+    /// <returns>Verification result (Success, SuccessRehashNeeded, Failed)</returns>
     PasswordVerificationResult VerifyPassword(string password, string hash);
 
     /// <summary>
     /// Validates password against organization's password policy.
-    /// Enforces: minimum length, no spaces, not empty, character distribution rules.
+    /// Enforces: minimum length, not empty, not whitespace-only, not all same character.
     /// </summary>
     /// <param name="password">Plaintext password to validate</param>
     /// <returns>Validation result (IsValid, Errors list)</returns>
     (bool IsValid, List<string> Errors) ValidatePassword(string password);
-
-    /// <summary>
-    /// Checks if password needs rehashing (e.g., bcrypt cost factor increased for security).
-    /// Called after verification to support transparent password upgrade.
-    /// </summary>
-    /// <param name="hash">Bcrypt hash to check</param>
-    /// <returns>True if hash should be recreated with current cost factor</returns>
-    bool NeedsRehashing(string hash);
 }

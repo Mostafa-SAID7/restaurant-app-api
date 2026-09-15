@@ -1,8 +1,8 @@
 using AutoMapper;
 using FluentAssertions;
-using RestaurantAPI.DTOs;
-using RestaurantAPI.Mapping;
-using RestaurantAPI.Models;
+using RestaurantAPI.Application.Common.DTOs;
+using RestaurantAPI.Application.Common.Mappings;
+using RestaurantAPI.Domain.Entities;
 using RestaurantAPI.UnitTests.TestHelpers;
 using Xunit;
 

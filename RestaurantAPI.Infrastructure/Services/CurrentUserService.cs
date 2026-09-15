@@ -1,7 +1,7 @@
 using System.Security.Claims;
-using RestaurantAPI.Auth.Services.Interfaces;
+using RestaurantAPI.Application.Common.Abstractions;
 
-namespace RestaurantAPI.Auth.Services.Implementation;
+namespace RestaurantAPI.Infrastructure.Services;
 
 /// <summary>
 /// Implementation of ICurrentUserService using ClaimsPrincipal from HttpContext.

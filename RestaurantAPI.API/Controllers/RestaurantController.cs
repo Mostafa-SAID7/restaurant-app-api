@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using RestaurantAPI.Application.Common.DTOs;
 using RestaurantAPI.Application.Features.Restaurants.Commands;
 using RestaurantAPI.Application.Features.Restaurants.Queries;
-using RestaurantAPI.Auth.Policies;
+using RestaurantAPI.API.Policies;
 using RestaurantAPI.Filters;
 using RestaurantAPI.Helpers;
 using Swashbuckle.AspNetCore.Annotations;
@@ -138,9 +138,9 @@ namespace RestaurantAPI.Controllers
         [HttpGet("{restaurantId}/menu")]
         [AllowAnonymous]
         [SwaggerOperation(Summary = "Get restaurant menu", Description = "Retrieve menu items for specific restaurant")]
-        [SwaggerResponse(200, "Success", typeof(ApiResponse<IEnumerable<ItemResponseDto>>))]
+        [SwaggerResponse(200, "Success", typeof(ApiResponse<IEnumerable<ItemDto>>))]
         [SwaggerResponse(404, "Restaurant not found")]
-        public async Task<ActionResult<ApiResponse<IEnumerable<ItemResponseDto>>>> GetMenu(
+        public async Task<ActionResult<ApiResponse<IEnumerable<ItemDto>>>> GetMenu(
             int restaurantId,
             [FromQuery] string sortByPrice = "",
             CancellationToken cancellationToken = default)
@@ -157,19 +157,19 @@ namespace RestaurantAPI.Controllers
 
                 if (!menuList.Any())
                 {
-                    return NotFound(ApiResponse<IEnumerable<ItemResponseDto>>.CreateError($"No menu items found for restaurant {restaurantId}"));
+                    return NotFound(ApiResponse<IEnumerable<ItemDto>>.CreateError($"No menu items found for restaurant {restaurantId}"));
                 }
 
-                return Ok(ApiResponse<IEnumerable<ItemResponseDto>>.CreateSuccess(menuList));
+                return Ok(ApiResponse<IEnumerable<ItemDto>>.CreateSuccess(menuList));
             }
             catch (ArgumentException ex)
             {
-                return NotFound(ApiResponse<IEnumerable<ItemResponseDto>>.CreateError(ex.Message));
+                return NotFound(ApiResponse<IEnumerable<ItemDto>>.CreateError(ex.Message));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error retrieving restaurant menu");
-                return StatusCode(500, ApiResponse<IEnumerable<ItemResponseDto>>.CreateError("An error occurred"));
+                return StatusCode(500, ApiResponse<IEnumerable<ItemDto>>.CreateError("An error occurred"));
             }
         }
 
@@ -272,9 +272,9 @@ namespace RestaurantAPI.Controllers
         [HttpGet("items/all")]
         [AllowAnonymous]
         [SwaggerOperation(Summary = "Get all menu items", Description = "Retrieve all menu items across all restaurants")]
-        [SwaggerResponse(200, "Success", typeof(ApiResponse<IEnumerable<ItemResponseDto>>))]
+        [SwaggerResponse(200, "Success", typeof(ApiResponse<IEnumerable<ItemDto>>))]
         [SwaggerResponse(404, "No items found")]
-        public async Task<ActionResult<ApiResponse<IEnumerable<ItemResponseDto>>>> GetAllItems(
+        public async Task<ActionResult<ApiResponse<IEnumerable<ItemDto>>>> GetAllItems(
             [FromQuery] string itemName = "",
             [FromQuery] string sortByPrice = "",
             CancellationToken cancellationToken = default)
@@ -291,15 +291,15 @@ namespace RestaurantAPI.Controllers
 
                 if (!itemList.Any())
                 {
-                    return NotFound(ApiResponse<IEnumerable<ItemResponseDto>>.CreateError("No items found"));
+                    return NotFound(ApiResponse<IEnumerable<ItemDto>>.CreateError("No items found"));
                 }
 
-                return Ok(ApiResponse<IEnumerable<ItemResponseDto>>.CreateSuccess(itemList));
+                return Ok(ApiResponse<IEnumerable<ItemDto>>.CreateSuccess(itemList));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error retrieving items");
-                return StatusCode(500, ApiResponse<IEnumerable<ItemResponseDto>>.CreateError("An error occurred"));
+                return StatusCode(500, ApiResponse<IEnumerable<ItemDto>>.CreateError("An error occurred"));
             }
         }
     }

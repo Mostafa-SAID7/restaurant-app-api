@@ -112,10 +112,11 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
         return Task.FromResult(true);
     }
 
-    public virtual async Task<int> DeleteRangeAsync(IEnumerable<T> entities)
+    public virtual Task<int> DeleteRangeAsync(IEnumerable<T> entities)
     {
-        _dbSet.RemoveRange(entities);
-        return await Task.FromResult(entities.Count());
+        var list = entities.ToList();
+        _dbSet.RemoveRange(list);
+        return Task.FromResult(list.Count);
     }
 
     public virtual async Task<int> DeleteRangeAsync(Expression<Func<T, bool>> predicate)

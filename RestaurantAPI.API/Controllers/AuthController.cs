@@ -3,11 +3,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RestaurantAPI.Application.Common.DTOs;
 using RestaurantAPI.Application.Features.Auth.Commands;
-using RestaurantAPI.Auth.DTOs;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Security.Claims;
 
-namespace RestaurantAPI.Auth.Controllers;
+namespace RestaurantAPI.API.Controllers;
 
 /// <summary>
 /// Authentication controller for user registration, login, token refresh, and logout.

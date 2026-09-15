@@ -1,4 +1,4 @@
-using RestaurantAPI.Models;
+using RestaurantAPI.Domain.Entities;
 
 namespace RestaurantAPI.UnitTests.TestHelpers;
 

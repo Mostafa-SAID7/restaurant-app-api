@@ -98,19 +98,6 @@ public class UnitOfWork : IUnitOfWork
         }
     }
 
-    // Bulk operations (not frequently used - can be implemented later if needed)
-    public async Task<int> ExecuteSqlRawAsync(string sql, params object[] parameters)
-    {
-        // TODO: Implement raw SQL if needed
-        return await Task.FromResult(0);
-    }
-
-    public async Task<IEnumerable<T>> ExecuteQueryAsync<T>(string sql, params object[] parameters) where T : class
-    {
-        // TODO: Implement raw SQL queries if needed
-        return await Task.FromResult(new List<T>());
-    }
-
     // Dispose pattern
     public void Dispose()
     {

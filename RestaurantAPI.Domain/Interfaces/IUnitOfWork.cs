@@ -23,8 +23,4 @@ public interface IUnitOfWork : IDisposable
     Task BeginTransactionAsync();
     Task CommitTransactionAsync();
     Task RollbackTransactionAsync();
-    
-    // Bulk operations
-    Task<int> ExecuteSqlRawAsync(string sql, params object[] parameters);
-    Task<IEnumerable<T>> ExecuteQueryAsync<T>(string sql, params object[] parameters) where T : class;
 }

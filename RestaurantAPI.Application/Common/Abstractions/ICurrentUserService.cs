@@ -1,24 +1,49 @@
 namespace RestaurantAPI.Application.Common.Abstractions;
 
 /// <summary>
-/// Port for accessing the currently authenticated user information.
-/// Abstraction over HTTP context to allow testing and separation of concerns.
-/// Implementation lives in WebApi/Infrastructure layer.
+/// Port for accessing the currently authenticated user information from HTTP context.
+/// Abstraction over HttpContext to allow testing and separation of concerns.
+/// Implementation lives in Infrastructure layer (accesses ClaimsPrincipal).
 /// </summary>
 public interface ICurrentUserService
 {
     /// <summary>
-    /// Get the current user's ID from the authentication context.
+    /// Get the current user's ID (Usercode) from JWT claims.
     /// </summary>
-    string GetUserId();
+    string? UserId { get; }
 
     /// <summary>
-    /// Get the current user's email from the authentication context.
+    /// Get the current user's email from JWT claims.
     /// </summary>
-    string GetUserEmail();
+    string? UserEmail { get; }
 
     /// <summary>
-    /// Check if a user is authenticated.
+    /// Get the current user's roles from JWT claims.
     /// </summary>
-    bool IsAuthenticated();
+    IEnumerable<string> Roles { get; }
+
+    /// <summary>
+    /// Check if user has a specific role.
+    /// </summary>
+    bool HasRole(string role);
+
+    /// <summary>
+    /// Check if user has any of the specified roles.
+    /// </summary>
+    bool HasAnyRole(params string[] roles);
+
+    /// <summary>
+    /// Check if user is authenticated.
+    /// </summary>
+    bool IsAuthenticated { get; }
+
+    /// <summary>
+    /// Get a specific claim value by claim type.
+    /// </summary>
+    string? GetClaimValue(string claimType);
+
+    /// <summary>
+    /// Get all claims for the current user.
+    /// </summary>
+    IEnumerable<System.Security.Claims.Claim> GetClaims();
 }

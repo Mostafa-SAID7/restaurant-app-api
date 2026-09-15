@@ -1,7 +1,7 @@
 namespace RestaurantAPI.Configurations;
 
 using RestaurantAPI.Middleware;
-using RestaurantAPI.Auth.Extensions;
+using RestaurantAPI.API.Extensions;
 
 public static class MiddlewareConfiguration
 {

@@ -12,11 +12,15 @@ public class UserDto
 }
 
 /// <summary>
-/// DTO for authenticated user information returned by GetUserAsync service.
+/// DTO for authenticated user information (roles, lock status).
+/// Used internally by auth handlers and GetUserAsync.
 /// </summary>
 public class AuthUserDto
 {
     public string Usercode { get; set; } = null!;
     public string UserEmail { get; set; } = null!;
-    public List<string> Roles { get; set; } = new();
+    public DateTime CreatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+    public IEnumerable<string> Roles { get; set; } = [];
+    public bool IsLocked { get; set; }
 }

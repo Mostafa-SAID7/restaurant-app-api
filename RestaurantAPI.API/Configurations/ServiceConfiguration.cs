@@ -1,40 +1,35 @@
-using RestaurantAPI.Mapping;
-using RestaurantAPI.DTOs.External;
-using RestaurantAPI.Services.Interfaces;
-using RestaurantAPI.Repositories.Interfaces;
-using RestaurantAPI.Auth.Extensions;
+using RestaurantAPI.Infrastructure.Persistence;
+using RestaurantAPI.API.Extensions;
 using RestaurantAPI.Application.Features.Orders.Authorization;
+using RestaurantAPI.Infrastructure.Services;
+using RestaurantAPI.Application;
+using RestaurantAPI.Application.Common.Abstractions;
 
-namespace RestaurantAPI.Configurations;
+namespace RestaurantAPI.API.Configurations;
 
 public static class ServiceConfiguration
 {
-    public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
+    /// <summary>
+    /// Registers all API-layer services: Application services (MediatR/AutoMapper/Validators),
+    /// auth services, JWT configuration, authorization policies, and infrastructure utilities.
+    /// Renamed from AddApplicationServices to avoid collision with
+    /// RestaurantAPI.Application.DependencyInjection.AddApplicationServices().
+    /// </summary>
+    public static IServiceCollection AddApiLayerServices(this IServiceCollection services, IConfiguration configuration)
     {
-        // Add AutoMapper with both internal and external profiles
-        services.AddAutoMapper(typeof(MappingProfile), typeof(ExternalMappingProfile));
+        // Register Application layer services (MediatR, FluentValidation, AutoMapper)
+        services.AddApplicationServices();
 
         // Register Auth Services (must be before authorization)
         services.AddAuthServices(configuration);
         services.AddJwtAuthentication(configuration);
         services.AddAuthorizationPolicies();
 
-        // Register Repositories
-        services.AddScoped<IUserRepository, UserRepository>();
-        services.AddScoped<IRestaurantRepository, RestaurantRepository>();
-        services.AddScoped<IItemRepository, ItemRepository>();
-        services.AddScoped<IOrderRepository, OrderRepository>();
-        services.AddScoped<IMasterOrderRepository, MasterOrderRepository>();
-        services.AddScoped<ICartRepository, CartRepository>();
-
-        // Register Unit of Work
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        // Image Service (infrastructure utility, not business logic)
+        services.AddScoped<IImageService, ImageService>();
 
         // Register Order Authorization Service (DIP: orders module uses this for authorization)
         services.AddScoped<IOrderAuthorizationService, OrderAuthorizationService>();
-
-        // Image Service (infrastructure utility, not business logic)
-        services.AddScoped<IImageService, ImageService>();
 
         return services;
     }

@@ -1,5 +1,5 @@
 using Moq;
-using RestaurantAPI.Models;
+using RestaurantAPI.Domain.Entities;
 using RestaurantAPI.Repositories.Interfaces;
 
 namespace RestaurantAPI.UnitTests.TestHelpers;

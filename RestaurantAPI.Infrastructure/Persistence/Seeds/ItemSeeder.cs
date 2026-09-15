@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using RestaurantAPI.Models;
+using RestaurantAPI.Domain.Entities;
 
 namespace RestaurantAPI.Data.Seeds;
 
