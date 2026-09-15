@@ -44,6 +44,7 @@ public static class AuthConfiguration
             entity.HasOne(ur => ur.User)
                 .WithMany()
                 .HasForeignKey(ur => ur.UserId)
+                .HasPrincipalKey(u => u.Usercode)
                 .OnDelete(DeleteBehavior.Cascade);
 
             entity.HasOne(ur => ur.Role)
@@ -70,6 +71,7 @@ public static class AuthConfiguration
             entity.HasOne<User>()
                 .WithMany()
                 .HasForeignKey(rt => rt.UserId)
+                .HasPrincipalKey(u => u.Usercode)
                 .OnDelete(DeleteBehavior.Cascade);
 
             entity.HasIndex(rt => rt.UserId);

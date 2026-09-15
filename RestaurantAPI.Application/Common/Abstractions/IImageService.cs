@@ -1,16 +1,17 @@
-using Microsoft.AspNetCore.Http;
-
 namespace RestaurantAPI.Application.Common.Abstractions;
 
 /// <summary>
 /// Port for image storage/retrieval operations.
 /// Implementation lives in Infrastructure layer.
-/// Supports direct file upload, base64 encoding, and image retrieval.
+///
+/// Uses Stream instead of IFormFile to keep the Application layer free of
+/// ASP.NET Core HTTP dependencies (clean architecture boundary).
+/// Controllers/Infrastructure convert IFormFile → Stream before calling these methods.
 /// </summary>
 public interface IImageService
 {
     /// <summary>
-    /// Upload an image stream and return its path.
+    /// Upload an image stream and return its storage path.
     /// </summary>
     Task<string> UploadAsync(Stream fileStream, string fileName, string folderName);
 
@@ -20,11 +21,10 @@ public interface IImageService
     Task<bool> DeleteAsync(string imageUrl);
 
     /// <summary>
-    /// Save an uploaded IFormFile and return its storage path.
-    /// Previously declared as (object file) which did not match the implementation — fixed.
+    /// Save an image from a stream and return its path.
+    /// Callers (e.g. controllers) should open the IFormFile stream and pass it here.
     /// </summary>
-    /// <param name="file">Uploaded file from a multipart/form-data request</param>
-    Task<string> SaveImageAsync(IFormFile file);
+    Task<string> SaveImageAsync(Stream fileStream, string fileName);
 
     /// <summary>
     /// Save a base64-encoded image and return its path.

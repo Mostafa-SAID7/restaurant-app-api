@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RestaurantAPI.Application.Common.Abstractions;
 using RestaurantAPI.Application.Common.DTOs;
 using RestaurantAPI.Application.Features.Auth.Commands;
 using Swashbuckle.AspNetCore.Annotations;
@@ -55,6 +56,11 @@ public class AuthController : ControllerBase
 
             return CreatedAtAction(nameof(RegisterAsync), 
                 ApiResponse<TokenResponseDto>.CreateSuccess(result, "User registered successfully"));
+        }
+        catch (ArgumentException ex)
+        {
+            _logger.LogWarning("Registration validation failed: {Message}", ex.Message);
+            return BadRequest(ApiResponse<TokenResponseDto>.CreateError(ex.Message));
         }
         catch (InvalidOperationException ex)
         {

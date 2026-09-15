@@ -10,7 +10,9 @@ public static class FilterConfiguration
         // ApiKeyAuthorizationFilter removed (migrated to JWT Bearer auth - Phase 2.8)
         services.AddScoped<GlobalExceptionFilter>();
         services.AddScoped<LoggingFilter>();
-        services.AddScoped<RateLimitingFilter>();
+        services.AddScoped(sp => new RateLimitingFilter(
+            sp.GetRequiredService<IMemoryCache>(),
+            sp.GetRequiredService<ILogger<RateLimitingFilter>>()));
 
         // Add memory cache for rate limiting
         services.AddMemoryCache();

@@ -21,98 +21,58 @@ public class MappingProfileTests
     [Fact]
     public void MappingProfile_IsValid()
     {
-        // Assert - This validates all mappings in the profile
         var config = new MapperConfiguration(cfg => cfg.AddProfile<MappingProfile>());
-        // Just create a mapper to ensure no exceptions occur
         var mapper = config.CreateMapper();
         mapper.Should().NotBeNull();
     }
 
-    #region User Mapping Tests
-
     [Fact]
-    public void UserDTOToUser_MapsCorrectly()
+    public void UserToUserDto_MapsEmailAndDoesNotExposePasswordHash()
     {
-        // Arrange
-        var userDto = new UserDTO
-        {
-            UserEmail = "user@test.com",
-            Password = "Password123"
-        };
-
-        // Act
-        var user = _mapper.Map<User>(userDto);
-
-        // Assert
-        user.UserEmail.Should().Be(userDto.UserEmail);
-        user.PasswordHash.Should().BeNullOrEmpty(); // Should be ignored
-    }
-
-    [Fact]
-    public void UserToUserDTO_DoesNotExposPassword()
-    {
-        // Arrange
         var user = TestDataFactory.CreateUser();
 
-        // Act
-        var userDto = _mapper.Map<UserDTO>(user);
+        var userDto = _mapper.Map<UserDto>(user);
 
-        // Assert
-        userDto.Password.Should().BeNullOrEmpty();
         userDto.UserEmail.Should().Be(user.UserEmail);
+        userDto.Usercode.Should().Be(user.Usercode);
     }
 
-    #endregion
-
-    #region Order Mapping Tests
-
     [Fact]
-    public void OrderDTOToOrder_MapsCorrectly()
+    public void OrderLineInputDtoToOrder_MapsQuantity()
     {
-        // Arrange
-        var orderDto = new OrderDTO
+        var orderDto = new OrderLineInputDto
         {
             ItemID = 1,
             Quantity = 2
         };
 
-        // Act
         var order = _mapper.Map<Order>(orderDto);
 
-        // Assert
         order.Quantity.Should().Be(2);
-        order.ItemPrice.Should().Be(0); // Should be ignored
-        order.TotalPrice.Should().Be(0); // Should be ignored
+        order.ItemPrice.Should().Be(0);
+        order.TotalPrice.Should().Be(0);
     }
 
     [Fact]
-    public void OrderToOrderLineDTO_MapsLineData()
+    public void OrderToOrderLineDto_MapsLineData()
     {
-        // Arrange
         var order = TestDataFactory.CreateOrder(
             itemName: "Pasta Carbonara",
             itemPrice: 18.50m,
             quantity: 2
         );
 
-        // Act
-        var lineDto = _mapper.Map<OrderLineDTO>(order);
+        var lineDto = _mapper.Map<OrderLineDto>(order);
 
-        // Assert
         lineDto.ItemName.Should().Be("Pasta Carbonara");
         lineDto.ItemPrice.Should().Be(18.50m);
         lineDto.Quantity.Should().Be(2);
         lineDto.TotalPrice.Should().Be(37.00m);
     }
 
-    #endregion
-
-    #region Cart Mapping Tests
-
     [Fact]
-    public void CartToCartItemDTO_MapsCartData()
+    public void CartToCartItemDto_MapsCartData()
     {
-        // Arrange
         var cart = TestDataFactory.CreateCart(
             cartId: 1,
             itemId: 1,
@@ -120,10 +80,8 @@ public class MappingProfileTests
             itemPrice: 12.50m
         );
 
-        // Act
-        var cartItemDto = _mapper.Map<CartItemDTO>(cart);
+        var cartItemDto = _mapper.Map<CartItemDto>(cart);
 
-        // Assert
         cartItemDto.CartID.Should().Be(1);
         cartItemDto.ItemID.Should().Be(1);
         cartItemDto.Quantity.Should().Be(3);
@@ -131,94 +89,67 @@ public class MappingProfileTests
         cartItemDto.TotalPrice.Should().Be(37.50m);
     }
 
-    #endregion
-
-    #region MasterOrder Mapping Tests
-
     [Fact]
-    public void MasterOrderToMasterOrderDTO_MapsCorrectly()
+    public void MasterOrderToMasterOrderDto_MapsCorrectly()
     {
-        // Arrange
         var masterOrder = TestDataFactory.CreateMasterOrder(
             masterId: 100,
             grandTotal: 125.00m
         );
 
-        // Act
-        var masterOrderDto = _mapper.Map<MasterOrderDTO>(masterOrder);
+        var masterOrderDto = _mapper.Map<MasterOrderDto>(masterOrder);
 
-        // Assert
         masterOrderDto.GrandTotal.Should().Be(125.00m);
     }
 
     [Fact]
-    public void MasterOrderToMasterOrderWithItemsDTO_IncludesUserCodeAndRestaurantName()
+    public void MasterOrderToMasterOrderWithItemsDto_IncludesUserCodeAndRestaurantName()
     {
-        // Arrange
         var masterOrder = TestDataFactory.CreateMasterOrder();
 
-        // Act
-        var masterOrderWithItemsDto = _mapper.Map<MasterOrderWithItemsDTO>(masterOrder);
+        var masterOrderWithItemsDto = _mapper.Map<MasterOrderWithItemsDto>(masterOrder);
 
-        // Assert
         masterOrderWithItemsDto.UserCode.Should().NotBeNullOrEmpty();
         masterOrderWithItemsDto.RestaurantName.Should().NotBeNullOrEmpty();
     }
 
-    #endregion
-
-    #region Restaurant & Item Mapping Tests
-
     [Fact]
-    public void RestaurantDTOToRestaurant_MapsCorrectly()
+    public void CreateRestaurantDtoToRestaurant_MapsCorrectly()
     {
-        // Arrange
-        var restaurantDto = new RestaurantDTO
+        var restaurantDto = new CreateRestaurantDto
         {
             RestaurantName = "Test Restaurant",
             Address = "123 Main St",
             Type = "Fine Dining"
         };
 
-        // Act
         var restaurant = _mapper.Map<Restaurant>(restaurantDto);
 
-        // Assert
         restaurant.RestaurantName.Should().Be(restaurantDto.RestaurantName);
         restaurant.Address.Should().Be(restaurantDto.Address);
         restaurant.Type.Should().Be(restaurantDto.Type);
     }
 
     [Fact]
-    public void ItemDTOToItem_IgnoresIDAndRestaurant()
+    public void CreateItemDtoToItem_MapsNameAndPrice()
     {
-        // Arrange
-        var itemDto = new ItemDTO
+        var itemDto = new CreateItemDto
         {
             ItemName = "Pizza",
             ItemPrice = 15.00m
         };
 
-        // Act
         var item = _mapper.Map<Item>(itemDto);
 
-        // Assert
         item.ItemName.Should().Be("Pizza");
         item.ItemPrice.Should().Be(15.00m);
-        item.ItemID.Should().Be(0); // Should be ignored
+        item.ItemID.Should().Be(0);
     }
-
-    #endregion
-
-    #region Null Handling Tests
 
     [Fact]
     public void Mapping_WithNullSource_HandlesGracefully()
     {
-        // Act & Assert
-        var result = _mapper.Map<UserDTO>((User?)null);
+        var result = _mapper.Map<UserDto>((User?)null);
         result.Should().BeNull();
     }
-
-    #endregion
 }

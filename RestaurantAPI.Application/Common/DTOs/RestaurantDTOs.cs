@@ -35,3 +35,12 @@ public class RestaurantDto
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
 }
+
+/// <summary>
+/// Request body for uploading a base64-encoded image.
+/// </summary>
+public class ImageRequestDTO
+{
+    public string? Base64Image { get; set; }
+    public string? FileName { get; set; }
+}

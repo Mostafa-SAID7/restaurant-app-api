@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
+using RestaurantAPI.API.Configurations;
 using RestaurantAPI.Configurations;
-using RestaurantAPI.Application;
+using RestaurantAPI.Data.Seeds;
 using RestaurantAPI.Infrastructure;
 using Serilog;
 
@@ -12,9 +13,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add logging configuration first
 builder.AddLoggingConfiguration();
 
-// Add layer services (Domain → Application → Infrastructure order)
-builder.Services.AddApplicationServices();
+// Add layer services (Infrastructure data access, then Application + auth)
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddApiLayerServices(builder.Configuration);
 
 // Add API infrastructure
 builder.Services.AddApiConfiguration();
@@ -37,8 +38,20 @@ healthChecks.AddCheck("api", () => Microsoft.Extensions.Diagnostics.HealthChecks
 
 var app = builder.Build();
 
+if (!app.Environment.IsEnvironment("Test"))
+{
+    try
+    {
+        await app.SeedDataAsync();
+    }
+    catch (Exception ex)
+    {
+        Log.Warning(ex, "Database migrate/seed skipped. Start SQL Server (see docker-compose.yml) if API data endpoints fail.");
+    }
+}
+
 app.ConfigureMiddleware();
 
-app.Run();
+await app.RunAsync();
 
 public partial class Program { }

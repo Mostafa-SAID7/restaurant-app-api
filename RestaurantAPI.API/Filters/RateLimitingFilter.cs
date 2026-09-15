@@ -1,4 +1,4 @@
-using RestaurantAPI.Extensions;
+using RestaurantAPI.API.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Caching.Memory;
@@ -50,7 +50,7 @@ public class RateLimitingFilter : IActionFilter
                 StatusCode = 429 // Too Many Requests
             };
 
-            context.HttpContext.Response.Headers.Add("Retry-After", _timeWindow.TotalSeconds.ToString());
+            context.HttpContext.Response.Headers["Retry-After"] = _timeWindow.TotalSeconds.ToString();
             return;
         }
 

@@ -5,22 +5,15 @@ namespace RestaurantAPI.Infrastructure.Services;
 
 /// <summary>
 /// Implementation of IPasswordService using ASP.NET Core Identity's PasswordHasher.
-/// Provides strong password hashing, verification, and policy validation.
-/// Enforces: minimum 12 characters, no leading/trailing whitespace, not all same character.
-///
-/// Uses Identity's PasswordVerificationResult directly — no custom enum or conversion needed.
-/// NeedsRehashing removed: the PasswordHasher returns SuccessRehashNeeded automatically
-/// on VerifyPassword when the hash format is outdated.
+/// Maps Identity's PasswordVerificationResult to the Application layer's custom enum
+/// so the Application layer stays free of any ASP.NET Core Identity dependency.
 /// </summary>
 public class PasswordService : IPasswordService
 {
     private readonly PasswordHasher<object> _passwordHasher;
     private readonly ILogger<PasswordService> _logger;
 
-    /// <summary>Minimum password length (NIST 800-63B recommendation).</summary>
     private const int MinPasswordLength = 12;
-
-    /// <summary>Maximum password length to prevent DoS attacks.</summary>
     private const int MaxPasswordLength = 500;
 
     public PasswordService(ILogger<PasswordService> logger)
@@ -42,21 +35,31 @@ public class PasswordService : IPasswordService
         }
     }
 
-    public PasswordVerificationResult VerifyPassword(string password, string hash)
+    public RestaurantAPI.Application.Common.Abstractions.PasswordVerificationResult VerifyPassword(string password, string hash)
     {
         if (string.IsNullOrEmpty(password) || string.IsNullOrEmpty(hash))
-            return PasswordVerificationResult.Failed;
+            return RestaurantAPI.Application.Common.Abstractions.PasswordVerificationResult.Failed;
 
         try
         {
-            // Identity's PasswordHasher returns the canonical PasswordVerificationResult directly.
-            // No conversion needed — the interface now uses this type.
-            return _passwordHasher.VerifyHashedPassword(null!, hash, password);
+            var result = _passwordHasher.VerifyHashedPassword(null!, hash, password);
+
+            // Map Identity enum → Application layer custom enum (preserves clean architecture)
+            return result switch
+            {
+                Microsoft.AspNetCore.Identity.PasswordVerificationResult.Success
+                    => RestaurantAPI.Application.Common.Abstractions.PasswordVerificationResult.Success,
+                Microsoft.AspNetCore.Identity.PasswordVerificationResult.SuccessRehashNeeded
+                    => RestaurantAPI.Application.Common.Abstractions.PasswordVerificationResult.SuccessRehashNeeded,
+                Microsoft.AspNetCore.Identity.PasswordVerificationResult.Failed
+                    => RestaurantAPI.Application.Common.Abstractions.PasswordVerificationResult.Failed,
+                _ => RestaurantAPI.Application.Common.Abstractions.PasswordVerificationResult.Failed
+            };
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error verifying password");
-            return PasswordVerificationResult.Failed;
+            return RestaurantAPI.Application.Common.Abstractions.PasswordVerificationResult.Failed;
         }
     }
 

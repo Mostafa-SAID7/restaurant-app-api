@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using RestaurantAPI.Application.Common.DTOs;
 using RestaurantAPI.DTOs;
 
 namespace RestaurantAPI.Helpers;

@@ -46,7 +46,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, TokenResponseDt
 
             // Verify password
             var verificationResult = _passwordService.VerifyPassword(request.Password, user.PasswordHash);
-            if (verificationResult != PasswordVerificationResult.Success)
+            if (verificationResult is not (PasswordVerificationResult.Success or PasswordVerificationResult.SuccessRehashNeeded))
             {
                 _logger.LogWarning("Failed login attempt for user: {Email}", request.Email);
                 throw new UnauthorizedAccessException("Invalid email or password");

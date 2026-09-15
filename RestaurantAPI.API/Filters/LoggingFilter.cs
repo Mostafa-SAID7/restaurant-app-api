@@ -1,4 +1,4 @@
-using RestaurantAPI.Extensions;
+using RestaurantAPI.API.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Diagnostics;

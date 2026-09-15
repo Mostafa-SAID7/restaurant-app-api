@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RestaurantAPI.Application.Common.Abstractions;
 using RestaurantAPI.Application.Common.DTOs;
 using RestaurantAPI.Application.Features.Restaurants.Commands;
 using RestaurantAPI.Application.Features.Restaurants.Queries;
@@ -204,7 +205,8 @@ namespace RestaurantAPI.Controllers
                     return BadRequest(ApiResponse<object>.CreateError("Invalid image file. Allowed formats: JPEG, PNG, GIF, WebP. Max size: 5MB"));
                 }
 
-                var imagePath = await _imageService.SaveImageAsync(image);
+                await using var stream = image.OpenReadStream();
+                var imagePath = await _imageService.SaveImageAsync(stream, image.FileName);
                 var imageUrl = _imageService.GetImageUrl(imagePath);
 
                 return Ok(ApiResponse<object>.CreateSuccess(new { imagePath, imageUrl }, "Image uploaded successfully"));

@@ -68,14 +68,15 @@ public class ImageService : IImageService
     /// Saves an IFormFile and returns the image path.
     /// Helper method for direct file upload.
     /// </summary>
-    public async Task<string> SaveImageAsync(IFormFile file)
+    public async Task<string> SaveImageAsync(Stream fileStream, string fileName)
     {
-        if (file == null || file.Length == 0)
-            throw new ArgumentException("File is empty");
+        if (fileStream == null || !fileStream.CanRead)
+            throw new ArgumentException("File stream is empty");
 
-        using var stream = file.OpenReadStream();
-        var imagePath = await UploadAsync(stream, file.FileName, "images");
-        return imagePath;
+        if (fileStream.CanSeek && fileStream.Length == 0)
+            throw new ArgumentException("File stream is empty");
+
+        return await UploadAsync(fileStream, fileName, "images");
     }
 
     /// <summary>

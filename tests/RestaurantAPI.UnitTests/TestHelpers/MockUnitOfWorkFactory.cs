@@ -1,6 +1,6 @@
 using Moq;
 using RestaurantAPI.Domain.Entities;
-using RestaurantAPI.Repositories.Interfaces;
+using RestaurantAPI.Domain.Interfaces;
 
 namespace RestaurantAPI.UnitTests.TestHelpers;
 

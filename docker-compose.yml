@@ -23,7 +23,7 @@ services:
   api:
     build:
       context: .
-      dockerfile: api/Dockerfile
+      dockerfile: RestaurantAPI.API/Dockerfile
     container_name: restaurant-api
     ports:
       - "5124:8080"
